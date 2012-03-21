@@ -12,7 +12,11 @@ var fb = require('./lib.js')
   , photos = []
   ;
 
-exports.sync = function(processInfo, cb) {
+exports.sync = function(pi, cb) {
+    if(!pi.config.albums) pi.config.albums = [];
+    if(pi.config.albums.length == 0) return fb.getAlbums({id:"me", authToken:pi.auth.authToken}, function(album){albums.push(album);}, function(err) {
+        // XXXXXXXXXXXXX partial
+    });
     fb.init(processInfo.auth);
     exports.syncPhotos(function(err) {
         if (err) console.error(err);
