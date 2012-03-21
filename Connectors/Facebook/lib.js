@@ -10,6 +10,7 @@
 var fs = require('fs'),
     request = require('request'),
     async = require('async');
+var util = require('util');
 
 
 // enumeration of all fields on a user for open graph, cuz they're not all default
@@ -88,7 +89,7 @@ function getOne(uri, cbDone) {
     if(!uri) return cbDone("no uri");
     request.get({uri:uri, json:true}, function(err, resp, js) {
         if(err) return cbDone(err);
-        if(resp.statusCode != 200) return cbDone("status code "+resp.statusCode);
+        if(resp.statusCode != 200) return cbDone("status code "+resp.statusCode+": "+util.inspect(js));
         if(js === null || typeof js != "object") return cbDone("response wasn't a json object");
         cbDone(null, js);
     });
@@ -98,8 +99,8 @@ function getDatas(arg, cbEach, cbDone) {
     if(!arg.uri) return cbDone("no uri");
     request.get({uri:arg.uri, json:true}, function(err, resp, js) {
         if(err) return cbDone(err);
-        if(resp.statusCode != 200) return cbDone("status code "+resp.statusCode);
-        if(!Array.isArray(js)) return cbDone("response wasn't a json array");
+        if(resp.statusCode != 200) return cbDone("status code "+resp.statusCode+": "+util.inspect(js));
+        if(js === null || typeof js != "object" || !Array.isArray(js.data)) return cbDone("response didn't include a json array: "+util.inspect(js));
         for(var i = 0; js.data && i < js.data.length; i++) cbEach(js.data[i]);
         if(js.paging && js.paging.next) {
             arg.uri = js.paging.next;

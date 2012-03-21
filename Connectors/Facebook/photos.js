@@ -14,29 +14,14 @@ var fb = require('./lib.js')
 
 exports.sync = function(pi, cb) {
     if(!pi.config.albums) pi.config.albums = [];
-    if(pi.config.albums.length == 0) return fb.getAlbums({id:"me", authToken:pi.auth.authToken}, function(album){albums.push(album);}, function(err) {
-        // XXXXXXXXXXXXX partial
+        if(pi.config.albums.length == 0) return fb.getAlbums({id:"me", accessToken:pi.auth.accessToken}, function(album){ pi.config.albums.push(album); }, function(err) {
+        if(pi.config.albums.length > 0) pi.config.nextRun = -1; // immediately start processing them
+        return cb(err, pi); // don't return any data
     });
-    fb.init(processInfo.auth);
-    exports.syncPhotos(function(err) {
-        if (err) console.error(err);
-        var responseObj = {data : {}};
-        responseObj.data.photo = photos;
-        cb(err, responseObj);
+    // now we have albums to process, do one of them!
+    pi.data = {photo:[]};
+    fb.getAlbum({id:pi.config.albums.pop(), accessToken:pi.auth.accessToken},function(photo){ pi.data.photo.push(photo); }, function(err) {
+        if(pi.config.albums.length > 0) pi.config.nextRun = -1; // if there's more to do!
+        return cb(err, pi);
     });
 };
-
-exports.syncPhotos = function(callback) {
-    fb.getProfile(function(profile) {
-        // use a queue so we know when all the albums are done individually async'ly processing
-        var albums = [{id:"me"}];
-        fb.getAlbums({id:"me"},function(album){albums.push(album);},function(){
-            async.forEach(albums,function(album,cbDone){
-                fb.getAlbum({id:album.id},function(photo){
-                    // TODO: call fb.getPhoto() here to actually sync the image locally
-                    photos.push({'obj' : photo, timestamp: new Date(), type : 'new'});            
-                },cbDone);
-            },callback);
-        });
-    });
-}
