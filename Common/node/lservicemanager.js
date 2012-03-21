@@ -25,20 +25,19 @@ var stats;
 var serviceMap = { }; // All of the immediately addressable services in the system
 
 var shuttingDown = null;
-var syncletManager, registry;
+var syncletManager;
 var lockerPortNext = parseInt("1" + lconfig.lockerPort, 10);
 
 /**
 * Scans the Me directory for instaled services
 */
-exports.init = function (sman, reg, callback) {
+exports.init = function (sman, callback) {
     logger = require('logger');
     logger.info('lservicemanager lockerPortNext = ' + lockerPortNext);
 
     stats = new dispatcher(lconfig.stats);
 
     syncletManager = sman;
-    registry = reg;
     var dirs = fs.readdirSync(lconfig.me);
     for (var i = 0; i < dirs.length; i++) {
         if (dirs[i] == "diary") continue;
@@ -74,7 +73,6 @@ exports.init = function (sman, reg, callback) {
             arg.name = id;
         }
         if (serviceMap[id]) return cb();
-        registry.install(arg, cb);
     }, callback);
 };
 

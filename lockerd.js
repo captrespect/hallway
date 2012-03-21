@@ -54,7 +54,6 @@ var serviceManager = require("lservicemanager");
 var pushManager = require(__dirname + "/Common/node/lpushmanager");
 var mongodb = require('mongodb');
 var lcrypto = require("lcrypto");
-var registry = require(__dirname + "/Ops/registry.js");
 var lmongo = require('lmongo');
 
 var buildInfo = fs.readFileSync(path.join(lconfig.lockerDir, 'build.json'));
@@ -140,19 +139,16 @@ function finishStartup() {
 
     // ordering sensitive, as synclet manager is inert during init, servicemanager's init will call into syncletmanager
     syncManager.init(serviceManager, function() {
-        registry.init(serviceManager, syncManager, lconfig, lcrypto, function() {
-            serviceManager.init(syncManager, registry, function() {  // this may trigger synclets to start!
-                runMigrations("postServices", function() {
-                    // start web server (so we can all start talking)
-                    var webservice = require(__dirname + "/Ops/webservice.js");
-                    webservice.startService(lconfig.lockerPort, lconfig.lockerListenIP, function(locker) {
-                        if (lconfig.airbrakeKey) locker.initAirbrake(lconfig.airbrakeKey);
-                        registry.app(locker); // add it's endpoints
-                        postStartup();
-                    });
-                });
-            });
+      serviceManager.init(syncManager, function() {  // this may trigger synclets to start!
+        runMigrations("postServices", function() {
+          // start web server (so we can all start talking)
+          var webservice = require(__dirname + "/Ops/webservice.js");
+          webservice.startService(lconfig.lockerPort, lconfig.lockerListenIP, function(locker) {
+            if (lconfig.airbrakeKey) locker.initAirbrake(lconfig.airbrakeKey);
+            postStartup();
+          });
         });
+      });
     });
     var lockerPortNext = "1"+lconfig.lockerPort;
     lockerPortNext++;

@@ -28,34 +28,29 @@ var lpquery = require("lpquery");
 var lconfig = require("lconfig");
 var logger = require('logger');
 var async = require('async');
+var OAuth2Provider = require(__dirname + '/OAuth2Provider');
 
 var lcrypto = require("lcrypto");
 
-var proxy = new httpProxy.RoutingProxy();
+// var proxy = new httpProxy.RoutingProxy();
 var scheduler = lscheduler.masterScheduler;
 
 var airbrake;
 
-var locker = express.createServer(
-    // we only use bodyParser to create .params for callbacks from services, connect should have a better way to do this
-    function(req, res, next) {
-        if (req.url.substring(0, 6) == "/core/" || req.url.substring(0, 6) == '/push/' || req.url.substring(0, 6) == '/post/') {
-            connect.bodyParser()(req, res, next);
-        } else {
-            next();
-        }
-    },
-    function(req, res, next) {
-        if (req.url.substring(0, 6) == '/auth/') {
-            connect.bodyParser()(req, res, next);
-        } else {
-            next();
-        }
-    },
-    connect.cookieParser(),
-    connect.session({key:'locker.project.id', secret : "locker"})
-);
+var apiKeys = JSON.parse(fs.readFileSync(lconfig.lockerDir + "/Config/apikeys.json", 'utf-8'));
 
+var locker = express.createServer(
+    connect.bodyParser(),
+    connect.cookieParser(),
+    connect.session({key:'locker.project.id', secret : "locker"}),
+    OAuth2Provider.oauth(),
+    OAuth2Provider.login(),
+    function(req, res, next) {
+      console.error("DEBUG: req.url", req.url);
+      if(req.url.indexOf('/auth/') === 0 || (req.session.user && req.session.user !== '')) return next();
+      res.send(401);
+    }
+);
 
 var listeners = {}; // listeners for events
 
@@ -215,33 +210,6 @@ for(var i in collectionApis) {
   locker._oldGet = undefined;
 }
 
-// ME PROXY
-// all of the requests to something installed (proxy them, moar future-safe)
-locker.get(/^\/Me\/([^\/]*)(\/?.*)?\/?/, function(req,res, next){
-    // ensure the ending slash - i.e. /Me/foo ==>> /Me/foo/
-    if(!req.params[1]) {
-        var handle = req.params[0];
-        var service = serviceManager.map(handle);
-        //rebuild the url with a / after the /Me/<handle>
-        var url = "/Me/" + handle + "/";
-        var qs = querystring.stringify(req.query);
-        if (qs.length > 0) url += "?" + qs;
-        if(service && service.type === 'app') {
-            res.header("Location", url);
-            return res.send(302);
-        }
-        req.url = url;
-    }
-    logger.silly("GET proxy of " + req.originalUrl);
-    proxyRequest('GET', req, res, next);
-});
-
-// all posts just pass
-locker.post('/Me/*', function(req,res, next){
-    logger.silly("POST proxy of " + req.originalUrl);
-    proxyRequest('POST', req, res, next);
-});
-
 locker.get('/synclets/:id/run', function(req, res) {
     syncManager.syncNow(req.params.id, req.query.id, false, function(err) {
         if(err) return res.send(err, 500);
@@ -259,102 +227,6 @@ locker.post('/post/:id/:synclet', function(req, res) {
 // all synclet getCurrent, id, etc stuff
 require('synclet/dataaccess')(locker);
 
-function proxyRequest(method, req, res, next) {
-    var slashIndex = req.url.indexOf("/", 4);
-    if (slashIndex < 0) slashIndex = req.url.length;
-    var id = req.url.substring(4, slashIndex);
-    var ppath = req.url.substring(slashIndex);
-    var info = serviceManager.map(id);
-    if (!info) {
-        logger.error(id + " not found in service map");
-        return res.send(404);
-    }
-    // if there's synclets, handled by their own built-ins
-    if (info.synclets) {
-        req.url = req.url.replace('Me', 'synclets');
-        return next();
-    }
-    if (info.static === true || info.static === "true") {
-        // This is a static file we'll try and serve it directly
-        var fileUrl = url.parse(ppath);
-        if(fileUrl.pathname.indexOf("/..") >= 0) { // extra sanity check
-            return res.send(404);
-        }
-
-        fs.stat(path.join(lconfig.lockerDir, info.srcdir, "static", fileUrl.pathname), function(err, stats) {
-            if (!err && (stats.isFile() || stats.isDirectory())) {
-                res.sendfile(path.join(lconfig.lockerDir, info.srcdir, "static", fileUrl.pathname));
-            } else {
-                fs.stat(path.join(lconfig.lockerDir, info.srcdir, fileUrl.pathname), function(err, stats) {
-                    if (!err && (stats.isFile() || stats.isDirectory())) {
-                        res.sendfile(path.join(lconfig.lockerDir, info.srcdir, fileUrl.pathname));
-                    } else {
-                        logger.warn("Could not find " + path.join(lconfig.lockerDir, info.srcdir, fileUrl.pathname));
-                        res.send(404);
-                    }
-                });
-            }
-        });
-        logger.silly("Sent static file " + path.join(lconfig.lockerDir, info.srcdir, "static", fileUrl.pathname));
-    } else {
-        if (!serviceManager.isRunning(id)) {
-            logger.info("Having to spawn " + id);
-            var buffer = httpProxy.buffer(req);
-            serviceManager.spawn(id,function(){
-                proxied(method, info, ppath, req, res, buffer);
-            });
-        } else {
-            proxied(method, info, ppath, req, res);
-        }
-    }
-    logger.silly("Proxy complete");
-}
-
-// DIARY
-// Publish a user visible message
-locker.get("/core/:svcId/diary", function(req, res) {
-    var level = req.param("level") || 0;
-    var message = req.param("message");
-    var svcId = req.params.svcId;
-
-    var now = new Date();
-    try {
-        fs.mkdirSync(lconfig.me + "/diary", '0700', function(err) {
-            if (err && err.errno != process.EEXIST) logger.error("Error creating diary: " + err);
-        });
-    } catch (E) {
-        // Why do I still have to catch when it has an error callback?!
-    }
-    fs.mkdir(lconfig.me + "/diary/" + now.getFullYear(), '0700', function(err) {
-        fs.mkdir(lconfig.me + "/diary/" + now.getFullYear() + "/" + now.getMonth(), '0700', function(err) {
-            var fullPath = lconfig.me + "/diary/" + now.getFullYear() + "/" + now.getMonth() + "/" + now.getDate() + ".json";
-            lfs.appendObjectsToFile(fullPath, [{"timestamp":now, "level":level, "message":message, "service":svcId}]);
-            res.writeHead(200);
-            res.end("{}");
-        });
-    });
-});
-
-// Retrieve the current days diary or the given range
-locker.get("/diary", function(req, res) {
-    var now = new Date();
-    var fullPath = lconfig.me + "/diary/" + now.getFullYear() + "/" + now.getMonth() + "/" + now.getDate() + ".json";
-    res.writeHead(200, {
-        "Content-Type": "text/javascript",
-        "Access-Control-Allow-Origin" : "*"
-    });
-    fs.readFile(fullPath, function(err, file) {
-        if (err) {
-            res.write("[]");
-            res.end();
-            return;
-        }
-        var rawLines   = file.toString().trim().split("\n");
-        var diaryLines = rawLines.map(function(line) { return JSON.parse(line); });
-        res.write(JSON.stringify(diaryLines), "binary");
-        res.end();
-    });
-});
 
 locker.get('/core/error', function(req, res) {
     throw new Error("Hmm...This is a REAL job for STUPENDOUS MAN!");
@@ -498,28 +370,6 @@ locker.get('/flush', function(req, res) {
 
 locker.use(express.static(__dirname + '/static'));
 
-// fallback everything to the dashboard
-locker.all('/dashboard*', function(req, res) {
-    if(!lconfig.ui || !serviceManager.map(lconfig.ui)) return res.send("no dashboard :(", 404);
-    req.url = '/Me/' + lconfig.ui + '/' + req.url.substring(11);
-    proxyRequest(req.method, req, res);
-    // detect when coming back from idle, and flush any delayed synclets if configured to do so
-    if(locker.last && lconfig.tolerance.idle && (Date.now() - locker.last) > (lconfig.tolerance.idle * 1000)) syncManager.flushTolerance(function(err){
-        if(err) logger.error("got error when flushing synclets: "+err);
-    });
-    locker.last = Date.now();
-});
-
-locker.all("/socket.io*", function(req, res) {
-    if(!lconfig.ui || !serviceManager.map(lconfig.ui)) return res.send("no dashboard :(", 404);
-    req.url = '/Me/' + lconfig.ui + req.url;
-    proxyRequest(req.method, req, res);
-});
-
-locker.get('/', function(req, res) {
-    res.redirect(lconfig.externalBase + '/dashboard/');
-});
-
 locker.error(function(err, req, res, next){
     if(err.stack) logger.error(err.stack);
     if (airbrake) {
@@ -533,18 +383,6 @@ locker.error(function(err, req, res, next){
 require('./webservice-push')(locker);
 
 
-function proxied(method, svc, ppath, req, res, buffer) {
-    svc.last = Date.now();
-    if(ppath.substr(0,1) != "/") ppath = "/"+ppath;
-    logger.verbose("proxying " + method + " " + req.url + " to "+ svc.uriLocal + ppath);
-    req.url = ppath;
-    proxy.proxyRequest(req, res, {
-      host: url.parse(svc.uriLocal).hostname,
-      port: url.parse(svc.uriLocal).port,
-      buffer: buffer
-    });
-}
-
 locker.initAirbrake = function(key) {
     airbrake = require('airbrake').createClient(key);
 };
@@ -554,3 +392,132 @@ exports.startService = function(port, ip, cb) {
         cb(locker);
     });
 };
+
+
+
+
+locker.get('/auth/:id', authIsAwesome);
+locker.get('/auth/:id/auth', authIsAuth);
+locker.post('/auth/:id/auth', authIsAuth);
+
+locker.get('/deauth/:id', deauthIsAwesomer);
+
+// and get the auth url for it to return
+function authIsAwesome(req, res) {
+    var id = req.params.id;
+    var js = serviceManager.map(id);
+    if (js) return authRedir(js, req, res); // short circuit if already done
+    if (err) return res.send(err, 500);
+    var js = serviceManager.map(id);
+    if (!js) return res.send("bad service id", 500);
+    return authRedir(js, req, res);
+}
+
+// helper for Awesome
+function authRedir(js, req, res) {
+    var authModule;
+    try {
+        authModule = require(path.join(lconfig.lockerDir, js.srcdir, 'auth.js'));
+    } catch (E) {
+        return res.send(E, 500);
+    }
+    // oauth2 types redirect
+    if (authModule.authUrl) {
+        if (!apiKeys[js.id]) return res.send("missing required api keys", 500);
+        var url = authModule.authUrl + "&client_id=" + apiKeys[js.id].appKey + "&redirect_uri=" + lconfig.externalBase + "/auth/" + js.id + "/auth";
+        return res.redirect(url);
+    }
+    // everything else is pass-through (custom, oauth1, etc)
+    authIsAuth(req, res);
+}
+
+// handle actual auth api requests or callbacks, much conflation to keep /auth/foo/auth consistent everywhere!
+function authIsAuth(req, res) {
+    var id = req.params.id;
+    logger.verbose("processing auth for "+id);
+    var js = serviceManager.map(id);
+    if (!js) return res.send("missing", 404);
+    var host = lconfig.externalBase + "/";
+
+    var authModule;
+    try {
+        authModule = require(path.join(lconfig.lockerDir, js.srcdir, 'auth.js'));
+    } catch (E) {
+        return res.send(E, 500);
+    }
+
+    // some custom code gets run for non-oauth2 options here, wear a tryondom
+    try {
+        if (authModule.direct) return authModule.direct(res);
+
+        // rest require apikeys
+        if (!apiKeys[id] && js.keys !== false && js.keys != "false") return res.send("missing required api keys", 500);
+
+        if (typeof authModule.handler == 'function') return authModule.handler(host, apiKeys[id], function (err, auth) {
+            if (err) return res.send(err, 500);
+            finishAuth(js, auth, res);
+        }, req, res);
+    } catch (E) {
+        return res.send(E, 500);
+    }
+
+    // oauth2 callbacks from here on out
+    var code = req.param('code');
+    var theseKeys = apiKeys[id];
+    if (!code || !authModule.handler.oauth2) return res.send("very bad request", 500);
+
+    var method = authModule.handler.oauth2;
+    var postData = {
+        client_id: theseKeys.appKey,
+        client_secret: theseKeys.appSecret,
+        redirect_uri: host + 'auth/' + id + '/auth',
+        grant_type: authModule.grantType,
+        code: code
+    };
+    req = {method: method, url: authModule.endPoint};
+    if (method == 'POST') {
+        req.body = querystring.stringify(postData);
+        req.headers = {'Content-Type' : 'application/x-www-form-urlencoded'};
+    } else {
+        req.url += '/access_token?' + querystring.stringify(postData);
+    }
+    request(req, function (err, resp, body) {
+        try {
+            body = JSON.parse(body);
+        } catch(err) {
+            body = querystring.parse(body);
+        }
+        var auth = {accessToken: body.access_token};
+        if (method == 'POST') auth = {token: body, clientID: theseKeys.appKey, clientSecret: theseKeys.appSecret};
+        if (typeof authModule.authComplete == 'function') {
+            return authModule.authComplete(auth, function (err, auth) {
+                if (err) return res.send(err, 500);
+                finishAuth(js, auth, res);
+            });
+        }
+        finishAuth(js, auth, res);
+    });
+}
+
+// save out auth and kick-start synclets, plus respond
+function finishAuth(js, auth, res) {
+    logger.info("authorized "+js.id);
+    js.auth = auth;
+    js.authed = Date.now();
+    // upsert it again now that it's auth'd, significant!
+    serviceManager.mapUpsert(path.join(js.srcdir,'package.json'));
+    syncManager.syncNow(js.id, function () {}); // force immediate sync too
+    // finish Singly OAuth 2 callback
+    res.end("cool, youre authed!");
+}
+
+function deauthIsAwesomer(req, res) {
+  var serviceName = req.params.id;
+  var service = serviceManager.map(serviceName);
+  delete service.auth;
+  delete service.authed;
+  service.deleted = Date.now();
+  serviceManager.mapDirty(serviceName);
+  logger.info("disconnecting "+serviceName);
+  res.redirect('back');
+}
