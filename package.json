@@ -50,7 +50,6 @@
         "airbrake": "=0.2.2",
         "node-fakeweb": "=0.0.7",
         "ejs": "=0.4.3",
-        "graceful-fs": "1.1.2",
         "nodemailer": "=0.2.3",
         "semver": "=1.0.10",
         "ini": "=1.0.1",

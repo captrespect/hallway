@@ -32,9 +32,6 @@ var async = require('async');
 var util = require('util');
 var lutil = require('lutil');
 var carrier = require('carrier');
-// TODO:  Reconsider enabling this, but realistically we should be managing this ourselves.
-// require('graceful-fs');
-
 
 // This lconfig stuff has to come before any other locker modules are loaded!!
 var lconfig = require('lconfig');
@@ -50,7 +47,7 @@ fs.writeFileSync(__dirname + '/Logs/locker.pid', "" + process.pid);
 var logger = require("logger");
 logger.info('process id:' + process.pid);
 var lscheduler = require("lscheduler");
-var syncManager = require('lsyncmanager');
+var syncManager = require(path.join(lconfig.lockerDir, "Services", "SyncManager", "syncmanager.js"));
 var serviceManager = require("lservicemanager");
 var pushManager = require(__dirname + "/Common/node/lpushmanager");
 var mongodb = require('mongodb');

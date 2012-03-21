@@ -14,7 +14,6 @@ var lscheduler = require("lscheduler");
 var levents = require("levents");
 var lutil = require('lutil');
 var serviceManager = require("lservicemanager");
-var syncManager = require('lsyncmanager');
 var express = require('express');
 var connect = require('connect');
 var request = require('request');
@@ -28,6 +27,7 @@ var lpquery = require("lpquery");
 var lconfig = require("lconfig");
 var logger = require('logger');
 var async = require('async');
+var syncManager = require(path.join(lconfig.lockerDir, "Services", "SyncManager", "syncmanager.js"));
 
 var lcrypto = require("lcrypto");
 
