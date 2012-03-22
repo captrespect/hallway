@@ -61,8 +61,8 @@ test: oldtest newtest
 MOCHA = ./node_modules/.bin/mocha
 MOCHA_TESTS = $(shell find test -name "*.test.js")
 newtest: build
-	@env INTEGRAL_CONFIG=test/config.json \
-	$(MOCHA) --growl --timeout 500 $(MOCHA_TESTS)
+	@env INTEGRAL_CONFIG=test/config.json NODE_PATH="$(PWD)/Common/node" \
+	$(MOCHA) $(MOCHA_TESTS)
 
 # old style vows tests
 oldtest: build
@@ -70,7 +70,13 @@ oldtest: build
 	env NODE_PATH="$(PWD)/Common/node" \
 	node ./runTests.js
 
-SUBDIR=locker-$(BUILD_NUMBER)
+# phantom tests
+PHANTOM_TESTS = $(shell find test -name "*.phantom.js")
+phantomtest: build
+	@env NODE_PATH="$(PWD)/Common/node" \
+	$(MOCHA) $(PHANTOM_TESTS)
+
+SUBDIR=carebear-$(BUILD_NUMBER)
 DISTFILE=$(SUBDIR).tar.gz
 
 # create a ready-to-run tarball with a complete build inside
@@ -89,5 +95,5 @@ jenkins:
 
 clean:
 	rm -f "$(DISTFILE)" "$(TEMPLATE_OUTPUT)" build.json tests/build.json
-	rm -f "locker-git-*.tar.gz"
+	rm -f "carebear-git-*.tar.gz"
 	rm -rf node_modules

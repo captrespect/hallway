@@ -59,6 +59,9 @@
         "moment": "=1.3.0",
         "mkdirp": "0.3.0",
         "murmurhash3": "",
+        "zombie": ">=0.12.15",
+        "temp": ">=0.4.0",
+        "phantom": ">=0.3.3",
 
 
         "hashish": "=0.0.4",
