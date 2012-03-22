@@ -52,6 +52,12 @@ SyncletManager.prototype.loadScripts = function() {
 /**
 * timeToRun is optional.  In this case the next run time is calculated 
 * based on normal frequency and tolerance methods.
+* Task:
+* {
+*   synclet:{connector:"", name:""},
+*   auth: {...},
+*   config: {...}
+* }
 */
 SyncletManager.prototype.schedule = function(connectorInfo, syncletInfo, timeToRun) {
   var key = this.getKey(connectorInfo, syncletInfo);
@@ -132,19 +138,17 @@ SyncletManager.prototype.runAndReschedule = function(connectorInfo, syncletInfo,
   */
 
   logger.info("Synclet "+syncletInfo.name+" starting for "+connectorInfo.id);
-  connectorInfo.status = syncletInfo.status = "running";
   var tstart = Date.now();
   stats.increment('synclet.' + connectorInfo.id + '.' + syncletInfo.name + '.start');
   stats.increment('synclet.' + connectorInfo.id + '.' + syncletInfo.name + '.running');
 
-  syncletInfo.deleted = syncletInfo.added = syncletInfo.updated = 0;
-  if (!connectorInfo.config) connectorInfo.config = {};
-  if (!connectorInfo.absoluteSrcdir) connectorInfo.absoluteSrcdir = path.join(lconfig.lockerDir, connectorInfo.srcdir);
-  if (!connectorInfo.workingDirectory) connectorInfo.workingDirectory = path.join(lconfig.lockerDir, lconfig.me, connectorInfo.id);
-  syncletInfo.workingDirectory = connectorInfo.workingDirectory; // legacy?
-  connectorInfo.syncletToRun = syncletInfo;
-  connectorInfo.lockerUrl = lconfig.lockerBase;
-  this.synclets[connectorInfo.id][syncletInfo.name].sync(connectorInfo, function(syncErr, response) {
+  var runInfo = {
+    config:(connectorInfo.config || {}),
+    auth:connectorInfo.auth,
+    absoluteSrcdir:path.join(lconfig.lockerDir, connectorInfo.srcdir),
+    connectorInfo.workingDirectory:path.join(lconfig.lockerDir, lconfig.me, connectorInfo.id)
+  };
+  this.synclets[connectorInfo.id][syncletInfo.name].sync(runInfo, function(syncErr, response) {
     if (syncErr) {
       logger.error(syncletInfo.name + " error: " + util.inspect(syncErr));
       connectorInfo.status = syncletInfo.status = 'failed';
@@ -155,23 +159,8 @@ SyncletManager.prototype.runAndReschedule = function(connectorInfo, syncletInfo,
     stats.decrement('synclet.' + connectorInfo.id + '.' + syncletInfo.name + '.running');
     stats.timing('synclet.' + connectorInfo.id + '.' + syncletInfo.name + '.timing', elapsed);
     logger.info("Synclet "+syncletInfo.name+" finished for "+connectorInfo.id+" timing "+elapsed);
-    connectorInfo.status = syncletInfo.status = 'processing data';
-    var deleteIDs = compareIDs(connectorInfo.config, response.config);
-    connectorInfo.auth = lutil.extend(true, connectorInfo.auth, response.auth); // for refresh tokens and profiles
-    connectorInfo.config = lutil.extend(true, connectorInfo.config, response.config);
-    //exports.scheduleRun(connectorInfo, synclet);
-    serviceManager.mapDirty(connectorInfo.id); // save out to disk
-    processResponse(deleteIDs, connectorInfo, syncletInfo, response, function(processErr) {
-      connectorInfo.status = 'waiting';
-      var nextRunTime = undefined;
-      if (connectorInfo.config && connectorInfo.config.nextRun < 0) {
-        // This wants to page so we'll schedule it for anther run in just a short gap.
-        nextRunTime = PAGING_TIMING;
-      }
-      // Make sure we reschedule this before we return anything else
-      self.schedule(connectorInfo, syncletInfo, nextRunTime);
-      callback(processErr);
-    });
+    this.emit("completed", task, response);
+    callback();
   });
   if(syncletInfo.posts) syncletInfo.posts = []; // they're serialized, empty the queue
   delete connectorInfo.syncletToRun;
@@ -280,22 +269,24 @@ function localError(base, err) {
     logger.error(base+"\t"+err);
 }
 
-function compareIDs (originalConfig, newConfig) {
-    var resp = {};
-    if (originalConfig && originalConfig.ids && newConfig && newConfig.ids) {
-        for (var i in newConfig.ids) {
-            if (!originalConfig.ids[i]) break;
-            var newSet = newConfig.ids[i];
-            var oldSet = originalConfig.ids[i];
-            var seenIDs = {};
-            resp[i] = [];
-            for (var j = 0; j < newSet.length; j++) seenIDs[newSet[j]] = true;
-            for (var j = 0; j < oldSet.length; j++) {
-                if (!seenIDs[oldSet[j]]) resp[i].push(oldSet[j]);
-            }
-        }
-    }
-    return resp;
+function stuff()
+{
+    // TODO: Construct a result
+    connectorInfo.status = syncletInfo.status = 'processing data';
+    connectorInfo.auth = lutil.extend(true, connectorInfo.auth, response.auth); // for refresh tokens and profiles
+    connectorInfo.config = lutil.extend(true, connectorInfo.config, response.config);
+    serviceManager.mapDirty(connectorInfo.id); // save out to disk
+    processResponse(deleteIDs, connectorInfo, syncletInfo, response, function(processErr) {
+      connectorInfo.status = 'waiting';
+      var nextRunTime = undefined;
+      if (connectorInfo.config && connectorInfo.config.nextRun < 0) {
+        // This wants to page so we'll schedule it for anther run in just a short gap.
+        nextRunTime = PAGING_TIMING;
+      }
+      // Make sure we reschedule this before we return anything else
+      self.schedule(connectorInfo, syncletInfo, nextRunTime);
+      callback(processErr);
+    });
 }
 
 function processResponse(deleteIDs, info, synclet, response, callback) {
