@@ -22,6 +22,8 @@ var runningContexts = {}; // Map of a synclet to a running context
 
 function SyncletManager()
 {
+  EventEmitter.call(this);
+
   this.scheduled = {};
   this.offlineMode = false;
   var self = this;
@@ -29,24 +31,30 @@ function SyncletManager()
     self.runAndReschedule(task.info, task.synclet, callback);
   }, NUM_WORKERS);
 }
-SyncletManager.prototype.loadScripts = function() {
-  console.dir(process.cwd());
+util.inherits(SyncletManager, EventEmitter);
+SyncletManager.prototype.loadSynclets = function() {
   // not defensively coded! load synclets
-  function synclets(synclets, connector, dir) {
-    console.log("loading "+connector);
-    if(!synclets[connector]) synclets[connector] = {};
+  var self = this;
+
+  function synclets(connector, dir) {
+    logger.info("Loading the " + connector + " connector");
+    if(!self.synclets[connector]) self.synclets[connector] = {};
     var sjs = JSON.parse(fs.readFileSync(path.join(lconfig.lockerDir, "Connectors", dir, "synclets.json")));
     for(var i = 0; i < sjs.synclets.length; i++) {
       var sname = sjs.synclets[i].name;
       var spath = path.join(lconfig.lockerDir, "Connectors", dir, sname);
       delete require.cache[spath]; // remove any old one
-      synclets[connector][sname] = require(spath);
+      self.synclets[connector][sname] = {
+        frequency:sjs.synclets[i].frequency,
+        sync:require(spath).sync
+      };
+      logger.info("\t* " + sname);
     }
   }
   // TODO from config
   this.synclets = {};
-  synclets(this.synclets, 'twitter','Twitter');
-  synclets(this.synclets, 'facebook','Facebook');
+  synclets('twitter','Twitter');
+  synclets('facebook','Facebook');
 };
 /// Schedule a synclet to run
 /**
@@ -146,7 +154,7 @@ SyncletManager.prototype.runAndReschedule = function(connectorInfo, syncletInfo,
     config:(connectorInfo.config || {}),
     auth:connectorInfo.auth,
     absoluteSrcdir:path.join(lconfig.lockerDir, connectorInfo.srcdir),
-    connectorInfo.workingDirectory:path.join(lconfig.lockerDir, lconfig.me, connectorInfo.id)
+    workingDirectory:path.join(lconfig.lockerDir, lconfig.me, connectorInfo.id)
   };
   this.synclets[connectorInfo.id][syncletInfo.name].sync(runInfo, function(syncErr, response) {
     if (syncErr) {
@@ -159,7 +167,8 @@ SyncletManager.prototype.runAndReschedule = function(connectorInfo, syncletInfo,
     stats.decrement('synclet.' + connectorInfo.id + '.' + syncletInfo.name + '.running');
     stats.timing('synclet.' + connectorInfo.id + '.' + syncletInfo.name + '.timing', elapsed);
     logger.info("Synclet "+syncletInfo.name+" finished for "+connectorInfo.id+" timing "+elapsed);
-    this.emit("completed", task, response);
+    //this.emit("completed", task, response);
+    self.emit("completed", response);
     callback();
   });
   if(syncletInfo.posts) syncletInfo.posts = []; // they're serialized, empty the queue
@@ -186,7 +195,9 @@ SyncletManager.prototype.getKey = function(connectorInfo, syncletInfo) {
 };
 
 syncletManager = new SyncletManager();
-syncletManager.loadScripts();
+syncletManager.loadSynclets();
+
+exports.manager = syncletManager;
 
 var ijods = {};
 
