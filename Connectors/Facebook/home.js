@@ -7,26 +7,26 @@
 *
 */
 
-var fb = require('./lib.js')
-  , posts = []
-  , updateState
-  ;
+var fb = require('./lib.js');
 
-
-exports.sync = function(processInfo, cb) {
-    fb.init(processInfo.auth);
-    var arg = {id:"me",type:"home"};
+exports.sync = function(pi, cb) {
+    var arg = {id:"me",type:"home",limit:100,accessToken:pi.auth.accessToken};
     var since=0;
-    if (processInfo.config && processInfo.config.updateState && processInfo.config.updateState.home) {
-        since = arg.since = processInfo.config.updateState.home.since;
-    }
-    fb.getPosts(arg,function(post){
-        posts.push({'obj' : post, timestamp: new Date(), type : 'new'});
-        if(post.updated_time > since) since = post.updated_time;
-    },function(err) {
-        var responseObj = {data : {}, config : {}};
-        responseObj.data.home = posts;
-        responseObj.config.updateState = {home:{since:since}};
-        cb(err, responseObj);
+    if (pi.config.homeSince) since = arg.since = pi.config.homeSince;
+    if (pi.config.homeNext) arg.page = pi.config.homeNext; // if we're paging the first time
+    var resp = {data: {}, config: {}};
+    fb.getPostPage(arg,function(err, js){
+        if(err) return cb(err);
+        if(!Array.isArray(js.data)) return cb("no posts array");
+        // find the newest!
+        js.data.forEach(function(post){ if(post.updated_time > since) since = post.updated_time });
+        resp.data.home = js.data;
+        resp.config.homeSince = since;
+        // if we got full limit and we're paging through, always use that
+        if(js.data.length == arg.limit && js.paging && js.paging.next) {
+            resp.config.homeNext = js.paging.next;
+            resp.config.nextRun = -1;
+        }
+        cb(err, resp);
     });
 };

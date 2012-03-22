@@ -7,19 +7,16 @@
 *
 */
 
-var fb = require('./lib.js')
-  , posts = []
-  ;
+var fb = require('./lib.js');
 
 
-exports.sync = function(processInfo, cb) {
-    fb.init(processInfo.auth);
-    var arg = {id:"me",type:"home",since:"yesterday"}; // only monitoring changes within the last 24h for now?
+exports.sync = function(pi, cb) {
+    var arg = {id:"me",type:"home",since:"yesterday",accessToken:pi.auth.accessToken}; // only monitoring changes within the last 24h for now?
+    var resp = {data: {}};
+    var posts = resp.data.home = [];
     fb.getPosts(arg,function(post){
-        if(post.updated_time > post.created_time) posts.push({'obj' : post, timestamp: new Date(), type : 'update'});
+        if(post.updated_time > post.created_time) posts.push(post);
     },function(err) {
-        var responseObj = {data : {}};
-        responseObj.data.home = posts;
-        cb(err, responseObj);
+        cb(err, resp);
     });
 };
