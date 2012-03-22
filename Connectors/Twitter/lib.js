@@ -145,6 +145,7 @@ exports.getUsers = function(pi, users, cbEach, cbDone) {
     var me = this;
     var id_str = "";
     var ids = {};
+    var id;
     for(var i = 0; i < 100 && users.length > 0; i++) {
         id = users.pop();
         ids[id] = true; // track hash of all attempted

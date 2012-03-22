@@ -117,6 +117,10 @@ exports.fakeout = function (name, done) {
   });
 };
 
+exports.loadFixture = function (path) {
+  return JSON.parse(fs.readFileSync(path));
+};
+
 exports.fakeTwitter = function (done) {
   exports.fakeout('twitter', done);
 };
@@ -133,17 +137,21 @@ exports.bootstrap = function (done) {
   exports.lockerificate(done);
 };
 
+exports.teardownMe = function (err, callback) {
+  if (err) return callback(err);
+
+  try {
+    wrench.rmdirSyncRecursive(path.join(process.env.LOCKER_ROOT, process.env.LOCKER_ME), false);
+  }
+  catch (err) {
+    return callback(err);
+  }
+
+  return callback();
+};
+
 exports.shutdown = function (done) {
   exports.delockerificate(function (err) {
-    if (err) return done(err);
-
-    try {
-      wrench.rmdirSyncRecursive(process.env.LOCKER_ME, false);
-    }
-    catch (err) {
-      return done(err);
-    }
-
-    return done();
+    exports.teardownMe(err, done);
   });
 };
