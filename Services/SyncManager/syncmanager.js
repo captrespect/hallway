@@ -22,158 +22,162 @@ var runningContexts = {}; // Map of a synclet to a running context
 
 function SyncletManager()
 {
+  EventEmitter.call(this);
+
   this.scheduled = {};
   this.offlineMode = false;
   var self = this;
-  this.workQueue = async.queue(function(task, callback) {
-    self.runAndReschedule(task.info, task.synclet, callback);
-  }, NUM_WORKERS);
+  this.workQueue = async.queue(function(task, callback) { self.runAndReschedule(task, callback); }, NUM_WORKERS);
 }
-SyncletManager.prototype.loadScripts = function() {
-  console.dir(process.cwd());
-  // TODO: Pick these from a config
-  this.synclets = {
-    twitter:{
-      self:require(path.join(lconfig.lockerDir, "Connectors", "Twitter", "self.js")),
-      friends:require(path.join(lconfig.lockerDir, "Connectors", "Twitter", "friends.js")),
-      mentions:require(path.join(lconfig.lockerDir, "Connectors", "Twitter", "mentions.js")),
-      related:require(path.join(lconfig.lockerDir, "Connectors", "Twitter", "related.js")),
-      timeline:require(path.join(lconfig.lockerDir, "Connectors", "Twitter", "timeline.js")),
-      tweets:require(path.join(lconfig.lockerDir, "Connectors", "Twitter", "tweets.js"))
+util.inherits(SyncletManager, EventEmitter);
+SyncletManager.prototype.loadSynclets = function() {
+  // not defensively coded! load synclets
+  var self = this;
+
+  function synclets(connector, dir) {
+    logger.info("Loading the " + connector + " connector");
+    if(!self.synclets[connector]) self.synclets[connector] = {};
+    var srcdir = path.join(lconfig.lockerDir, "Connectors", dir);
+    var sjs = JSON.parse(fs.readFileSync(path.join(srcdir, "synclets.json")));
+    for(var i = 0; i < sjs.synclets.length; i++) {
+      var sname = sjs.synclets[i].name;
+      var spath = path.join(lconfig.lockerDir, "Connectors", dir, sname);
+      delete require.cache[spath]; // remove any old one
+      self.synclets[connector][sname] = {
+        frequency:sjs.synclets[i].frequency,
+        srcdir:srcdir,
+        sync:require(spath).sync
+      };
+      logger.info("\t* " + sname);
     }
   }
+  // TODO from config
+  this.synclets = {};
+  synclets('twitter','Twitter');
+  synclets('facebook','Facebook');
 };
 /// Schedule a synclet to run
 /**
 * timeToRun is optional.  In this case the next run time is calculated
 * based on normal frequency and tolerance methods.
+* Task:
+* {
+*   synclet:{connector:"", name:""},
+*   auth: {...},
+*   config: {...},
+*   user: "...opaque identifier..."
+* }
 */
-SyncletManager.prototype.schedule = function(connectorInfo, syncletInfo, timeToRun) {
-  var key = this.getKey(connectorInfo, syncletInfo);
+SyncletManager.prototype.schedule = function(task, timeToRun) {
+  var key = this.getKey(task);
   // Let's get back to a clean slate on this synclet
   if (this.scheduled[key]) {
     logger.debug(key + " was already scheduled.");
-    this.cleanup(connectorInfo, syncletInfo);
+    this.cleanup(task);
   }
-  syncletInfo.status = "waiting";
-  if (!syncletInfo.frequency) return;
+  if (!this.synclets[task.synclet.connector] || !this.synclets[task.synclet.connector][task.synclet.name]) {
+    logger.error("Attempted to schedule an unregistered synclet: " + task.synclet.connector + "-" + task.synclet.name);
+    return;
+  }
+  var syncletInfo = this.synclets[task.synclet.connector][task.synclet.name];
+
+  if (!syncletInfo.frequency) {
+    logger.error("Attempted to schedule a run only synclet");
+    return;
+  }
 
   // In offline mode things may only be ran directly with runAndReschedule
   if (this.offlineMode) return;
 
-  // validation check
-  if(syncletInfo.nextRun && typeof syncletInfo.nextRun != "number") delete syncletInfo.nextRun;
-
   if (timeToRun === undefined) {
     // had a schedule and missed it, run it now
+    /* TODO:  This whole logic block is either a higher level ore we need to save teh queue state on exit.
     if(syncletInfo.nextRun && syncletInfo.nextRun <= Date.now()) {
       logger.verbose("scheduling " + key + " to run immediately (missed)");
       timeToRun = 0;
     } else if (!syncletInfo.nextRun) {
-      // if not scheduled yet, schedule it to run in the future
-      var milliFreq = parseInt(syncletInfo.frequency) * 1000;
-      syncletInfo.nextRun = parseInt(Date.now() + milliFreq + (((Math.random() - 0.5) * 0.5) * milliFreq)); // 50% fuzz added or subtracted
-      timeToRun = syncletInfo.nextRun - Date.now();
-    }
+    */
+    // if not scheduled yet, schedule it to run in the future
+    var milliFreq = parseInt(syncletInfo.frequency) * 1000;
+    var nextRun = parseInt(Date.now() + milliFreq + (((Math.random() - 0.5) * 0.5) * milliFreq)); // 50% fuzz added or subtracted
+    timeToRun = nextRun - Date.now();
+    //}
   }
 
   logger.verbose("scheduling " + key + " (freq " + syncletInfo.frequency + "s) to run in " + (timeToRun / 1000) + "s");
   var self = this;
-  this.scheduled[key] = setTimeout(function() {
-    self.workQueue.push({info:connectorInfo, synclet:syncletInfo});
-  }, timeToRun);
+  this.scheduled[key] = setTimeout(function() { self.workQueue.push(task); }, timeToRun);
 };
 /// Remove the synclet from scheduled and cleanup all other state, does not reset it to run again
-SyncletManager.prototype.cleanup = function(connectorInfo, syncletInfo) {
-  var key = this.getKey(connectorInfo, syncletInfo);
+SyncletManager.prototype.cleanup = function(task) {
+  var key = this.getKey(task);
   if (this.scheduled[key]) {
     clearTimeout(this.scheduled[key]); // remove any existing timer
     delete this.scheduled[key];
   }
 };
 /// Run the synclet and then attempt to reschedule it
-SyncletManager.prototype.runAndReschedule = function(connectorInfo, syncletInfo, callback) {
-  //TODO:  Ensure that we only run one per connector at a time.
-  delete syncletInfo.nextRun; // We're going to run and get a new time, so reset
-  this.cleanup(connectorInfo, syncletInfo);
+SyncletManager.prototype.runAndReschedule = function(task, callback) {
+  this.cleanup(task);
   var self = this;
   // Tolerance isn't done yet, we'll come back
-  if (!this.checkToleranceReady(connectorInfo, syncletInfo)) {
-    return self.schedule(connectorInfo, syncletInfo);
+  if (!this.checkToleranceReady(task)) {
+    return self.schedule(task);
   }
-  // This should not be possible anymore, so track if it happens, do
-  // not reschedule, one is obviously running and will get rescheduled
-  if (syncletInfo.status === 'running') {
-    console.error("Somehow we got a synclet running twice");
-    console.trace();
-    return callback('already running');
-  }
+
   // Don't reschdule, it's never going to work, drop it and assume they will reschedule
   // once authed.
-  if(!connectorInfo.auth || !connectorInfo.authed) {
-    console.error("Tried to run an unauthed synclet!");
-    return callback("no auth info for " + connectorInfo.id);
+  if(!task.auth) {
+    logger.error("Tried to run an unauthed synclet!");
+    return callback("no auth info for " + task.synclet.connector + "-" + task.synclet.name);
   }
 
-  /*
-  // TODO:  This logic should not be here in the run, but previous to here
-  if (info.status == 'running' || runningContexts[info.id + "/" + synclet.name]) {
-    logger.verbose("delaying "+synclet.name);
-    setTimeout(function() {
-      executeSynclet(info, synclet, callback);
-    }, 10000);
+  if (!this.synclets[task.synclet.connector] || !this.synclets[task.synclet.connector][task.synclet.name]) {
+    logger.error("Attempted to run an unregistered synclet: " + task.synclet.connector + "-" + task.synclet.name);
     return;
   }
-  */
 
-  logger.info("Synclet "+syncletInfo.name+" starting for "+connectorInfo.id);
-  connectorInfo.status = syncletInfo.status = "running";
+  logger.verbose("Synclet starting " + this.getKey(task));
   var tstart = Date.now();
+  /* TODO:  Temp disabled since not individual now
   stats.increment('synclet.' + connectorInfo.id + '.' + syncletInfo.name + '.start');
   stats.increment('synclet.' + connectorInfo.id + '.' + syncletInfo.name + '.running');
+  */
 
-  syncletInfo.deleted = syncletInfo.added = syncletInfo.updated = 0;
-  if (!connectorInfo.config) connectorInfo.config = {};
-  if (!connectorInfo.absoluteSrcdir) connectorInfo.absoluteSrcdir = path.join(lconfig.lockerDir, connectorInfo.srcdir);
-  if (!connectorInfo.workingDirectory) connectorInfo.workingDirectory = path.join(lconfig.lockerDir, lconfig.me, connectorInfo.id);
-  syncletInfo.workingDirectory = connectorInfo.workingDirectory; // legacy?
-  connectorInfo.syncletToRun = syncletInfo;
-  connectorInfo.lockerUrl = lconfig.lockerBase;
-  console.error("DEBUG: this.synclets", this.synclets);
-  this.synclets[connectorInfo.id][syncletInfo.name].sync(connectorInfo, function(syncErr, response) {
+  var syncletInfo = this.synclets[task.synclet.connector][task.synclet.name];
+  var runInfo = {
+    config:(task.config || {}),
+    auth:task.auth,
+    absoluteSrcdir:syncletInfo.srcdir
+  };
+  syncletInfo.sync(runInfo, function(syncErr, response) {
     if (syncErr) {
-      logger.error(syncletInfo.name + " error: " + util.inspect(syncErr));
-      connectorInfo.status = syncletInfo.status = 'failed';
+      logger.error(self.getKey(task) + " error: " + util.inspect(syncErr));
       return callback(syncErr);
     }
     var elapsed = Date.now() - tstart;
+    /* TODO:  Temp disable since not individual now
     stats.increment('synclet.' + connectorInfo.id + '.' + syncletInfo.name + '.stop');
     stats.decrement('synclet.' + connectorInfo.id + '.' + syncletInfo.name + '.running');
     stats.timing('synclet.' + connectorInfo.id + '.' + syncletInfo.name + '.timing', elapsed);
-    logger.info("Synclet "+syncletInfo.name+" finished for "+connectorInfo.id+" timing "+elapsed);
-    connectorInfo.status = syncletInfo.status = 'processing data';
-    var deleteIDs = compareIDs(connectorInfo.config, response.config);
-    connectorInfo.auth = lutil.extend(true, connectorInfo.auth, response.auth); // for refresh tokens and profiles
-    connectorInfo.config = lutil.extend(true, connectorInfo.config, response.config);
-    //exports.scheduleRun(connectorInfo, synclet);
-    serviceManager.mapDirty(connectorInfo.id); // save out to disk
-    processResponse(deleteIDs, connectorInfo, syncletInfo, response, function(processErr) {
-      connectorInfo.status = 'waiting';
-      var nextRunTime = undefined;
-      if (connectorInfo.config && connectorInfo.config.nextRun < 0) {
-        // This wants to page so we'll schedule it for anther run in just a short gap.
-        nextRunTime = PAGING_TIMING;
-      }
-      // Make sure we reschedule this before we return anything else
-      self.schedule(connectorInfo, syncletInfo, nextRunTime);
-      callback(processErr);
-    });
+    */
+    logger.verbose("Synclet finished " + self.getKey(task) + " in " + elapsed + "ms");
+    var nextRunTime = undefined;
+    if (response.config && response.config.nextRun < 0) {
+      // This wants to page so we'll schedule it for anther run in just a short gap.
+      nextRunTime = PAGING_TIMING;
+    }
+    // Make sure we reschedule this before we return anything else
+    self.schedule(task, nextRunTime);
+    self.emit("completed", response, task);
+    callback();
   });
-  if(syncletInfo.posts) syncletInfo.posts = []; // they're serialized, empty the queue
-  delete connectorInfo.syncletToRun;
 };
 /// Return true if the tolerance is ready for us to actually run
-SyncletManager.prototype.checkToleranceReady = function(connectorInfo, syncletInfo) {
+SyncletManager.prototype.checkToleranceReady = function(task) {
+  // TODO:  What are we doing with tolerance now?  This might need to be stored on the config/state object of the task
+  return true;
+
   // Make sure the baseline is there
   if (syncletInfo.tolMax === undefined) {
     syncletInfo.tolAt = 0;
@@ -188,12 +192,14 @@ SyncletManager.prototype.checkToleranceReady = function(connectorInfo, syncletIn
   return true;
 };
 // This trivial helper function just makes sure we're consistent and we can change it easly
-SyncletManager.prototype.getKey = function(connectorInfo, syncletInfo) {
-  return connectorInfo.id + "-" + syncletInfo.name;
+SyncletManager.prototype.getKey = function(task) {
+  return task.user + "-" + task.synclet.connector + "-" + task.synclet.name;
 };
 
 syncletManager = new SyncletManager();
-syncletManager.loadScripts();
+syncletManager.loadSynclets();
+
+exports.manager = syncletManager;
 
 var ijods = {};
 
@@ -201,9 +207,7 @@ var ijods = {};
 var serviceManager;
 exports.init = function (sman, callback) {
   serviceManager = sman;
-
   callback();
-
 };
 
 var executeable = true;
@@ -231,11 +235,21 @@ exports.syncNow = function (serviceId, syncletId, post, callback) {
       if(!Array.isArray(synclet.posts)) synclet.posts = [];
       synclet.posts.push(post);
     }
-    syncletManager.runAndReschedule(js, synclet, cb);
+    var task = {
+      config:js.config,
+      auth:js.auth,
+      synclet: {
+        connector:js.id,
+        name:synclet.name
+      },
+      user:"orig-locker-me"
+    };
+    syncletManager.runAndReschedule(task, cb);
   }, callback);
 };
 
 // run all synclets that have a tolerance and reset them
+// TODO:  Remove or massively refactor this, just a shim while testing
 exports.flushTolerance = function(callback, force) {
   // TODO:  This now has an implied force, is that correct, why wouldn't you want this to force?
   var map = serviceManager.map();
@@ -243,30 +257,39 @@ exports.flushTolerance = function(callback, force) {
     // We only want services with synclets
     if(!map[service].synclets) return cb();
     async.forEachSeries(map[service].synclets, function(synclet, cb2) { // do each synclet in series
-      synclet.tolAt = 0;
-      syncletManager.runAndReschedule(map[service], synclet, cb2);
+      // TODO:  Figure out tolerance
+      //synclet.tolAt = 0;
+      var task = {
+        config:map[service].config,
+        auth:map[service].auth,
+        synclet: {
+          connector:map[service].id,
+          name:synclet.name
+        },
+        user:"orig-locker-me"
+      };
+      syncletManager.runAndReschedule(task, cb2);
     }, cb);
   }, callback);
 };
 
-/**
-* Add a timeout to run a synclet
-* DEPRECATE:  Use the syncletManager.schedule directly
-*/
-exports.scheduleRun = function(info, synclet) {
-  logger.warn("Deprecated use of scheduleRun");
-  console.trace();
-  syncletManager.schedule(info, synclet);
-};
-
-// Find al the synclets and get their initial scheduling done
+// Shims the old single user locker data to run in the new task mode
 exports.scheduleAll = function(callback) {
   var map = serviceManager.map();
   async.forEach(Object.keys(map), function(service, cb){ // do all services in parallel
     // We only want services with synclets
     if(!map[service].synclets) return cb();
     async.forEach(map[service].synclets, function(synclet, cb2) { // do each synclet in series
-      syncletManager.schedule(map[service], synclet);
+      var task = {
+        config:map[service].config,
+        auth:map[service].auth,
+        synclet: {
+          connector:map[service].id,
+          name:synclet.name
+        },
+        user:"orig-locker-me"
+      };
+      syncletManager.schedule(task);
       cb2();
     }, cb);
   }, callback);
@@ -276,22 +299,17 @@ function localError(base, err) {
     logger.error(base+"\t"+err);
 }
 
-function compareIDs (originalConfig, newConfig) {
-    var resp = {};
-    if (originalConfig && originalConfig.ids && newConfig && newConfig.ids) {
-        for (var i in newConfig.ids) {
-            if (!originalConfig.ids[i]) break;
-            var newSet = newConfig.ids[i];
-            var oldSet = originalConfig.ids[i];
-            var seenIDs = {};
-            resp[i] = [];
-            for (var j = 0; j < newSet.length; j++) seenIDs[newSet[j]] = true;
-            for (var j = 0; j < oldSet.length; j++) {
-                if (!seenIDs[oldSet[j]]) resp[i].push(oldSet[j]);
-            }
-        }
-    }
-    return resp;
+function stuff()
+{
+    // TODO: Construct a result
+    connectorInfo.status = syncletInfo.status = 'processing data';
+    connectorInfo.auth = lutil.extend(true, connectorInfo.auth, response.auth); // for refresh tokens and profiles
+    connectorInfo.config = lutil.extend(true, connectorInfo.config, response.config);
+    serviceManager.mapDirty(connectorInfo.id); // save out to disk
+    processResponse(deleteIDs, connectorInfo, syncletInfo, response, function(processErr) {
+      connectorInfo.status = 'waiting';
+      callback(processErr);
+    });
 }
 
 function processResponse(deleteIDs, info, synclet, response, callback) {
