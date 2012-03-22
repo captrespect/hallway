@@ -154,7 +154,6 @@ function finishStartup() {
       syncManager.manager.on("completed", function(response, task) {
         logger.debug("******** NEED TO PROCESS THE RESPONSE!");
         // Reschedule it
-        console.dir(arguments);
         logger.verbose("Reschduling " + JSON.stringify(task));
         syncManager.manager.schedule(task);
       });
