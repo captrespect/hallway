@@ -108,7 +108,7 @@ shutdown() {
 cleanup_mongo
 
 # Extra paths to search for files : separated
-export NODE_PATH=Common/node
+export NODE_PATH=lib:Common/node
 
 # Start the locker
 case "$locker_mode" in

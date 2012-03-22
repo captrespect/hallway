@@ -28,7 +28,7 @@ var lconfig = require("lconfig");
 var logger = require('logger');
 var async = require('async');
 var syncManager = require(path.join(lconfig.lockerDir, "Services", "SyncManager", "syncmanager.js"));
-var authManager = require(path.join(lconfig.lockerDir, "Services", "Auth", "auth.js"));
+var authManager = require("authManager");
 
 
 var lcrypto = require("lcrypto");
@@ -45,7 +45,7 @@ var locker = express.createServer(
     authManager.provider.oauth(),
     authManager.provider.login()
     // ,function(req, res, next) {
-    //   if(req.url.indexOf('/auth/') === 0 || (req.session.user && req.session.user !== '')) return next();
+    //   if(req.url.indexOf('/auth/') === 0 || (req.session.account_id && req.session.account_id !== '')) return next();
     //   res.send(401);
     // }
 );
