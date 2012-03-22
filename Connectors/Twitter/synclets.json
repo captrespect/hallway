@@ -22,4 +22,5 @@
         {"name": "tweets", "frequency": 600},
         {"name": "timeline", "frequency": 120},
         {"name": "mentions", "frequency": 600}
+		]
 }
