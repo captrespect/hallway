@@ -28,7 +28,7 @@ exports.getFriends = function(arg, cbEach, cbDone) {
         if(err || !friends.data) return cbDone(err);
         // this is super intense, but is it ok?
         async.forEach(friends.data,function(friend,cb){
-            fb.getPerson({id:friend.id},cbEach,cb);
+            fb.getPerson({id:friend.id,accessToken:arg.accessToken},cbEach,cb);
         },cbDone);
     });
 }
