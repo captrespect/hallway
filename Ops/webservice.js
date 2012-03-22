@@ -14,7 +14,6 @@ var lscheduler = require("lscheduler");
 var levents = require("levents");
 var lutil = require('lutil');
 var serviceManager = require("lservicemanager");
-var syncManager = require('lsyncmanager');
 var express = require('express');
 var connect = require('connect');
 var request = require('request');
@@ -29,6 +28,8 @@ var lconfig = require("lconfig");
 var logger = require('logger');
 var async = require('async');
 var OAuth2Provider = require(__dirname + '/OAuth2Provider');
+var syncManager = require(path.join(lconfig.lockerDir, "Services", "SyncManager", "syncmanager.js"));
+
 
 var lcrypto = require("lcrypto");
 
@@ -227,7 +228,6 @@ locker.post('/post/:id/:synclet', function(req, res) {
 // all synclet getCurrent, id, etc stuff
 require('synclet/dataaccess')(locker);
 
-
 locker.get('/core/error', function(req, res) {
     throw new Error("Hmm...This is a REAL job for STUPENDOUS MAN!");
 });
@@ -380,6 +380,7 @@ locker.error(function(err, req, res, next){
     res.send("Something went wrong.", 500);
 });
 
+require("./webservice-synclets")(locker);
 require('./webservice-push')(locker);
 
 

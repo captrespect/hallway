@@ -1,15 +1,13 @@
 var fs = require("fs");
+var util = require('util');
 var fb = require("./lib.js");
-var auth = JSON.parse(fs.readFileSync(process.argv[2]));
-console.log("passing auth: "+JSON.stringify(auth));
-fb.init(auth);
-fb.getPerson({id:"me"},function(me){    console.log("ME\t"+JSON.stringify(me));}, function(err){    if(err) console.log("error: "+err); });
-fb.getFriends({id:"me"},function(f){console.log("FRIEND\t"+JSON.stringify(f));}, function(err){if(err) console.log("error: "+err); });
-fb.getAlbums({id:"me"},function(f){
-    console.log("ALBUM\t"+JSON.stringify(f));
-    fb.getAlbum({id:f.id},function(f){
-        console.log("PHOTO\t"+JSON.stringify(f));
-        fb.getPhoto({id:f.id},function(f){console.log("PHOTO\t"+JSON.stringify(f));}, function(err){if(err) console.log("error: "+err); });
-    }, function(err){if(err) console.log("error: "+err); });
-}, function(err){if(err) console.log("error: "+err); });
-fb.getPosts({id:"me",type:"home"},function(f){console.log("POST\t"+JSON.stringify(f));}, function(err){if(err) console.log("error: "+err); });
+var pi = JSON.parse(fs.readFileSync(process.argv[3]));
+//console.log("passing auth: "+JSON.stringify(pi));
+
+if(process.argv[4]) pi.config = JSON.parse(process.argv[4]);
+var sync = require(process.argv[2]);
+sync.sync(pi,function(e,js){
+    console.error("error:"+util.inspect(e));
+    console.error("config: "+JSON.stringify(js.config));
+    Object.keys(js.data).forEach(function(key){console.error(key+"\t"+js.data[key].length)});
+});

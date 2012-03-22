@@ -12,10 +12,10 @@ var request = require("request")
   , lconfig = require("lconfig")
   , serviceManager = require("lservicemanager")
   , logger = require("./logger.js")
-  , syncManager = require('lsyncmanager')
   , url = require('url')
   , async = require('async')
   , path = require('path');
+var syncManager = require(path.join(lconfig.lockerDir, "Services", "SyncManager", "syncmanager.js"));
 
 var eventListeners = {};
 var processingQueue = []; // queue of events being processed
