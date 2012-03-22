@@ -27,8 +27,8 @@ var lpquery = require("lpquery");
 var lconfig = require("lconfig");
 var logger = require('logger');
 var async = require('async');
-var OAuth2Provider = require(__dirname + '/OAuth2Provider');
 var syncManager = require(path.join(lconfig.lockerDir, "Services", "SyncManager", "syncmanager.js"));
+var authManager = require(path.join(lconfig.lockerDir, "Services", "Auth", "auth.js"));
 
 
 var lcrypto = require("lcrypto");
@@ -38,14 +38,12 @@ var scheduler = lscheduler.masterScheduler;
 
 var airbrake;
 
-var apiKeys = JSON.parse(fs.readFileSync(lconfig.lockerDir + "/Config/apikeys.json", 'utf-8'));
-
 var locker = express.createServer(
     connect.bodyParser(),
     connect.cookieParser(),
     connect.session({key:'locker.project.id', secret : "locker"}),
-    OAuth2Provider.oauth(),
-    OAuth2Provider.login(),
+    authManager.provider.oauth(),
+    authManager.provider.login(),
     function(req, res, next) {
       console.error("DEBUG: req.url", req.url);
       if(req.url.indexOf('/auth/') === 0 || (req.session.user && req.session.user !== '')) return next();
@@ -226,7 +224,7 @@ locker.post('/post/:id/:synclet', function(req, res) {
 });
 
 // all synclet getCurrent, id, etc stuff
-require('synclet/dataaccess')(locker);
+// require('synclet/dataaccess')(locker);
 
 locker.get('/core/error', function(req, res) {
     throw new Error("Hmm...This is a REAL job for STUPENDOUS MAN!");
@@ -395,125 +393,14 @@ exports.startService = function(port, ip, cb) {
 };
 
 
-
-
-locker.get('/auth/:id', startServiceAuth);
-locker.get('/auth/:id/auth', authIsAuth);
-locker.post('/auth/:id/auth', authIsAuth);
+// locker.get('/auth/:id', function(req, res) {
+//   authManager.startServiceAuth(provider, req, res, onComplete);
+// });
+locker.get('/auth/:id/auth', function(req, res) {
+  authManager.authIsAuth(req.params.id, req, res);
+});
+locker.post('/auth/:id/auth', function(req, res) {
+  authManager.authIsAuth(req.params.id, req, res);
+});
 
 // locker.get('/deauth/:id', deauthIsAwesomer);
-
-// and get the auth url for it to return
-function startServiceAuth(req, res) {
-  var id = req.params.id;
-  var js = serviceManager.map(id);
-  if (js) return authRedir(js, req, res); // short circuit if already done
-}
-
-function authRedir(js, req, res) {
-  var authModule;
-  try {
-    authModule = require(path.join(lconfig.lockerDir, js.srcdir, 'auth.js'));
-  } catch (E) {
-    return res.send(E, 500);
-  }
-  // oauth2 types redirect
-  if (authModule.authUrl) {
-    if (!apiKeys[js.id]) return res.send("missing required api keys", 500);
-    var url = authModule.authUrl + "&client_id=" + apiKeys[js.id].appKey + "&redirect_uri=" + lconfig.externalBase + "/auth/" + js.id + "/auth";
-    return res.redirect(url);
-  }
-  // everything else is pass-through (custom, oauth1, etc)
-  authIsAuth(req, res);
-}
-
-// handle actual auth api requests or callbacks, much conflation to keep /auth/foo/auth consistent everywhere!
-function authIsAuth(req, res) {
-  var id = req.params.id;
-  logger.verbose("processing auth for "+id);
-  var js = serviceManager.map(id);
-  if (!js) return res.send("missing", 404);
-  var host = lconfig.externalBase + "/";
-
-  var authModule;
-  try {
-    authModule = require(path.join(lconfig.lockerDir, js.srcdir, 'auth.js'));
-  } catch (E) {
-    return res.send(E, 500);
-  }
-
-  // some custom code gets run for non-oauth2 options here, wear a tryondom
-  try {
-    if (authModule.direct) return authModule.direct(res);
-
-    // rest require apikeys
-    if (!apiKeys[id] && js.keys !== false && js.keys != "false") return res.send("missing required api keys", 500);
-
-    if (typeof authModule.handler == 'function') return authModule.handler(host, apiKeys[id], function (err, auth) {
-      if (err) return res.send(err, 500);
-      finishAuth(req, res, js, auth);
-    }, req, res);
-  } catch (E) {
-    return res.send(E, 500);
-  }
-
-  // oauth2 callbacks from here on out
-  var code = req.param('code');
-  var theseKeys = apiKeys[id];
-  if (!code || !authModule.handler.oauth2) return res.send("very bad request", 500);
-
-  var method = authModule.handler.oauth2;
-  var postData = {
-    client_id: theseKeys.appKey,
-    client_secret: theseKeys.appSecret,
-    redirect_uri: host + 'auth/' + id + '/auth',
-    grant_type: authModule.grantType,
-    code: code
-  };
-  req = {method: method, url: authModule.endPoint};
-  if (method == 'POST') {
-    req.body = querystring.stringify(postData);
-    req.headers = {'Content-Type' : 'application/x-www-form-urlencoded'};
-  } else {
-    req.url += '/access_token?' + querystring.stringify(postData);
-  }
-  request(req, function (err, resp, body) {
-    try {
-      body = JSON.parse(body);
-    } catch(err) {
-      body = querystring.parse(body);
-    }
-    var auth = {accessToken: body.access_token};
-    if (method == 'POST') auth = {token: body, clientID: theseKeys.appKey, clientSecret: theseKeys.appSecret};
-    if (typeof authModule.authComplete == 'function') {
-      return authModule.authComplete(auth, function (err, auth) {
-        if (err) return res.send(err, 500);
-        finishAuth(req, res, js, auth);
-      });
-    }
-    finishAuth(req, res, js, auth);
-  });
-}
-
-// save out auth and kick-start synclets, plus respond
-function finishAuth(req, res, js, auth) {
-  logger.info("authorized "+js.id);
-  js.auth = auth;
-  js.authed = Date.now();
-  // upsert it again now that it's auth'd, significant!
-  serviceManager.mapUpsert(path.join(js.srcdir,'package.json'));
-  syncManager.syncNow(js.id, function () {}); // force immediate sync too
-  // finish Singly OAuth 2 callback
-  res.end("cool, youre authed!");
-}
-
-// function deauthIsAwesomer(req, res) {
-//   var serviceName = req.params.id;
-//   var service = serviceManager.map(serviceName);
-//   delete service.auth;
-//   delete service.authed;
-//   service.deleted = Date.now();
-//   serviceManager.mapDirty(serviceName);
-//   logger.info("disconnecting "+serviceName);
-//   res.redirect('back');
-// }

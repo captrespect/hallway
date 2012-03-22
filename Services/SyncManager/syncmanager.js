@@ -34,6 +34,7 @@ SyncletManager.prototype.loadScripts = function() {
   // TODO: Pick these from a config
   this.synclets = {
     twitter:{
+      self:require(path.join(lconfig.lockerDir, "Connectors", "Twitter", "self.js")),
       friends:require(path.join(lconfig.lockerDir, "Connectors", "Twitter", "friends.js")),
       mentions:require(path.join(lconfig.lockerDir, "Connectors", "Twitter", "mentions.js")),
       related:require(path.join(lconfig.lockerDir, "Connectors", "Twitter", "related.js")),
@@ -44,7 +45,7 @@ SyncletManager.prototype.loadScripts = function() {
 };
 /// Schedule a synclet to run
 /**
-* timeToRun is optional.  In this case the next run time is calculated 
+* timeToRun is optional.  In this case the next run time is calculated
 * based on normal frequency and tolerance methods.
 */
 SyncletManager.prototype.schedule = function(connectorInfo, syncletInfo, timeToRun) {
@@ -59,7 +60,7 @@ SyncletManager.prototype.schedule = function(connectorInfo, syncletInfo, timeToR
 
   // In offline mode things may only be ran directly with runAndReschedule
   if (this.offlineMode) return;
- 
+
   // validation check
   if(syncletInfo.nextRun && typeof syncletInfo.nextRun != "number") delete syncletInfo.nextRun;
 
@@ -100,7 +101,7 @@ SyncletManager.prototype.runAndReschedule = function(connectorInfo, syncletInfo,
   if (!this.checkToleranceReady(connectorInfo, syncletInfo)) {
     return self.schedule(connectorInfo, syncletInfo);
   }
-  // This should not be possible anymore, so track if it happens, do 
+  // This should not be possible anymore, so track if it happens, do
   // not reschedule, one is obviously running and will get rescheduled
   if (syncletInfo.status === 'running') {
     console.error("Somehow we got a synclet running twice");
@@ -138,6 +139,7 @@ SyncletManager.prototype.runAndReschedule = function(connectorInfo, syncletInfo,
   syncletInfo.workingDirectory = connectorInfo.workingDirectory; // legacy?
   connectorInfo.syncletToRun = syncletInfo;
   connectorInfo.lockerUrl = lconfig.lockerBase;
+  console.error("DEBUG: this.synclets", this.synclets);
   this.synclets[connectorInfo.id][syncletInfo.name].sync(connectorInfo, function(syncErr, response) {
     if (syncErr) {
       logger.error(syncletInfo.name + " error: " + util.inspect(syncErr));
@@ -451,9 +453,9 @@ function addData (collection, mongoId, data, info, synclet, idr, ij, callback) {
       if (object.obj && object.type === "delete") {
         return false;
       }
-      return true; 
+      return true;
     });
-    entries = entries.map(function(item) { 
+    entries = entries.map(function(item) {
       var object = (item.obj) ? item : {obj: item};
       return {id:object.obj[mongoId], data:object.obj};
     });
