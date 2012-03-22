@@ -70,7 +70,7 @@ oldtest: build
 	env NODE_PATH="$(PWD)/Common/node" \
 	node ./runTests.js
 
-SUBDIR=locker-$(BUILD_NUMBER)
+SUBDIR=carebear-$(BUILD_NUMBER)
 DISTFILE=$(SUBDIR).tar.gz
 
 # create a ready-to-run tarball with a complete build inside
@@ -89,5 +89,5 @@ jenkins:
 
 clean:
 	rm -f "$(DISTFILE)" "$(TEMPLATE_OUTPUT)" build.json tests/build.json
-	rm -f "locker-git-*.tar.gz"
+	rm -f "carebear-git-*.tar.gz"
 	rm -rf node_modules
