@@ -13,64 +13,27 @@ var fs = require('fs'),
     url = require('url');
 var path = require('path');
 
-var tw;
-var auth;
-var base;
-
-exports.init = function(theAuth, theBase, srcdir) {
-    auth = theAuth;
-    base = theBase;
-    tw = require(path.join(srcdir,'twitter_client'))(auth.consumerKey, auth.consumerSecret);
-    try {
-        fs.mkdirSync(path.join(base,'friends'), 0755);
-    } catch(e) {};
-};
-
-exports.getMe = function(arg, cbEach, cbDone) {
-    if(auth.profile && auth.profile.screen_name) {
-      cbEach(auth.profile);
-      return process.nextTick(cbDone);
-    }
-    arg.path = '/account/verify_credentials.json';
-    return getOne(arg,function(err,me){
-      if(!err) {
-        fs.writeFile(path.join(base,'profile.json'), JSON.stringify(me));
-        cbEach(me);
-      }
-      cbDone(err);
-    });
+exports.getMe = function(pi, cbEach, cbDone) {
+  var arg = {};
+  arg.path = '/account/verify_credentials.json';
+  arg.token = pi.auth.token;
+  getOne(pi.tc, arg,function(err,me){
+    if(me) cbEach(me);
+    cbDone(err);
+  });
 }
 
 // walk my friends list getting/caching each one
-exports.getMyFriends = function(arg, cbEach, cbDone) {
+exports.getMyFriends = function(pi, cbEach, cbDone) {
     var me = this;
-    this.getMe({},function(js){arg.screen_name = js.screen_name;},function(err){
-        if(err) return cbDone(err);
-        arg.cursor=-1; // not sure why?
-        arg.path = '/friends/ids.json';
-        getOne(arg,function(err,js){
-            if(err || !js.ids || js.ids.length == 0) return cbDone(err);
-            me.getUsers(js.ids, function(friend){
-                if(!friend) return;
-                // load orig if any
-                var orig;
-                try {
-                    orig = JSON.parse(fs.readFileSync(path.join(base,'friends/'+friend.id_str+'.json')));
-                }catch(E){}
-                // background cache pic if it's new or changed
-                if(!orig || orig.profile_image_url != friend.profile_image_url)
-                {
-                    request.get({uri:friend.profile_image_url, encoding:'binary'}, function(err, resp, body) {
-                        var photoExt = friend.profile_image_url.substring(friend.profile_image_url.lastIndexOf('.'));
-                        fs.writeFile(path.join(base,'friends/' + friend.id_str + photoExt, body, 'binary'));
-                    });
-                }
-                // background cache data
-                fs.writeFile(path.join(base,'friends/'+friend.id_str+'.json', JSON.stringify(friend)));
-                cbEach(friend);
-            },cbDone);
-        });
-    })
+    var arg = {};
+    arg.cursor=-1; // not sure why?
+    arg.path = '/friends/ids.json';
+    arg.token = pi.auth.token;
+    getOne(pi.tc, arg, function(err,js){
+        if(err || !js.ids || js.ids.length == 0) return cbDone(err);
+        me.getUsers(pi, js.ids, cbEach, cbDone);
+    });
 }
 
 // just get extended details of all friends
@@ -112,10 +75,11 @@ exports.getFollowers = function(arg, cbEach, cbDone) {
 }
 
 // get your home timeline, screen_name has to be me
-exports.getTimeline = function(arg, cbEach, cbDone) {
+exports.getTimeline = function(pi, arg, cbDone) {
     if(!arg.screen_name) return cbDone("missing screen_name");
     arg.path = '/statuses/home_timeline.json';
-    getPages(arg,cbEach,cbDone);
+    arg.token = pi.auth.token;
+    getPage(pi.tc,arg,cbDone);
 }
 
 // get just one chunk of a timeline, screen_name has to be me
@@ -130,18 +94,20 @@ exports.getTimelinePage = function(arg, cbEach, cbDone) {
 }
 
 // should work for anyone, get their tweets
-exports.getTweets = function(arg, cbEach, cbDone) {
+exports.getTweets = function(pi, arg, cbDone) {
     if(!arg.screen_name) return cbDone("missing screen_name");
     arg.path = '/statuses/user_timeline.json';
     arg.include_rts = true;
-    getPages(arg,cbEach,cbDone);
+    arg.token = pi.auth.token;
+    getPage(pi.tc,arg,cbDone);
 }
 
 // duh
-exports.getMentions = function(arg, cbEach, cbDone) {
+exports.getMentions = function(pi, arg, cbDone) {
     if(!arg.screen_name) return cbDone("missing screen_name");
     arg.path = '/statuses/mentions.json';
-    getPages(arg,cbEach,cbDone);
+    arg.token = pi.auth.token;
+    getPage(pi.tc,arg,cbDone);
 }
 
 // get replies and retweets for any tweet id
@@ -173,7 +139,7 @@ function getIdList(arg, cbEach, cbDone) {
 }
 
 // bulk chunk get user details
-exports.getUsers = function(users, cbEach, cbDone) {
+exports.getUsers = function(pi, users, cbEach, cbDone) {
     if(users.length == 0) return cbDone();
     var lenStart = users.length;
     var me = this;
@@ -185,7 +151,7 @@ exports.getUsers = function(users, cbEach, cbDone) {
         if(i > 0) id_str += ',';
         id_str += id;
     }
-    getOne({path:'/users/lookup.json',user_id:id_str},function(err,infos){
+    getOne(pi.tc, {path:'/users/lookup.json', user_id:id_str, token:pi.auth.token},function(err,infos){
         if(err) return cbDone(err);
         for(var i=0; i < infos.length; i++){
             if(!ids[infos[i].id_str]) continue; // skip dups
@@ -196,7 +162,7 @@ exports.getUsers = function(users, cbEach, cbDone) {
             users.push(id); // any non-done users push back for next attempt
         }
         if(lenStart == users.length) return cbDone("failed to find remaining users");
-        me.getUsers(users, cbEach, cbDone); // loop loop till done
+        me.getUsers(pi, users, cbEach, cbDone); // loop loop till done
     });
 }
 
@@ -218,11 +184,10 @@ function getOnePublic(arg, cb) {
     });
 }
 
-function getOne(arg, cb) {
+function getOne(tc, arg, cb) {
     if(!arg.path) return cb("no path");
-    arg.token = auth.token;
     arg.include_entities = true;
-    tw.apiCall('GET', arg.path, arg, function(err, js){
+    tc.apiCall('GET', arg.path, arg, function(err, js){
         if(err) return cb(err);
         cb(null,js);
     });
@@ -238,18 +203,32 @@ function postOne(arg, cb) {
     });
 }
 
-function getPages(arg, cbEach, cbDone) {
+function getPage(tc, arg, cbDone) {
     if(!arg.path) return cb("no path");
     arg.count = 200;
-    arg.token = auth.token;
     arg.include_entities = true;
     if(!arg.page) arg.page = 1;
-    tw.apiCall('GET', arg.path, arg, function(err, js) {
+    tc.apiCall('GET', arg.path, arg, function(err, js) {
+        if(err) return cbDone(err);
+        if(!Array.isArray(js)) return cbDone("result not an array");
+        cbDone(null, js);
+    });
+}
+
+
+function getPages(tc, arg, cbEach, cbDone) {
+    if(!arg.path) return cb("no path");
+    arg.count = 200;
+    arg.include_entities = true;
+    if(!arg.page) arg.page = 1;
+    var token = arg.token; // need to stash this as tc whacks it
+    tc.apiCall('GET', arg.path, arg, function(err, js) {
         // if error.statusCode == 500, retry?
         if(err || !Array.isArray(js) || js.length == 0) return cbDone(err);
         for(var i = 0; i < js.length; i++) cbEach(js[i]);
         arg.page++;
-        return getPages(arg,cbEach,cbDone);
+        arg.token = token;
+        return getPages(tc,arg,cbEach,cbDone);
     });
 }
 

@@ -60,6 +60,9 @@
         "mkdirp": "0.3.0",
         "murmurhash3": "",
         "oauth2-provider": ">=1.0.0 <2.0.0",
+        "zombie": ">=0.12.15",
+        "temp": ">=0.4.0",
+        "phantom": ">=0.3.3",
 
 
         "hashish": "=0.0.4",

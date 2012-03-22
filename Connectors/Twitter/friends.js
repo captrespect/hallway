@@ -8,22 +8,12 @@
 */
 
 var path = require('path');
-var tw;
+var tw = require(path.join(__dirname, 'lib.js'))
 
-var contacts = [];
-exports.sync = function(processInfo, cb) {
-    tw = require(path.join(processInfo.absoluteSrcdir, 'lib.js'));
-    tw.init(processInfo.auth, processInfo.workingDirectory, processInfo.absoluteSrcdir);
-    exports.syncFriends(function(err) {
-        if (err) console.error(err);
-        var responseObj = {data : {}};
-        responseObj.data.contact = contacts;
-        cb(err, responseObj);
+exports.sync = function(pi, cb) {
+    pi.tc = require(path.join(__dirname, 'twitter_client.js'))(pi.auth.consumerKey, pi.auth.consumerSecret);
+    var resp = {data:{ contact:[] }};
+    tw.getMyFriends(pi,function(friend){ resp.data.contact.push(friend) }, function(err) {
+        cb(err, resp);
     });
 };
-
-exports.syncFriends = function(callback) {
-    tw.getMyFriends({},function(friend){
-        contacts.push({'obj' : friend, timestamp: new Date(), type : 'new'});
-    },callback);
-}

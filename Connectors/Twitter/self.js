@@ -8,15 +8,15 @@
 */
 
 var path = require('path');
-var tw;
+var tw = require(path.join(__dirname, 'lib.js'))
 
-exports.sync = function(processInfo, cb) {
-    tw = require(path.join(processInfo.absoluteSrcdir, 'lib.js'));
-    tw.init(processInfo.auth, processInfo.workingDirectory, processInfo.absoluteSrcdir);
-    var self;
-    tw.getMe({}, function(js){ self = js; }, function(err) {
-        if (err) return cb(err);
-        processInfo.auth.profile = self; // map to shared profile
-        cb(err, {data: { self: [self] }, auth: processInfo.auth});
-    });
+exports.sync = function(pi, cb) {
+  pi.tc = require(path.join(__dirname, 'twitter_client.js'))(pi.auth.consumerKey, pi.auth.consumerSecret);
+  var resp = {data:{}, auth:pi.auth};
+  tw.getMe(pi, function(self){
+    resp.data.self = [self];
+    resp.auth.profile = self; // also save to auth master
+  }, function(err) {
+        cb(err, resp);
+  });
 };
