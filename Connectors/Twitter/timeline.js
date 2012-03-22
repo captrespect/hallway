@@ -8,27 +8,29 @@
 */
 
 var path = require('path');
-var tw;
+var tw = require(path.join(__dirname, 'lib.js'))
 
-exports.sync = function(processInfo, cb) {
-    tw = require(path.join(processInfo.absoluteSrcdir, 'lib.js'));
-    tw.init(processInfo.auth, processInfo.workingDirectory, processInfo.absoluteSrcdir);
-    var me;
-    var responseObj = {data : {}, config:{}};
-    var since=1;
-    if (processInfo.config && processInfo.config.updateState && processInfo.config.updateState.timeline) {
-        since = processInfo.config.updateState.timeline.since;
-    }
-    tw.getMe({},function(js){me=js}, function(err){
-        if(err) return cb(err, responseObj);
-        var statuses = [];
-        tw.getTimeline({screen_name:me.screen_name,since_id:since},function(js){
-            statuses.push({'obj' : js, timestamp: new Date(), type : 'new'});
-            if(js.id > since) since = js.id;
-        },function(err){
-            responseObj.data.timeline = statuses;
-            responseObj.config.updateState = {timeline:{since:since}};
-            cb(err, responseObj);
-        });
-    });
+exports.sync = function(pi, cb) {
+  pi.tc = require(path.join(__dirname, 'twitter_client.js'))(pi.auth.consumerKey, pi.auth.consumerSecret);
+  var resp = {data:{}, config:{}};
+  var since=1;
+  var page=1;
+  // if existing since, start from there
+  if (pi.config.timelineSince) since = pi.config.timelineSince;
+  if (pi.config.timelinePage) page = pi.config.timelinePage;
+  var arg = {screen_name:pi.auth.profile.screen_name, page:page};
+  if(page == 1) arg.since_id = since; // only pass in a since if we're at the first page
+  tw.getTimeline(pi, arg, function(err, js){
+    if(err) return cb(err);
+    if(!Array.isArray(js)) return cb("no array");
+    // page forward or reset to first if hit the end
+    page = (js.length == 0) ? 1 : page+1; 
+    // find the newest!
+    js.forEach(function(item){ if(item.id > since) since = item.id+10 }); // their api sometimes returns the last one repeatedly, L4M30
+    resp.data.tweet = js;
+    resp.config.timelineSince = since;
+    resp.config.timelinePage = page;
+    if(page > 1) resp.config.nextRun = -1; // run again if paging
+    cb(err, resp);
+  });
 };

@@ -1,15 +1,14 @@
 var fs = require("fs");
-var tw = require("./lib.js");
-var auth = JSON.parse(fs.readFileSync(process.argv[2]));
-console.log("passing auth: "+JSON.stringify(auth));
-tw.init(auth);
-var me;
-tw.getMe({},function(js){  console.log("ME\t"+JSON.stringify(js)); me=js}, function(err){
-	if(err) console.log("error: "+err);
-//	tw.getMyFriends({},function(js){  console.log("FRIEND\t"+JSON.stringify(js));}, function(err){ if(err) console.log("error: "+err);});
-//	tw.getFollowers({screen_name:me.screen_name},function(js){  console.log("FOLLOWER\t"+JSON.stringify(js));}, function(err){ if(err) console.log("error: "+err);});
-//    tw.getTimeline({screen_name:me.screen_name},function(js){  console.log("TIMELINE\t"+JSON.stringify(js));}, function(err){ if(err) console.log("error: "+err);});
-//    tw.getTweets({screen_name:me.screen_name},function(js){  console.log("TWEET\t"+JSON.stringify(js));}, function(err){ if(err) console.log("error: "+err);});
-    tw.getTimelinePage({screen_name:me.screen_name},function(js){  console.log("MENTION\t"+JSON.stringify(js));}, function(err){ if(err) console.log("error: "+err);});
+var util = require('util');
+var fb = require("./lib.js");
+var pi = JSON.parse(fs.readFileSync(process.argv[2]));
+//console.log("passing auth: "+JSON.stringify(pi));
 
+if(process.argv[4]) pi.config = JSON.parse(process.argv[4]);
+var sync = require(__dirname + "/" + process.argv[3]);
+sync.sync(pi,function(e,js){
+//  console.error(JSON.stringify(js, null, 4));
+    console.error("error:"+util.inspect(e));
+    console.error("config: "+JSON.stringify(js.config));
+    Object.keys(js.data).forEach(function(key){console.error(key+"\t"+js.data[key].length)});
 });
