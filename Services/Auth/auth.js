@@ -14,7 +14,6 @@ var host = lconfig.externalBase + '/';
 
 // and get the auth url for it to return
 function startServiceAuth(provider, req, res) {
-  console.error('DEBUG: startServiceAuth');
   var js = serviceManager.map(provider);
   var authModule;
   try {
@@ -37,7 +36,6 @@ function startOAuth2(provider, authModule, req, res) {
 
 // handle actual auth api requests or callbacks, much conflation to keep /auth/foo/auth consistent everywhere!
 exports.authIsAuth = function(service, req, res, onComplete) {
-  console.error("DEBUG: authIsAuth start req.session", req.session);
   logger.verbose('processing auth for '+service);
   var js = serviceManager.map(service);
   if (!js) return res.send('missing', 404);
@@ -62,15 +60,14 @@ exports.authIsAuth = function(service, req, res, onComplete) {
   if (!apiKeys[service] && js.keys !== false && js.keys != 'false') return res.send('missing required api keys', 500);
 
   if (typeof authModule.handler === 'function') {
-    // try {
-      console.error("DEBUG: handler req.session", req.session);
+    try {
       return authModule.handler(host, apiKeys[service], function (err, auth) {
         if (err) return res.send(err, 500);
         finishAuth(req, res, js, auth);
       }, req, res);
-    // } catch (E) {
-    //   return res.send(E, 500);
-    // }
+    } catch (E) {
+      return res.send(E, 500);
+    }
   }
 
   var code = req.param('code');
@@ -130,15 +127,11 @@ function finishAuth(req, res, js, auth) {
   js.authed = Date.now();
   // upsert it again now that it's auth'd, significant!
   serviceManager.mapUpsert(path.join(js.srcdir,'package.json'));
-  // process.nextTick(function() {
-  //   syncManager.syncNow(js.id, function () {}); // force immediate sync too
-  // });
+  process.nextTick(function() {
+    syncManager.syncNow(js.id, function () {}); // force immediate sync too
+  });
   req.session.user = auth;
-  console.error("DEBUG: finishAuth req.session", req.session);
-  // if (typeof req.session[js.id].onComplete !== 'function') res.send('no onComplete function!', 500);
   return res.redirect(req.session.loggedInUrl);
-  // finish Singly OAuth 2 callback
-  // res.end('cool, youre authed!');
 }
 
 // function deauthIsAwesomer(req, res) {
@@ -166,7 +159,6 @@ var myOAP = new OAuth2Provider('encryption secret', 'signing secret');
 
 // before showing authorization page, make sure the user is logged in
 myOAP.on('enforce_login', function(req, res, authorize_url, next) {
-  console.error("DEBUG: enforce_login query", req.query);
   var provider = req.query.service;
   if (!provider) return res.send('bad service', 400);
   if (req.session.user) return next(req.session.user);
@@ -191,7 +183,6 @@ myOAP.on('enforce_login', function(req, res, authorize_url, next) {
 // render the authorize form with the submission URL
 // use two submit buttons named "allow" and "deny" for the user's choice
 myOAP.on('authorize_form', function(req, res, client_id, authorize_url) {
-  console.error('DEBUG: authorize_form');
   res.end('<html>this app wants to access your account... <form method="post" action="' + authorize_url + '"><button name="allow">Allow</button><button name="deny">Deny</button></form>');
 });
 
@@ -212,7 +203,6 @@ myOAP.on('remove_grant', function(user_id, client_id, code) {
 
 // find the user for a particular grant
 myOAP.on('lookup_grant', function(client_id, client_secret, code, next) {
-  console.error('DEBUG: lookup grant');
   // verify that client id/secret pair are valid
   if(client_id in myClients && myClients[client_id] == client_secret) {
     for(var user in myGrants) {

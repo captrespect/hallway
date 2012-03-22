@@ -43,12 +43,11 @@ var locker = express.createServer(
     connect.cookieParser(),
     connect.session({key:'locker.project.id', secret : "locker"}),
     authManager.provider.oauth(),
-    authManager.provider.login(),
-    function(req, res, next) {
-      console.error("DEBUG: req.url", req.url);
-      if(req.url.indexOf('/auth/') === 0 || (req.session.user && req.session.user !== '')) return next();
-      res.send(401);
-    }
+    authManager.provider.login()
+    // ,function(req, res, next) {
+    //   if(req.url.indexOf('/auth/') === 0 || (req.session.user && req.session.user !== '')) return next();
+    //   res.send(401);
+    // }
 );
 
 var listeners = {}; // listeners for events
