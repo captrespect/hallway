@@ -150,9 +150,13 @@ function finishStartup() {
 
     // ordering sensitive, as synclet manager is inert during init, servicemanager's init will call into syncletmanager
     // Dear lord this massive waterfall is so scary
-    syncManager.init(serviceManager, function() {
-      syncManager.manager.on("completed", function(error, response) {
+    syncManager.manager.init(serviceManager, function() {
+      syncManager.manager.on("completed", function(response, task) {
         logger.debug("******** NEED TO PROCESS THE RESPONSE!");
+        // Reschedule it
+        console.dir(arguments);
+        logger.verbose("Reschduling " + JSON.stringify(task));
+        syncManager.manager.schedule(task);
       });
       serviceManager.init(function() {  // this may trigger synclets to start!
         // TODO:  Here we should be figuring out what set of users we need to run synclets
