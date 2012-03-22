@@ -31,16 +31,22 @@ function SyncletManager()
 }
 SyncletManager.prototype.loadScripts = function() {
   console.dir(process.cwd());
-  // TODO: Pick these from a config
-  this.synclets = {
-    twitter:{
-      friends:require(path.join(lconfig.lockerDir, "Connectors", "Twitter", "friends.js")),
-      mentions:require(path.join(lconfig.lockerDir, "Connectors", "Twitter", "mentions.js")),
-      related:require(path.join(lconfig.lockerDir, "Connectors", "Twitter", "related.js")),
-      timeline:require(path.join(lconfig.lockerDir, "Connectors", "Twitter", "timeline.js")),
-      tweets:require(path.join(lconfig.lockerDir, "Connectors", "Twitter", "tweets.js"))
+  // not defensively coded! load synclets
+  function synclets(synclets, connector, dir) {
+    console.log("loading "+connector);
+    if(!synclets[connector]) synclets[connector] = {};
+    var sjs = JSON.parse(fs.readFileSync(path.join(lconfig.lockerDir, "Connectors", dir, "synclets.json")));
+    for(var i = 0; i < sjs.synclets.length; i++) {
+      var sname = sjs.synclets[i].name;
+      var spath = path.join(lconfig.lockerDir, "Connectors", dir, sname);
+      delete require.cache[spath]; // remove any old one
+      synclets[connector][sname] = require(spath);
     }
   }
+  // TODO from config
+  this.synclets = {};
+  synclets(this.synclets, 'twitter','Twitter');
+  synclets(this.synclets, 'facebook','Facebook');
 };
 /// Schedule a synclet to run
 /**
