@@ -10,10 +10,10 @@ var mocha    = require('mocha')
   , util     = require('util')
   ;
 
-describe("twitter connector", function () {
-  var apiBase = 'https://api.twitter.com:443/1/';
-  var apiSuffix = '&include_entities=true';
-  var pinfo;
+describe("Twitter connector", function () {
+  var apiBase = 'https://api.twitter.com:443/1/'
+    , apiSuffix = '&include_entities=true'
+    , pinfo;
 
   before(function (done) {
     fakeweb.allowNetConnect = false;
