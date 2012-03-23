@@ -55,7 +55,7 @@ build.json:
 .PHONY: build.json
 
 # run all of the tests
-test: oldtest newtest
+test: newtest
 
 # new style mocha tests
 MOCHA = ./node_modules/.bin/mocha
