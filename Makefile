@@ -61,13 +61,13 @@ test: oldtest newtest
 MOCHA = ./node_modules/.bin/mocha
 MOCHA_TESTS = $(shell find test -name "*.test.js")
 newtest: build
-	@env INTEGRAL_CONFIG=test/config.json NODE_PATH="$(PWD)/Common/node" \
+	@env NODE_PATH="lib:$(PWD)/Common/node" \
 	$(MOCHA) $(MOCHA_TESTS)
 
 # old style vows tests
 oldtest: build
 	cd tests && \
-	env NODE_PATH="$(PWD)/Common/node" \
+	env NODE_PATH="$(PWD)/lib:$(PWD)/Common/node" \
 	node ./runTests.js
 
 # phantom tests
