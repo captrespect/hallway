@@ -35,23 +35,6 @@ var pinfo = JSON.parse(fs.readFileSync(__dirname + mePath + '/me.json'));
     }
  */
 suite.next().suite.addBatch({
-    "Can get mentions" : {
-        topic: function() {
-            fakeweb.allowNetConnect = false;
-            fakeweb.registerUri({uri : 'https://api.twitter.com:443/1/account/verify_credentials.json?path=%2Faccount%2Fverify_credentials.json&include_entities=true',
-                file : __dirname + '/fixtures/twitter/verify_credentials.js' });
-            fakeweb.registerUri({uri : 'https://api.twitter.com:443/1/statuses/mentions.json?screen_name=ctide&since_id=1&path=%2Fstatuses%2Fmentions.json&count=200&include_entities=true&page=1',
-                file : __dirname + '/fixtures/twitter/home_timeline.js' });
-                fakeweb.registerUri({uri : 'https://api.twitter.com:443/1/statuses/mentions.json?screen_name=ctide&since_id=1&path=%2Fstatuses%2Fmentions.json&count=200&include_entities=true&page=2',
-                    body :'[]' });
-            mentions.sync(pinfo, this.callback)
-        },
-        "successfully" : function(err, response) {
-            assert.equal(response.data.mentions[0].obj.id_str, '71348168469643264');
-        }
-    }
-
-}).addBatch({
     "Can get tweets" : {
         topic: function() {
             fakeweb.allowNetConnect = false;
