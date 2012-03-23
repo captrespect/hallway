@@ -5,7 +5,6 @@ process.env["NODE_PATH"] = path.join(__dirname, "..", "Common", "node"); // for 
 var lconfig = require(__dirname + "/../Common/node/lconfig");
 lconfig.load("Config/config.json");
 var wrench = require("wrench");
-var runIntegration = true;
 var integrationOnly = false;
 var tty = require('tty');
 
@@ -81,7 +80,6 @@ if (process.argv.length > 2) {
     }
     if (process.argv[2] == "-f") {
         // Get the files to run
-        runIntegration = false;
         for (var x = 3; x < process.argv.length; ++x) {
             runFiles.push(process.argv[x]);
         }
@@ -91,10 +89,6 @@ if (process.argv.length > 2) {
             if (process.argv[x][0] != "-") runGroups.push(process.argv[x]);
         }
     }
-}
-
-if (process.env["TRAVIS"] == "true") {
-    runIntegration = false;
 }
 
 // If they have specified any groups or defaulting to all we need to process this
@@ -149,9 +143,6 @@ var runTests = function() {
     } else {
         vowsArgument.push("--spec");
     }
-    if (process.argv.indexOf("-u") > 0) {
-        runIntegration = false
-    }
     if (process.argv.indexOf("-c") > 0) {
         return runRake();
     }
@@ -179,18 +170,11 @@ var runTests = function() {
             output = output.replace(/^\s+|\s+$/g, '');
             fs.writeFileSync('output.xml', output);
         }
-        if (code || signal) {
-            // unit tests failed
-            return finished(code, signal);
-        }
-        if (runIntegration) {
-            runRake();
-        } else {
-            finished(code, signal);
-        }
+        return finished(code, signal);
     });
 }
 
+// not used anymore
 var runRake = function() {
     var rakeProcess = require("child_process").spawn("rake", ["ci:setup:rspec","default"], { cwd: __dirname + "/integration"});
     rakeProcess.stdout.on("data", function(data) {
