@@ -20,8 +20,6 @@
                       "lpushmanager-test-local.js"],
         "synclets" : ["synclet-local-foursquare.js",
                       "synclet-local-github.js",
-                      "synclet-local-twitter.js",
-                      "synclet-local-facebook.js",
                       "synclet-local-flickr.js",
                       "synclet-local-soundcloud.js",
                       "synclet-local-googleContacts.js"],
