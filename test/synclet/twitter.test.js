@@ -4,6 +4,7 @@ var mocha   = require('mocha')
   , path    = require('path')
   , helper  = require(path.join(__dirname, '..', 'lib', 'locker-helper.js'))
   , friends = require(path.join(__dirname, '..', '..', 'Connectors', 'Twitter', 'friends'))
+  , util    = require('util')
   ;
 
 describe('twitter connector', function () {
@@ -22,15 +23,15 @@ describe('twitter connector', function () {
 
   describe('friends synclet', function () {
     before(function (done) {
-      fakeweb.registerUri({uri  : apiBase + '/account/verify_credentials.json?path=%2Faccount%2Fverify_credentials.json' + apiSuffix,
-                           file : __dirname + '/../fixtures/synclets/twitter/verify_credentials.js' });
-      fakeweb.registerUri({uri  : apiBase + '/friends/ids.json?screen_name=ctide&cursor=-1&path=%2Ffriends%2Fids.json' + apiSuffix,
+      //fakeweb.registerUri({uri  : apiBase + '/account/verify_credentials.json?path=%2Faccount%2Fverify_credentials.json' + apiSuffix,
+                           //file : __dirname + '/../fixtures/synclets/twitter/verify_credentials.js' });
+      fakeweb.registerUri({uri  : apiBase + '/friends/ids.json?cursor=-1&path=%2Ffriends%2Fids.json' + apiSuffix,
                            file : __dirname + '/../fixtures/synclets/twitter/friends.js' });
       fakeweb.registerUri({uri  : apiBase + '/users/lookup.json?path=%2Fusers%2Flookup.json&user_id=1054551' + apiSuffix,
                            file : __dirname + '/../fixtures/synclets/twitter/1054551.js' });
-      fakeweb.registerUri({uri  : 'http://a0.twimg.com:80/profile_images/299352843/Picture_82_normal.png',
-                           file : __dirname + '/../fixtures/synclets/twitter/1054551.png',
-                           contentType : 'image/png' });
+      //fakeweb.registerUri({uri  : 'http://a0.twimg.com:80/profile_images/299352843/Picture_82_normal.png',
+                           //file : __dirname + '/../fixtures/synclets/twitter/1054551.png',
+                           //contentType : 'image/png' });
 
       return done();
     });
@@ -46,7 +47,7 @@ describe('twitter connector', function () {
      friends.sync(pinfo, function (err, response) {
        if (err) return done(err);
 
-       response.data.contact[0].obj.id.should.equal(1054551, 'response IDs should match');
+       response.data.contact[0].id.should.equal(1054551, 'response IDs should match');
        return done();
      });
     });
