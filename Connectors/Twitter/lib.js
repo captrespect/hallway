@@ -1,11 +1,11 @@
 /*
-*
-* Copyright (C) 2011, The Locker Project
-* All rights reserved.
-*
-* Please see the LICENSE file for more information.
-*
-*/
+ *
+ * Copyright (C) 2011, The Locker Project
+ * All rights reserved.
+ *
+ * Please see the LICENSE file for more information.
+ *
+ */
 
 var fs = require('fs'),
     request = require('request'),
@@ -21,7 +21,7 @@ exports.getMe = function(pi, cbEach, cbDone) {
     if(me) cbEach(me);
     cbDone(err);
   });
-}
+};
 
 // walk my friends list getting/caching each one
 exports.getMyFriends = function(pi, cbEach, cbDone) {
@@ -31,10 +31,10 @@ exports.getMyFriends = function(pi, cbEach, cbDone) {
     arg.path = '/friends/ids.json';
     arg.token = pi.auth.token;
     getOne(pi.tc, arg, function(err,js){
-        if(err || !js.ids || js.ids.length == 0) return cbDone(err);
+        if(err || !js.ids || js.ids.length === 0) return cbDone(err);
         me.getUsers(pi, js.ids, cbEach, cbDone);
     });
-}
+};
 
 // just get extended details of all friends
 exports.getFriends = function(arg, cbEach, cbDone) {
@@ -43,10 +43,10 @@ exports.getFriends = function(arg, cbEach, cbDone) {
     arg.cursor=-1; // not sure why?
     arg.path = '/friends/ids.json';
     getOne(arg,function(err,js){
-        if(err || !js.ids || js.ids.length == 0) return cbDone(err);
+        if(err || !js.ids || js.ids.length === 0) return cbDone(err);
         me.getUsers(js.ids, cbEach, cbDone);
     });
-}
+};
 
 // create a new tweet
 exports.update = function(arg, cbEach, cbDone) {
@@ -58,7 +58,7 @@ exports.update = function(arg, cbEach, cbDone) {
         cbEach(js);
         cbDone();
     });
-}
+};
 
 // just get extended details of all followers
 exports.getFollowers = function(arg, cbEach, cbDone) {
@@ -69,10 +69,10 @@ exports.getFollowers = function(arg, cbEach, cbDone) {
     },1);
     getIdList(arg,q.push,function(err){
         if(err) return cbDone(err);
-        if(q.length() == 0) return cbDone(); // queue could be done, but likely not
+        if(q.length() === 0) return cbDone(); // queue could be done, but likely not
         q.drain = cbDone;
     });
-}
+};
 
 // get your home timeline, screen_name has to be me
 exports.getTimeline = function(pi, arg, cbDone) {
@@ -80,7 +80,7 @@ exports.getTimeline = function(pi, arg, cbDone) {
     arg.path = '/statuses/home_timeline.json';
     arg.token = pi.auth.token;
     getPage(pi.tc,arg,cbDone);
-}
+};
 
 // get just one chunk of a timeline, screen_name has to be me
 exports.getTimelinePage = function(arg, cbEach, cbDone) {
@@ -91,7 +91,7 @@ exports.getTimelinePage = function(arg, cbEach, cbDone) {
         if(js) cbEach(js);
         cbDone(err);
     });
-}
+};
 
 // should work for anyone, get their tweets
 exports.getTweets = function(pi, arg, cbDone) {
@@ -100,7 +100,7 @@ exports.getTweets = function(pi, arg, cbDone) {
     arg.include_rts = true;
     arg.token = pi.auth.token;
     getPage(pi.tc,arg,cbDone);
-}
+};
 
 // duh
 exports.getMentions = function(pi, arg, cbDone) {
@@ -108,7 +108,7 @@ exports.getMentions = function(pi, arg, cbDone) {
     arg.path = '/statuses/mentions.json';
     arg.token = pi.auth.token;
     getPage(pi.tc,arg,cbDone);
-}
+};
 
 // get replies and retweets for any tweet id
 exports.getRelated = function(arg, cbEach, cbDone) {
@@ -122,7 +122,7 @@ exports.getRelated = function(arg, cbEach, cbDone) {
             cbDone();
         });
     });
-}
+};
 
 // step through any sized list of ids using cursors
 function getIdList(arg, cbEach, cbDone) {
@@ -130,24 +130,23 @@ function getIdList(arg, cbEach, cbDone) {
     var me = this;
     if(!arg.cursor) arg.cursor = -1;
     getOne(arg,function(err,js){
-        if(err || !js.ids || js.ids.length == 0) return cbDone(err);
+        if(err || !js.ids || js.ids.length === 0) return cbDone(err);
         cbEach(js);
         arg.cursor = js.next_cursor;
-        if(arg.cursor == 0) return cbDone();
+        if(arg.cursor === 0) return cbDone();
         me.getIdList(arg, cbEach, cbDone);
     });
 }
 
 // bulk chunk get user details
 exports.getUsers = function(pi, users, cbEach, cbDone) {
-    if(users.length == 0) return cbDone();
+    if(users.length === 0) return cbDone();
     var lenStart = users.length;
     var me = this;
     var id_str = "";
     var ids = {};
-    var id;
     for(var i = 0; i < 100 && users.length > 0; i++) {
-        id = users.pop();
+        var id = users.pop();
         ids[id] = true; // track hash of all attempted
         if(i > 0) id_str += ',';
         id_str += id;
@@ -159,13 +158,13 @@ exports.getUsers = function(pi, users, cbEach, cbDone) {
             delete ids[infos[i].id_str];
             cbEach(infos[i]);
         }
-        for(id in ids){
+        for (var id in ids) {
             users.push(id); // any non-done users push back for next attempt
         }
         if(lenStart == users.length) return cbDone("failed to find remaining users");
         me.getUsers(pi, users, cbEach, cbDone); // loop loop till done
     });
-}
+};
 
 // call the api non-authenticated
 function getOnePublic(arg, cb) {
@@ -225,7 +224,7 @@ function getPages(tc, arg, cbEach, cbDone) {
     var token = arg.token; // need to stash this as tc whacks it
     tc.apiCall('GET', arg.path, arg, function(err, js) {
         // if error.statusCode == 500, retry?
-        if(err || !Array.isArray(js) || js.length == 0) return cbDone(err);
+        if(err || !Array.isArray(js) || js.length === 0) return cbDone(err);
         for(var i = 0; i < js.length; i++) cbEach(js[i]);
         arg.page++;
         arg.token = token;
