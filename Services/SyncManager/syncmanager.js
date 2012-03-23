@@ -16,6 +16,7 @@ var NUM_WORKERS = 4;
 var DEFAULT_SCAN_TIME = 10000;
 
 var serviceManager;
+var syncletManager;
 
 function SyncletManager()
 {
@@ -109,7 +110,7 @@ SyncletManager.prototype.schedule = function(task, timeToRun) {
 
   // In offline mode things may only be ran directly with runTask
   if (this.offlineMode) return;
-   
+
   var self = this;
   var key = this.getKey(task);
   this.db.execute("SELECT * FROM SyncSchedule WHERE key=?", [key], function(error,rows) {
@@ -118,14 +119,14 @@ SyncletManager.prototype.schedule = function(task, timeToRun) {
       return;
     }
 
-    if (rows && rows.length == 1 && rows[0].state != 0) {
+    if (rows && rows.length == 1 && rows[0].state !== 0) {
       logger.error("Attempted to reschedule a synclet while it is running");
       return;
     }
 
     if (timeToRun === undefined) {
       // We'll default to frequency unless paging
-      var nextRun = parseInt(syncletInfo.frequency) * 1000;
+      var nextRun = parseInt(syncletInfo.frequency, 10) * 1000;
       if (task.config && task.config.nextRun < 0) {
         // Paging
         nextRun = PAGING_TIMING;
