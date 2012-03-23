@@ -17,17 +17,20 @@ describe("Twitter connector", function () {
 
   before(function (done) {
     fakeweb.allowNetConnect = false;
-    helper.fakeTwitter(done);
+    helper.fakeTwitter(function () {
+      process.chdir(path.join(process.env.LOCKER_ROOT, process.env.LOCKER_ME, 'twitter'));
+      return done();
+    });
   });
 
   beforeEach(function (done) {
-    process.chdir(path.join(process.env.LOCKER_ROOT, process.env.LOCKER_ME, 'twitter'));
     pinfo = helper.loadFixture(path.join(__dirname, '..', 'fixtures', 'connectors', 'twitter.json'));
     pinfo.absoluteSrcdir = path.join(__dirname, '..', '..', 'Connectors', 'Twitter');
     return done();
   });
 
   after(function (done) {
+    process.chdir(process.env.LOCKER_ROOT);
     helper.teardownMe(null, done);
   });
 

@@ -95,7 +95,6 @@ exports.withMe = function (callback) {
   var config = exports.configurate();
   path.exists(config.me, function (exists) {
     if (!exists) {
-      console.error('making Me directory', config.me);
       fs.mkdir(config.me, function (err) {
         if (err) return callback(err);
 
@@ -109,7 +108,6 @@ exports.withMe = function (callback) {
 };
 
 exports.fakeout = function (name, done) {
-  console.error('faking configuration for', name);
   exports.withMe(function (err, me) {
     if (err) return done(err);
 

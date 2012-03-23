@@ -15,18 +15,21 @@ describe("Facebook connector", function () {
 
   before(function (done) {
     fakeweb.allowNetConnect = false;
-    helper.fakeFacebook(done);
-  });
-
-  after(function (done) {
-    helper.teardownMe(null, done);
+    helper.fakeFacebook(function () {
+      process.chdir(path.join(process.env.LOCKER_ROOT, process.env.LOCKER_ME, 'facebook'));
+      return done();
+    });
   });
 
   beforeEach(function (done) {
-    process.chdir(path.join(process.env.LOCKER_ROOT, process.env.LOCKER_ME, 'facebook'));
     pinfo = helper.loadFixture(path.join(__dirname, '..', 'fixtures', 'connectors', 'facebook.json'));
     pinfo.absoluteSrcdir = path.join(__dirname, '..', '..', 'Connectors', 'Facebook');
     return done();
+  });
+
+  after(function (done) {
+    process.chdir(process.env.LOCKER_ROOT);
+    helper.teardownMe(null, done);
   });
 
   describe("friends synclet", function () {
