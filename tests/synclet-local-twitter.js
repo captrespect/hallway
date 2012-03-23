@@ -18,43 +18,6 @@ process.on('uncaughtException',function(error){
 var mePath = '/Data/twitter-1';
 var pinfo = JSON.parse(fs.readFileSync(__dirname + mePath + '/me.json'));
 
-suite.next().suite.addBatch({
-    "Can get users" : {
-        topic: function() {
-            fakeweb.allowNetConnect = false;
-            fakeweb.registerUri({uri : 'https://api.twitter.com:443/1/account/verify_credentials.json?path=%2Faccount%2Fverify_credentials.json&include_entities=true',
-                file : __dirname + '/fixtures/twitter/verify_credentials.js' });
-            fakeweb.registerUri({uri : 'https://api.twitter.com:443/1/friends/ids.json?screen_name=ctide&cursor=-1&path=%2Ffriends%2Fids.json&include_entities=true',
-                file : __dirname + '/fixtures/twitter/friends.js' });
-            fakeweb.registerUri({uri : 'https://api.twitter.com:443/1/users/lookup.json?path=%2Fusers%2Flookup.json&user_id=1054551&include_entities=true',
-                file : __dirname + '/fixtures/twitter/1054551.js' });
-            fakeweb.registerUri({uri : 'http://a0.twimg.com:80/profile_images/299352843/Picture_82_normal.png',
-                file : __dirname + '/fixtures/twitter/1054551.png',
-                contentType : 'image/png' });
-            process.chdir('.' + mePath);
-            friends.sync(pinfo, this.callback)
-        },
-        "successfully" : function(err, response) {
-            assert.equal(response.data.contact[0].obj.id, '1054551');
-        }
-    }
-}).addBatch({
-    "Can get timeline" : {
-        topic: function() {
-            fakeweb.allowNetConnect = false;
-            fakeweb.registerUri({uri : 'https://api.twitter.com:443/1/account/verify_credentials.json?path=%2Faccount%2Fverify_credentials.json&include_entities=true',
-                file : __dirname + '/fixtures/twitter/verify_credentials.js' });
-            fakeweb.registerUri({uri : 'https://api.twitter.com:443/1/statuses/home_timeline.json?screen_name=ctide&since_id=1&path=%2Fstatuses%2Fhome_timeline.json&count=200&include_entities=true&page=1',
-                file : __dirname + '/fixtures/twitter/home_timeline.js' });
-                fakeweb.registerUri({uri : 'https://api.twitter.com:443/1/statuses/home_timeline.json?screen_name=ctide&since_id=1&path=%2Fstatuses%2Fhome_timeline.json&count=200&include_entities=true&page=2',
-                    body :'[]' });
-            timeline.sync(pinfo, this.callback)
-        },
-        "successfully" : function(err, response) {
-            assert.equal(response.data.timeline[0].obj.id_str, '71348168469643264');
-        }
-    }
-
 /*}).addBatch({
     "Can handle failwhale" : {
         topic: function() {
@@ -71,7 +34,7 @@ suite.next().suite.addBatch({
         }
     }
  */
-}).addBatch({
+suite.next().suite.addBatch({
     "Can get mentions" : {
         topic: function() {
             fakeweb.allowNetConnect = false;
