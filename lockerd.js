@@ -42,7 +42,7 @@ if (!lconfig.loaded) {
         configFile = process.argv[3];
     }
     else {
-        configFile = path.join(configDir, 'Config');
+        configFile = path.join(configDir, 'config.json');
     }
     lconfig.load(configFile);
 }
