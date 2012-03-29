@@ -10,7 +10,7 @@ var syncManager = require(path.join(lconfig.lockerDir, 'Services', 'SyncManager'
 var serviceManager = require('lservicemanager');
 var accountsManager = require('accountsManager');
 
-var apiKeys = JSON.parse(fs.readFileSync(lconfig.lockerDir + "/Config/apikeys.json", 'utf-8'));
+var apiKeys = JSON.parse(fs.readFileSync(lconfig.apikeysPath, 'utf-8'));
 var host = lconfig.externalBase + '/';
 
 // and get the auth url for it to return
@@ -77,7 +77,7 @@ exports.authIsAuth = function(service, req, res, onComplete) {
     if (err) return res.send(err, 500);
     finishAuth(req, res, js, auth);
   });
-}
+};
 
 function finishOAuth2(code, provider, authModule, callback) {
   // oauth2 callbacks from here on out
@@ -150,7 +150,7 @@ function finishAuth(req, res, js, auth) {
 
 // hardcoded list of <client id, client secret> tuples
 var myClients = {
- '1': '1secret',
+ '1': '1secret'
 };
 
 // temporary grant storage

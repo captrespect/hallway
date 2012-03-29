@@ -50,11 +50,6 @@ else {
     console.warn("Locker config already loaded, me is set to", lconfig.me);
 }
 
-if (!path.existsSync(path.join(configDir, 'apikeys.json'))) {
-    console.error('You must have an apikeys.json file in the Config directory. See the Config/apikeys.json.example file');
-    process.exit(1);
-}
-
 fs.writeFileSync(path.join(lconfig.lockerdir, 'Logs', 'locker.pid'), "" + process.pid);
 
 var logger = require("logger");
