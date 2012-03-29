@@ -1,3 +1,0 @@
-[submodule "Apps/dashboardv3/static/common"]
-	path = Apps/dashboardv3/static/common
-	url = https://github.com/LockerProject/shared-ui.git
