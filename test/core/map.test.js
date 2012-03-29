@@ -2,7 +2,6 @@ var request = require('request')
   , should  = require('should')
   , mocha   = require('mocha')
   , path    = require('path')
-  , util    = require('util')
   , async   = require('async')
   , helper  = require(path.join(__dirname, '..', 'lib', 'locker-helper.js'))
   ;
