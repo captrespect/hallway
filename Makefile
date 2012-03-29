@@ -2,7 +2,7 @@ export GIT_REVISION?=$(shell git rev-parse --short --default HEAD)
 # if not provided by Jenkins, then just use the gitrev
 export BUILD_NUMBER?=git-$(GIT_REVISION)
 
-all: submodules build
+all: build
 	@echo
 	@echo "Looks like everything worked!"
 	@echo "Get some API keys (https://github.com/LockerProject/Locker/wiki/GettingAPIKeys) and then try running:"
@@ -16,13 +16,6 @@ deps:
 	@echo
 	@echo "Go ahead and run 'make'"
 .PHONY: deps
-
-# if building from git, make sure that the submodules are checked out
-submodules:
-	@if [ -d ./.git -a -f ./.gitmodules -a ! -d ./Apps/dashboardv3/static/common/.git ]; then \
-		echo "Initializing submodules..."; \
-		git submodule update --init; \
-	fi
 
 # check if system level dependencies are installed
 check_deps:
@@ -82,7 +75,7 @@ DISTFILE=$(SUBDIR).tar.gz
 # create a ready-to-run tarball with a complete build inside
 bindist: $(DISTFILE)
 
-$(DISTFILE): submodules
+$(DISTFILE): 
 	./scripts/build-tarball "$(SUBDIR)" "$@"
 
 # create a ready-to-run tarball, and then run tests on the contents
