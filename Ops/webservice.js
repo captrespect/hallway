@@ -50,6 +50,11 @@ var locker = express.createServer(
     // }
 );
 
+locker.get("/awesome", function(req, res) {
+  if(req.awesome) return res.send(req.awesome);
+  res.send(false);
+});
+
 var listeners = {}; // listeners for events
 
 var DEFAULT_QUERY_LIMIT = 20;
