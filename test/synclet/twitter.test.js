@@ -29,13 +29,18 @@ describe("Twitter connector", function () {
     return done();
   });
 
+  afterEach(function (done) {
+    fakeweb.tearDown();
+    return done();
+  });
+
   after(function (done) {
     process.chdir(process.env.LOCKER_ROOT);
     helper.teardownMe(null, done);
   });
 
   describe("friends synclet", function () {
-    before(function (done) {
+    beforeEach(function (done) {
       fakeweb.registerUri({uri  : apiBase + 'friends/ids.json?cursor=-1&path=%2Ffriends%2Fids.json' + apiSuffix,
                            file : __dirname + '/../fixtures/synclets/twitter/friends.js'});
       fakeweb.registerUri({uri  : apiBase + 'users/lookup.json?path=%2Fusers%2Flookup.json&user_id=1054551' + apiSuffix,
@@ -55,7 +60,7 @@ describe("Twitter connector", function () {
   });
 
   describe("timeline synclet", function () {
-    before(function (done) {
+    beforeEach(function (done) {
       fakeweb.registerUri({uri  : apiBase + 'account/verify_credentials.json?path=%2Faccount%2Fverify_credentials.json' + apiSuffix,
                            file : __dirname + '/../fixtures/synclets/twitter/verify_credentials.js'});
       fakeweb.registerUri({uri  : apiBase + 'statuses/home_timeline.json?screen_name=ctide&page=1&since_id=1&path=%2Fstatuses%2Fhome_timeline.json&count=200' + apiSuffix,
@@ -75,7 +80,7 @@ describe("Twitter connector", function () {
   });
 
   describe("mentions synclet", function() {
-    before(function (done) {
+    beforeEach(function (done) {
       fakeweb.registerUri({uri : apiBase + 'account/verify_credentials.json?path=%2Faccount%2Fverify_credentials.json' + apiSuffix,
                            file : __dirname + '/../fixtures/synclets/twitter/verify_credentials.js'});
       fakeweb.registerUri({uri : apiBase + 'statuses/mentions.json?screen_name=ctide&page=1&since_id=1&path=%2Fstatuses%2Fmentions.json&count=200' + apiSuffix,
@@ -94,7 +99,7 @@ describe("Twitter connector", function () {
   });
 
   describe("tweets synclet", function() {
-    before(function (done) {
+    beforeEach(function (done) {
       fakeweb.registerUri({uri : apiBase + 'account/verify_credentials.json?path=%2Faccount%2Fverify_credentials.json' + apiSuffix,
                            file : __dirname + '/../fixtures/synclets/twitter/verify_credentials.js'});
       fakeweb.registerUri({uri : apiBase + 'statuses/user_timeline.json?screen_name=ctide&page=1&since_id=1&path=%2Fstatuses%2Fuser_timeline.json&include_rts=true&count=200' + apiSuffix,

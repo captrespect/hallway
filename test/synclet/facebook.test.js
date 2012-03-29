@@ -27,13 +27,18 @@ describe("Facebook connector", function () {
     return done();
   });
 
+  afterEach(function (done) {
+    fakeweb.tearDown();
+    return done();
+  });
+
   after(function (done) {
     process.chdir(process.env.LOCKER_ROOT);
     helper.teardownMe(null, done);
   });
 
   describe("friends synclet", function () {
-    before(function (done) {
+    beforeEach(function (done) {
       fakeweb.registerUri({uri : apiBase + 'friends?access_token=foo&date_format=U',
                            file : __dirname + '/../fixtures/synclets/facebook/friends2.json'});
       fakeweb.registerUri({uri : 'https://graph.facebook.com:443/1234?access_token=foo&date_format=U&' +
@@ -61,7 +66,7 @@ describe("Facebook connector", function () {
   });
 
   describe("home synclet", function () {
-    before(function (done) {
+    beforeEach(function (done) {
       fakeweb.registerUri({uri : apiBase + 'home?access_token=foo&date_format=U&limit=100',
                            file : __dirname + '/../fixtures/synclets/facebook/home.json'});
       fakeweb.registerUri({uri : apiBase + 'feed?date_format=U&access_token=abc&limit=25&until=1305843879',
@@ -81,7 +86,7 @@ describe("Facebook connector", function () {
   });
 
   describe("photos synclet", function () {
-    before(function (done) {
+    beforeEach(function (done) {
       fakeweb.registerUri({uri : 'https://graph.facebook.com:443/427822997594/photos?access_token=foo&date_format=U',
                            file : __dirname + '/../fixtures/synclets/facebook/photos.js'});
       fakeweb.registerUri({uri : apiBase + 'albums?access_token=foo&date_format=U',
