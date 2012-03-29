@@ -26,12 +26,8 @@ check_deps:
 	fi
 
 # get Locker ready to run
-build: check_deps npm_modules build.json common
+build: check_deps npm_modules build.json
 .PHONY: build
-
-common:
-	@. scripts/use-deps.sh && \
-	make -C Apps/dashboardv3/static/common
 
 # install node dependencies via npm
 npm_modules:
