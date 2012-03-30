@@ -1,14 +1,14 @@
 <div>
-  <form>
+  <form action="/settings" method="POST">
     <ul>
-      <li><label>Client ID</label><input id="clientId" value="asdfasdfasdfsa234534534fasdf" disabled="disabled"></li>
-      <li><label>Client Secret</label><input id="clientSecret" value="asdfasdfasdfsa234534534fasdf" disabled="disabled"></li>
-      <li><label>Application Name</label><input id="appName" value="" data-placeholder="Foo App"></li>
-      <li><label>Description</label><textarea id="appDescription" data-placeholder="Short description of what the application does. Maximum of 250 characters.">asdfasdfasdfsa234534534fasdf</textarea></li>
-      <li><label>URL</label><input id="appUrl" value="" data-placeholder="http://localhost:8080/"></li>
-      <li><label>Callback Url</label><input id="callbackUrl" value="" data-placeholder="http://somewebsite.com/auth/singly/auth"></li>
+      <li><label>Client ID</label><input id="clientId" name="clientId" value="<%= user.clientId %>" disabled="disabled"></li>
+      <li><label>Client Secret</label><input id="clientSecret" name="clientSecret" value="<%= user.clientSecret %>" disabled="disabled"></li>
+      <li><label>Application Name</label><input id="appName" name="appName" value="<%= user.appName %>" data-placeholder="Foo App"></li>
+      <li><label>Description</label><textarea id="appDescription" name="appDescription" data-placeholder="Short description of what the application does. Maximum of 250 characters."><%= user.appDescription %></textarea></li>
+      <li><label>URL</label><input id="appUrl" value="<%= user.appUrl %>" name="appUrl" data-placeholder="http://localhost:8080/"></li>
+      <li><label>Callback Url</label><input id="callbackUrl" name="callbackUrl" value="<%= user.callbackUrl %>" data-placeholder="http://somewebsite.com/auth/singly/auth"></li>
       <li><label>Services</label>
-      <select multiple id="services">
+      <select multiple id="services" name="services">
         <option>Facebook</option>
         <option>Twitter</option>
       </select>

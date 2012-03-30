@@ -38,7 +38,7 @@ app.get('/callback', function(req, res) {
     }
     res.send('wahoo! <a href="'+hostUrl+'/awesome?access_token='+body.access_token+'">tokenized test</a>');
   });
-})
+});
 
 app.listen(port);
 

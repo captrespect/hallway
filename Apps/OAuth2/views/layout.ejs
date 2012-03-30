@@ -12,10 +12,6 @@
     <script src="../common/js/registry.js"></script>
     <script src="../common/js/generators.js"></script>
     <script src="../common/js/page-handlers.js"></script>
-    <script src="../js/dashboard.js"></script>
-    <% if (dashboard && dashboard.customHostedEndpoint) { %>
-    <script src="<%= dashboard.customHostedEndpoint %>"></script>
-    <% } %>
     <link rel="stylesheet" href="../css/settings-account.css" />
     <link rel="stylesheet" href="../css/settings-api.css" />
     <script src="../js/settings.js"></script>
@@ -56,21 +52,15 @@
 
     <header class="header">
       <div class="user-info">
-        <img class="avatar" src="<%= profileImage %>">
         <div class="user-info-name"><a class='user-info-name-link' href='/'></a></div>
       </div>
       <div class="nav-section">
-        <% if (dashboard && dashboard.customHostedEndpoint) { %>
-          <div class="hosted-nav">
-            <a href='<%= dashboard.customLogout %>'>Sign out</a>
-            <a href='<%= dashboard.customLearnmore || "https://singly.com/home.html#About-OurMission" %>'><%= dashboard.customHostedby || "Hosted by Singly" %></a>
-          </div>
-        <% } %>
+        <div class="hosted-nav">
+          <a href=''>Sign out</a>
+          <a href=''>Hosted by Singly</a>
+        </div>
       </div>
     </header>
-    <aside class="sidenav">
-      <%- partial('settings') %>
-    </aside>
     <div class="app-container" id="iframeContainer">
       <div class="app-header"></div>
       <div id="appFrame">
