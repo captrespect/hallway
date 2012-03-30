@@ -27,7 +27,7 @@ var lpquery = require("lpquery");
 var lconfig = require("lconfig");
 var logger = require('logger');
 var async = require('async');
-var syncManager = require(path.join(lconfig.lockerDir, "Services", "SyncManager", "syncmanager.js"));
+var syncManager = require("syncManager.js");
 var authManager = require("authManager");
 
 

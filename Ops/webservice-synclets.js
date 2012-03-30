@@ -3,7 +3,7 @@ var path = require('path');
 var lconfig = require('lconfig');
 var logger = require('logger');
 var lfs = require('lfs');
-var syncManager = require(path.join(lconfig.lockerDir, "Services", "SyncManager", "syncmanager.js"));
+var syncManager = require('syncManager.js');
 
 module.exports = function(locker) {
     // get all the information about synclets
