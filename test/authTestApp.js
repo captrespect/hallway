@@ -10,12 +10,17 @@ var port = 8043;
 var app = express.createServer();
 
 app.get('/', function(req, res) {
-  var qs = querystring.stringify({
+  var tw = querystring.stringify({
     client_id: client_id,
     redirect_uri: 'http://localhost:' + port + '/callback',
     service: 'twitter'
   });
-  res.send('<html><a href="' + hostUrl + '/oauth/authorize?' + qs + '">auth twitter</a></html>');
+  var fb = querystring.stringify({
+    client_id: client_id,
+    redirect_uri: 'http://localhost:' + port + '/callback',
+    service: 'facebook'
+  });
+  res.send('<html><a href="' + hostUrl + '/oauth/authorize?' + tw + '">auth twitter</a> or <a href="' + hostUrl + '/oauth/authorize?' + fb + '">auth facebook</a></html>');
 })
 
 app.get('/callback', function(req, res) {
