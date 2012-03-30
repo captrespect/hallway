@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <%- partial('header_partial') %>
+    <script type="text/javascript" src="https://use.typekit.com/znj4adx.js"></script>
+    <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+    <script type="text/javascript" charset="utf-8" src='../common/js/dust-core-0.3.0.min.js'></script>
+    <script type="text/javascript" charset="utf-8" src='../common/js/moment.min.js'></script>
+    <script type='text/javascript' charset="utf-8" src='../js/jquery.simplemodal.js'></script>
+    <script src='../common/js/compiled_templates.js'></script>
+    <script src="../common/js/registry.js"></script>
+    <script src="../common/js/generators.js"></script>
+    <script src="../common/js/page-handlers.js"></script>
+    <script src="../js/dashboard.js"></script>
+    <% if (dashboard && dashboard.customHostedEndpoint) { %>
+    <script src="<%= dashboard.customHostedEndpoint %>"></script>
+    <% } %>
+    <link rel="stylesheet" href="../css/settings-account.css" />
+    <link rel="stylesheet" href="../css/settings-api.css" />
+    <script src="../js/settings.js"></script>
+    <script src="../common/js/jquery.validate.min.js"></script>
+    <script src="../common/js/jquery.jsonp-2.2.0.min.js"></script>
+    <style>
+      li {
+        margin-bottom: 10px;
+      }
+
+      label {
+        float:left;
+        width: 150px;
+        text-align: right;
+        margin-right: 10px;
+      }
+
+      input, textarea {
+        width: 300px;
+      }
+
+      input.button {
+        background-color: #CCC;
+        color: #666;
+        width: 60px;
+        border-radius: 5px;
+        border: none;
+        padding: 5px;
+        font-weight: bold;
+        cursor: pointer;
+        margin-right: 10px;
+      }
+
+    </style>
+
+  </head>
+  <body class="app-page">
+
+    <header class="header">
+      <div class="user-info">
+        <img class="avatar" src="<%= profileImage %>">
+        <div class="user-info-name"><a class='user-info-name-link' href='/'></a></div>
+      </div>
+      <div class="nav-section">
+        <% if (dashboard && dashboard.customHostedEndpoint) { %>
+          <div class="hosted-nav">
+            <a href='<%= dashboard.customLogout %>'>Sign out</a>
+            <a href='<%= dashboard.customLearnmore || "https://singly.com/home.html#About-OurMission" %>'><%= dashboard.customHostedby || "Hosted by Singly" %></a>
+          </div>
+        <% } %>
+      </div>
+    </header>
+    <aside class="sidenav">
+      <%- partial('settings') %>
+    </aside>
+    <div class="app-container" id="iframeContainer">
+      <div class="app-header"></div>
+      <div id="appFrame">
+        <%- body %>
+      </div>
+    </div>
+
+  </body>
+</html>
+

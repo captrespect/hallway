@@ -1,0 +1,27 @@
+<div>
+  <form>
+    <ul>
+      <li><label>Client ID</label><input id="clientId" value="asdfasdfasdfsa234534534fasdf" disabled="disabled"></li>
+      <li><label>Client Secret</label><input id="clientSecret" value="asdfasdfasdfsa234534534fasdf" disabled="disabled"></li>
+      <li><label>Application Name</label><input id="appName" value="" data-placeholder="Foo App"></li>
+      <li><label>Description</label><textarea id="appDescription" data-placeholder="Short description of what the application does. Maximum of 250 characters.">asdfasdfasdfsa234534534fasdf</textarea></li>
+      <li><label>URL</label><input id="appUrl" value="" data-placeholder="http://localhost:8080/"></li>
+      <li><label>Callback Url</label><input id="callbackUrl" value="" data-placeholder="http://somewebsite.com/auth/singly/auth"></li>
+      <li><label>Services</label>
+      <select multiple id="services">
+        <option>Facebook</option>
+        <option>Twitter</option>
+      </select>
+      </li>
+    </ul>
+    <input type="button" class="button" value="Cancel"><input type="submit" class="button" value="Save">
+  </form>
+</div>
+<script>
+  $(document).ready(function() {
+    $('input').val(function(i, val) {
+      return (val === "") ? $(this).data('placeholder') : val;
+    });
+
+  });
+</script>

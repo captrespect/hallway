@@ -1,0 +1,12 @@
+<div class="sidenav-header">
+  <p class='sidenav-header-title'>ACCOUNT SETTINGS</p>
+</div>
+<div class="sidenav-items">
+  <ul>
+    <% if (dashboard.customHostedEndpoint) { %>
+    <li><a class="iframeLink" href="./account">Account Information</a></li>
+    <li><a class="iframeLink" href="./api">API Key</a></li>
+    <li><a class="iframeLink" href="./oauth2">OAuth2</a></li>
+    <% } %>
+  </ul>
+</div>
