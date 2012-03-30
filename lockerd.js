@@ -60,7 +60,7 @@ fs.writeFileSync(path.join(lconfig.lockerdir, 'Logs', 'locker.pid'), "" + proces
 var logger = require("logger");
 logger.info('process id:' + process.pid);
 var lscheduler = require("lscheduler");
-var syncManager = require(path.join(lconfig.lockerDir, "Services", "SyncManager", "syncmanager.js"));
+var syncManager = require("syncManager.js");
 var serviceManager = require("lservicemanager");
 var pushManager = require(__dirname + "/Common/node/lpushmanager");
 var mongodb = require('mongodb');
@@ -152,10 +152,12 @@ function finishStartup() {
     // Dear lord this massive waterfall is so scary
     syncManager.manager.init(serviceManager, function() {
       syncManager.manager.on("completed", function(response, task) {
-        logger.debug("******** NEED TO PROCESS THE RESPONSE!");
-        // Reschedule it
-        logger.verbose("Reschduling " + JSON.stringify(task));
-        syncManager.manager.schedule(task);
+        require('pipeline').incoming({data:response.data}, function(err){
+          if(err) return logger.error("failed pipeline processing: "+err);
+          // Reschedule it
+          logger.verbose("Reschduling " + JSON.stringify(task));
+          syncManager.manager.schedule(task);          
+        })
       });
       serviceManager.init(function() {  // this may trigger synclets to start!
         // TODO:  Here we should be figuring out what set of users we need to run synclets
