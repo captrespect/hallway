@@ -86,3 +86,4 @@ clean:
 	rm -f "$(DISTFILE)" "$(TEMPLATE_OUTPUT)" build.json tests/build.json
 	rm -f "carebear-git-*.tar.gz"
 	rm -rf node_modules
+	rm -rf Me.*.test
