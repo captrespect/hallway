@@ -61,6 +61,7 @@ var pushManager = require(__dirname + "/Common/node/lpushmanager");
 var mongodb = require('mongodb');
 var lcrypto = require("lcrypto");
 var lmongo = require('lmongo');
+var pipeline = require('pipeline');
 
 var buildInfo = fs.readFileSync(path.join(lconfig.lockerDir, 'build.json'));
 logger.info("Starting locker with build info:" + buildInfo);
@@ -147,7 +148,7 @@ function finishStartup() {
     // Dear lord this massive waterfall is so scary
     syncManager.manager.init(serviceManager, function() {
       syncManager.manager.on("completed", function(response, task) {
-        require('pipeline').incoming({data:response.data}, function(err){
+        pipeline.incoming({data:response.data}, function(err){
           if(err) return logger.error("failed pipeline processing: "+err);
           // Reschedule it
           logger.verbose("Reschduling " + JSON.stringify(task));
@@ -163,6 +164,7 @@ function finishStartup() {
             var webservice = require(__dirname + "/Ops/webservice.js");
             webservice.startService(lconfig.lockerPort, lconfig.lockerListenIP, function(locker) {
               if (lconfig.airbrakeKey) locker.initAirbrake(lconfig.airbrakeKey);
+              pipeline.app(locker);
               postStartup();
             });
           });
