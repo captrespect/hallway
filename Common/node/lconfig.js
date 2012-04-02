@@ -153,6 +153,8 @@ exports.load = function(filepath) {
   exports.dashboard = config.dashboard;
   exports.mail = config.mail;
 
+  exports.database = config.database;
+
   // load trusted public keys
   var kdir = path.join(path.dirname(filepath), "keys");
   exports.keys = [];
