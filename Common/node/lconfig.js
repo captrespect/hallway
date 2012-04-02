@@ -48,6 +48,7 @@ exports.load = function(filepath) {
   exports.externalPath = config.externalPath || '';
   exports.airbrakeKey = config.airbrakeKey || undefined;
   exports.stats = config.stats || {};
+  exports.database = config.database || {};
   if (exports.stats.prefix) {
     var hostname = process.env.HOSTNAME
     , hostBasename;
@@ -152,8 +153,6 @@ exports.load = function(filepath) {
   config.dashboard.lockerName = config.dashboard.customLockerName || 'locker';
   exports.dashboard = config.dashboard;
   exports.mail = config.mail;
-
-  exports.database = config.database;
 
   // load trusted public keys
   var kdir = path.join(path.dirname(filepath), "keys");
