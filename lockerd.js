@@ -148,7 +148,7 @@ function finishStartup() {
     // Dear lord this massive waterfall is so scary
     syncManager.manager.init(serviceManager, function() {
       syncManager.manager.on("completed", function(response, task) {
-        pipeline.incoming({data:response.data}, function(err){
+        pipeline.incoming({data:response.data, owner:task.user}, function(err){
           if(err) return logger.error("failed pipeline processing: "+err);
           // Reschedule it
           logger.verbose("Reschduling " + JSON.stringify(task));

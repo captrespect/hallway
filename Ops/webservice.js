@@ -16,10 +16,8 @@ var lutil = require('lutil');
 var serviceManager = require("lservicemanager");
 var express = require('express');
 var connect = require('connect');
-var request = require('request');
 var path = require('path');
 var fs = require("fs");
-var url = require('url');
 var querystring = require("querystring");
 var lfs = require(__dirname + "/../Common/node/lfs.js");
 var httpProxy = require('http-proxy');
@@ -29,8 +27,6 @@ var logger = require('logger');
 var async = require('async');
 var syncManager = require("syncManager.js");
 var authManager = require("authManager");
-var ejs = require("ejs");
-
 
 var lcrypto = require("lcrypto");
 
@@ -51,41 +47,9 @@ var locker = express.createServer(
     // }
 );
 
-locker.configure(function() {
-  locker.set('views', __dirname + '/../Apps/OAuth2/views');
-  locker.set('view engine', 'ejs');
-  locker.use(express.static(__dirname + '/../Apps/OAuth2/static'));
-  locker.use(express.bodyParser());
-});
-
 locker.get("/awesome", function(req, res) {
   if(req.awesome) return res.send(req.awesome);
   res.send(false);
-});
-
-var userGlobals = {
-  "email":"testuser@singly.com",
-  "name":"Test User",
-  "clientId": "1",
-  "clientSecret": "1secret",
-  "appName": "Demo App",
-  "appDescription": "Something cool",
-  "appUrl": "http://localhost:8043",
-  "callbackUrl": "http://localhost:8043/callback"
-};
-
-locker.get("/settings", function(req, res) {
-  res.render('settings-oauth2', {
-    user: userGlobals
-  });
-});
-
-locker.post("/settings", function(req, res) {
-  if (!req.body) return res.send('missing parameter', 400);
-  Object.keys(req.body).forEach(function(key) {
-    userGlobals[key] = req.body[key];
-  });
-  res.redirect('back');
 });
 
 var listeners = {}; // listeners for events
