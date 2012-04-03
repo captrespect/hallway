@@ -1,0 +1,27 @@
+<div>
+  <form action="/settings" method="POST">
+    <ul>
+      <li><label>Client ID</label><input id="clientId" name="clientId" value="<%= user.clientId %>" disabled="disabled"></li>
+      <li><label>Client Secret</label><input id="clientSecret" name="clientSecret" value="<%= user.clientSecret %>" disabled="disabled"></li>
+      <li><label>Application Name</label><input id="appName" name="appName" value="<%= user.appName %>" data-placeholder="Foo App"></li>
+      <li><label>Description</label><textarea id="appDescription" name="appDescription" data-placeholder="Short description of what the application does. Maximum of 250 characters."><%= user.appDescription %></textarea></li>
+      <li><label>URL</label><input id="appUrl" value="<%= user.appUrl %>" name="appUrl" data-placeholder="http://localhost:8080/"></li>
+      <li><label>Callback Url</label><input id="callbackUrl" name="callbackUrl" value="<%= user.callbackUrl %>" data-placeholder="http://somewebsite.com/auth/singly/auth"></li>
+      <li><label>Services</label>
+      <select multiple id="services" name="services">
+        <option>Facebook</option>
+        <option>Twitter</option>
+      </select>
+      </li>
+    </ul>
+    <input type="button" class="button" value="Cancel"><input type="submit" class="button" value="Save">
+  </form>
+</div>
+<script>
+  $(document).ready(function() {
+    $('input').val(function(i, val) {
+      return (val === "") ? $(this).data('placeholder') : val;
+    });
+
+  });
+</script>
