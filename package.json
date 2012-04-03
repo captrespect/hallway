@@ -65,6 +65,7 @@
         "phantom": ">=0.3.3",
         "mysql":"",
         "knox":"",
+        "generic-pool":"",
 
 
         "hashish": "=0.0.4",
