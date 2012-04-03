@@ -16,6 +16,7 @@
         "oauth_token_secret":"toksec"
       },
       "profile": {
+        "id":"ctide",
         "screen_name":"ctide"
       }
     },

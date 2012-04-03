@@ -142,6 +142,7 @@ locker.get("/query/:query", function(req, res) {
             return;
         }
 
+        /*
         var mongo = require("lmongo");
         mongo.init(provider.id, provider.mongoCollections, function(mongo, colls) {
             try {
@@ -168,6 +169,7 @@ locker.get("/query/:query", function(req, res) {
                 res.end('Something broke while trying to query Mongo : ' + E);
             }
         });
+        */
     } catch (E) {
         res.writeHead(400);
         res.end("Invalid query " + req.originalUrl.substr(6) + "<br />" + E);
@@ -199,6 +201,7 @@ locker.get('/core/:svcId/at', function(req, res) {
     res.end("true");
 });
 
+/*
 var collectionApis = serviceManager.getCollectionApis();
 for(var i in collectionApis) {
   locker._oldGet = locker.get;
@@ -209,6 +212,7 @@ for(var i in collectionApis) {
   locker.get = locker._oldGet;
   locker._oldGet = undefined;
 }
+*/
 
 locker.get('/synclets/:id/run', function(req, res) {
     syncManager.syncNow(req.params.id, req.query.id, false, function(err) {

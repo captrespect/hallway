@@ -58,9 +58,7 @@ var lscheduler = require("lscheduler");
 var syncManager = require("syncManager.js");
 var serviceManager = require("lservicemanager");
 var pushManager = require(__dirname + "/Common/node/lpushmanager");
-var mongodb = require('mongodb');
 var lcrypto = require("lcrypto");
-var lmongo = require('lmongo');
 var pipeline = require('pipeline');
 
 var buildInfo = fs.readFileSync(path.join(lconfig.lockerDir, 'build.json'));
@@ -74,50 +72,6 @@ if (lconfig.lockerHost != "localhost" && lconfig.lockerHost != "127.0.0.1") {
                 ' it\'s apparently still not implemented :)\n\n');
 }
 var shuttingDown_ = false;
-
-var mongoProcess;
-path.exists(lconfig.me + '/' + lconfig.mongo.dataDir, function(exists) {
-    if(!exists) {
-        try {
-            //ensure there is a Me dir
-            fs.mkdirSync(lconfig.me, '0755');
-        } catch(err) {
-            if(err.code !== 'EEXIST')
-                logger.error('err: ' + util.inspect(err));
-        }
-        fs.mkdirSync(lconfig.me + '/' + lconfig.mongo.dataDir, '0755');
-    }
-    var mongoOptions = ['--dbpath',
-      lconfig.lockerDir + '/' + lconfig.me + '/' + lconfig.mongo.dataDir,
-      '--port', lconfig.mongo.port].concat(lconfig.mongo.options);
-
-    mongoProcess = spawn('mongod', mongoOptions);
-
-    var mongoStdout = carrier.carry(mongoProcess.stdout);
-    var waitingForMongo = true;
-    mongoStdout.on('line', function (line) {
-        logger.info('[mongo] ' + line);
-        if (waitingForMongo && line.indexOf("[initandlisten] waiting for connections on port " + lconfig.mongo.port) >= 0) {
-          waitingForMongo = false;
-          lmongo.connect(checkKeys);
-        }
-    });
-    var mongoStderr = carrier.carry(mongoProcess.stderr);
-    mongoStderr.on('line', function (line) {
-        logger.error('[mongo] ' + line);
-    });
-
-    mongoProcess.on('exit', function(code, signal) {
-        mongoProcess = null;
-        if (shuttingDown_) {
-            logger.info('mongod exited with code '+code+', signal '+signal);
-        } else {
-            logger.error('mongod exited unexpectedly with code '+code+', signal '+signal+', shutting down!');
-            shutdown(1);
-        }
-    });
-});
-
 
 function checkKeys() {
     lcrypto.generateSymKey(function(hasKey) {
@@ -249,34 +203,13 @@ function shutdown(returnCode, callback) {
     process.stdout.write("\n");
     logger.info("Shutting down...");
     serviceManager.shutdown(function () {
-        cleanupMongo(function () {
-            if (callback) {
-                return callback(returnCode);
-            }
-            else {
-                return exit(returnCode);
-            }
-        });
+      if (callback) {
+        return callback(returnCode);
+      }
+      else {
+        return exit(returnCode);
+      }
     });
-}
-
-function cleanupMongo(cb) {
-    if (!mongoProcess) {
-        cb();
-        return;
-    }
-
-    var gaveUp = false; // make sure we only call the callback once
-    mongoProcess.on('exit', function (code, signal) { if (!gaveUp) { cb(); } });
-
-    mongoProcess.kill();
-
-    var timeout = 5000;
-    setTimeout(function() {
-        gaveUp = true;
-        logger.error('Mongo did not exit after timeout ('+timeout+'ms), giving up');
-        cb();
-    }, timeout);
 }
 
 function exit(returnCode) {
@@ -320,5 +253,6 @@ if (!process.env.LOCKER_TEST) {
   });
 }
 
+checkKeys();
 // Export some things so this can be used by other processes, mainly for the test runner
 exports.shutdown = shutdown;

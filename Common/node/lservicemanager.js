@@ -378,13 +378,6 @@ function getProcessInformation(svc) {
     lockerUrl: lconfig.lockerBase,
     externalBase: lconfig.externalBase + '/Me/' + svc.id + '/'
   };
-  if (svc.mongoCollections) {
-    processInformation.mongo = {
-      host: lconfig.mongo.host,
-      port: lconfig.mongo.port
-    };
-    processInformation.mongo.collections = svc.mongoCollections;
-  }
   return processInformation;
 }
 
