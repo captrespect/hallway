@@ -7,20 +7,6 @@
 *
 */
 
-/* random notes:
-on startup scan all folders
-    Apps Collections Connectors - generate lists of "available"
-    Me - generate lists of "existing"
-
-when asked, run any existing and return localhost:port
-if first time
-    check dependencies
-    create Me/ dir
-    create me.json settings
-    pick a port
-*/
-var conf = {};
-conf._exit = false;
 exports.alive = false;
 
 
@@ -90,12 +76,6 @@ function checkKeys() {
 }
 
 function finishStartup() {
-    // get current git revision if git is available
-    var gitHead = spawn('git', ['rev-parse', '--verify', 'HEAD']);
-    gitHead.stdout.on('data', function(data) {
-        fs.writeFileSync(path.join(lconfig.lockerDir, lconfig.me, 'gitrev.json'), JSON.stringify(data.toString()));
-    });
-
     pushManager.init();
 
     // ordering sensitive, as synclet manager is inert during init, servicemanager's init will call into syncletmanager
