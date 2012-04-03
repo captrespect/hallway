@@ -13,6 +13,7 @@ exports.sync = function(processInfo, cb) {
     fb.getProfile(processInfo.auth, function(err, self){
         if(err) return cb(err);
         processInfo.auth.profile = self; // map to shared profile
+        processInfo.auth.id = self.id;
         cb(err, {data: { self: [self] }, auth: processInfo.auth});
     });
 };
