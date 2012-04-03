@@ -36,6 +36,8 @@ else {
     console.warn("Locker config already loaded, me is set to", lconfig.me);
 }
 
+if (!path.existsSync(path.join(lconfig.lockerDir,lconfig.me))) fs.mkdirSync(path.join(lconfig.lockerDir, lconfig.me), 0755);
+
 fs.writeFileSync(path.join(lconfig.lockerdir, 'Logs', 'locker.pid'), "" + process.pid);
 
 var logger = require("logger");
