@@ -28,7 +28,8 @@ exports.sync = function(pi, cb) {
     // find the newest!
     // their api sometimes returns the last one repeatedly, L4M30
     js.forEach(function (item) { if (item.id > since) since = item.id + 10; });
-    resp.data.mention = js;
+    var base = 'tweet:'+pi.auth.profile.id+'@twitter/mention';
+    resp.data[base] = js;
     resp.config.mentionsSince = since;
     resp.config.mentionsPage = page;
     if (page > 1) resp.config.nextRun = -1; // run again if paging
