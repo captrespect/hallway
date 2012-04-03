@@ -10,4 +10,7 @@ tmpdir=$(mktemp -d)
 trap "rm -rf '$tmpdir'" EXIT
 tar xf "$tarball" -C "$tmpdir"
 cd "$tmpdir/$subdir"
+if [ -n "${CONFIG_PATH}" ]; then
+  cp ${CONFIG_PATH} test/resources/config.json
+fi
 $MAKE test
