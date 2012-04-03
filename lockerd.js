@@ -62,7 +62,7 @@ var lcrypto = require("lcrypto");
 var pipeline = require('pipeline');
 
 var buildInfo = fs.readFileSync(path.join(lconfig.lockerDir, 'build.json'));
-logger.info("Starting locker with build info:" + buildInfo);
+logger.info("CareBear staring with build:" + buildInfo);
 
 if (process.argv.indexOf("offline") >= 0) syncManager.setExecuteable(false);
 
