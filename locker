@@ -34,37 +34,6 @@ if [ ! -f "$apikeys" ]; then
     exit 1
 fi
 
-cleanup_mongo() {
-    mongodata=Me/mongodata
-    mongolock=$mongodata/mongod.lock
-    if [ -s $mongolock ]; then
-        echo "mongod lock file exists: $mongolock..."
-        pid=$(cat "$mongolock")
-        if [ "$locker_mode" = "production" ]; then
-            # Shut it down
-            echo "Shutting down mongod."
-            kill "$pid"
-            while kill -0 "$pid" >/dev/null 2>&1; do
-                echo "Waiting for mongod to exit..."
-                sleep 1
-            done
-            echo "mongod shut down."
-        else
-            # Automatically check and repair mongo
-            if [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null; then
-                echo "...and it's still running.  Hopefully that's OK."
-            else
-                echo "...but it's dead.  Cleaning up..."
-                rm -f "$mongolock"
-                if ! mongod --dbpath "$mongodata" --repair; then
-                    echo "mongod --repair failed!" >&2
-                    exit 1
-                fi
-            fi
-        fi
-    fi
-}
-
 monitor() {
     # Monitor the process and restart it if it dies
 
@@ -81,7 +50,6 @@ monitor() {
         fi
 
         # Abnormal exit
-        cleanup_mongo
 
         end_time=$(date +%s)
         runtime=$(($end_time - $start_time))
@@ -101,11 +69,8 @@ shutdown() {
     wait $lockerd_pid
     status=$?
     echo "locker exited with status $status"
-    cleanup_mongo
     exit $status
 }
-
-cleanup_mongo
 
 # Extra paths to search for files : separated
 export NODE_PATH=lib:Common/node

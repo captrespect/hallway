@@ -19,7 +19,6 @@
           "collection-contacts-test.js"
         ]
     },
-    "apps" : ["photosv09:Apps/photosv0.9", "helloplaces:Apps/HelloPlaces", "linkalatte:Apps/LinkaLatte", "hellolinks:Apps/HelloLinks", "contactsviewer:Apps/MergedContacts", "devdocs:Apps/DevDocs", "foursquare:Connectors/foursquare"],
     "displayUnstable" : true,
     "disabledTests" : [
         "connector-IMAP-test.js"
@@ -34,5 +33,16 @@
     "logging": {
         "level": "error",
         "config": true
+    },
+    "database": {
+      "hostname":"",
+      "username":"",
+      "password":"",
+      "database":""
+    },
+    "s3" : {
+      "key":"",
+      "secret":"",
+      "bucket":""
     }
 }

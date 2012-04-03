@@ -53,7 +53,7 @@ describe("Twitter connector", function () {
      friends.sync(pinfo, function (err, response) {
        if (err) return done(err);
 
-       response.data.contact[0].id.should.equal(1054551, 'response IDs should match');
+       response.data["contact:ctide@twitter/friend"][0].id.should.equal(1054551, 'response IDs should match');
        return done();
      });
     });
@@ -73,7 +73,7 @@ describe("Twitter connector", function () {
       timeline.sync(pinfo, function (err, response) {
         if (err) return done(err);
 
-        response.data.tweet[0].id_str.should.equal('71348168469643264');
+        response.data["tweet:ctide@twitter/timeline"][0].id_str.should.equal('71348168469643264');
         return done();
       });
     });
@@ -92,7 +92,7 @@ describe("Twitter connector", function () {
       mentions.sync(pinfo, function (err, response) {
         if (err) return done(err);
 
-        response.data.mention[0].id_str.should.equal('71348168469643264');
+        response.data["tweet:ctide@twitter/mention"][0].id_str.should.equal('71348168469643264');
         return done();
       });
     });
@@ -111,7 +111,7 @@ describe("Twitter connector", function () {
       tweets.sync(pinfo, function (err, response) {
         if (err) return done(err);
 
-        response.data.tweet[0].id_str.should.equal('71348168469643264');
+        response.data["tweet:ctide@twitter/tweets"][0].id_str.should.equal('71348168469643264');
         return done();
       });
     });

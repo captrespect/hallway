@@ -61,14 +61,19 @@ exports.load = function(filepath) {
   }
   setBase();
   exports.registryUpdateInterval = config.registryUpdateInterval || 3600;
-  exports.collections = config.collections || [
+  exports.collections = config.collections || [];
+  /*
+  [
     "contacts:Collections/Contacts",
     "links:Collections/Links",
     "photos:Collections/Photos",
     "places:Collections/Places",
     "search:Collections/Search"
   ];
-  exports.apps = config.apps || [
+  */
+  exports.apps = config.apps || [];
+  /*
+  [
     "helloplaces:Apps/HelloPlaces",
     "linkalatte:Apps/LinkaLatte",
     "contactsviewer:Apps/MergedContacts",
@@ -84,20 +89,7 @@ exports.load = function(filepath) {
     "foursquare:Connectors/foursquare",
     "lastfm:Connectors/LastFM"
   ];
-  config.mongo = config.mongo || {};
-  exports.mongo = {
-    "dataDir": config.mongo.dataDir || "mongodata",
-    "host": config.mongo.host || "localhost",
-    "port": config.mongo.port, // default set below
-    "options": config.mongo.options || ['--nohttpinterface']
-  };
-
-  // If the port specified is zero, then choose a random one
-  if (exports.mongo.port === 0) {
-    exports.mongo.port = 27018 + Math.floor(Math.random()*100);
-  } else if (!exports.mongo.port) {
-    exports.mongo.port = 27018;
-  }
+  */
 
   // FIXME: me should get resolved into an absolute path, but much of the code base uses it relatively.
   //
@@ -146,8 +138,6 @@ exports.load = function(filepath) {
     maxstep: config.tolerance.maxstep || 10, // what is the largest frequency multiplier
     idle: 600 // flush any synclets in tolerance when dashboard activity after this many seconds of none
   };
-  //    exports.ui = config.ui || 'dashboardv3:Apps/dashboardv3';
-  exports.ui = config.ui || 'dashboardv3:Apps/dashboardv3';
   exports.quiesce = (config.quiesce || 650) * 1000;
 
   config.dashboard = config.dashboard || {};
