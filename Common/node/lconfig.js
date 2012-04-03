@@ -49,6 +49,7 @@ exports.load = function(filepath) {
   exports.airbrakeKey = config.airbrakeKey || undefined;
   exports.stats = config.stats || {};
   exports.database = config.database || {};
+  exports.s3 = config.s3 || {};
   if (exports.stats.prefix) {
     var hostname = process.env.HOSTNAME
     , hostBasename;
