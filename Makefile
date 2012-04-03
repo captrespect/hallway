@@ -39,7 +39,7 @@ npm_modules:
 # the test suite pretends that tests/ is the top of the source tree,
 # so drop a copy there too
 build.json:
-	echo '{ "build" : "$(BUILD_NUMBER)", "gitrev" : "$(GIT_REVISION)" }' \
+	@echo '{ "build" : "$(BUILD_NUMBER)", "gitrev" : "$(GIT_REVISION)" }' \
 	| tee $@ tests/$@
 .PHONY: build.json
 
