@@ -101,6 +101,7 @@ function finishStartup() {
             webservice.startService(lconfig.lockerPort, lconfig.lockerListenIP, function(locker) {
               if (lconfig.airbrakeKey) locker.initAirbrake(lconfig.airbrakeKey);
               pipeline.app(locker);
+              exports.alive = true;
               require('accountsManager').init(postStartup);
             });
           });
