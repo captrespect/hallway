@@ -3,10 +3,10 @@ var mocha    = require('mocha')
   , fakeweb  = require('node-fakeweb')
   , path     = require('path')
   , helper   = require(path.join(__dirname, '..', 'lib', 'locker-helper.js'))
-  , friends  = require(path.join(__dirname, '..', '..', 'Connectors', 'Twitter', 'friends.js'))
-  , timeline = require(path.join(__dirname, '..', '..', 'Connectors', 'Twitter', 'timeline.js'))
-  , mentions = require(path.join(__dirname, '..', '..', 'Connectors', 'Twitter', 'mentions.js'))
-  , tweets   = require(path.join(__dirname, '..', '..', 'Connectors', 'Twitter', 'tweets.js'))
+  , friends  = require(path.join(__dirname, '..', '..', 'Connectors', 'twitter', 'friends.js'))
+  , timeline = require(path.join(__dirname, '..', '..', 'Connectors', 'twitter', 'timeline.js'))
+  , mentions = require(path.join(__dirname, '..', '..', 'Connectors', 'twitter', 'mentions.js'))
+  , tweets   = require(path.join(__dirname, '..', '..', 'Connectors', 'twitter', 'tweets.js'))
   , util     = require('util')
   ;
 
@@ -25,7 +25,7 @@ describe("Twitter connector", function () {
 
   beforeEach(function (done) {
     pinfo = helper.loadFixture(path.join(__dirname, '..', 'fixtures', 'connectors', 'twitter.json'));
-    pinfo.absoluteSrcdir = path.join(__dirname, '..', '..', 'Connectors', 'Twitter');
+    pinfo.absoluteSrcdir = path.join(__dirname, '..', '..', 'Connectors', 'twitter');
     return done();
   });
 

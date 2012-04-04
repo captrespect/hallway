@@ -1,5 +1,5 @@
 {
-    "srcdir": "Connectors/Twitter",
+    "srcdir": "Connectors/twitter",
     "id": "twitter",
     "provider":"twitter",
     "synclets": [
