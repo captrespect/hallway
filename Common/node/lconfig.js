@@ -50,6 +50,7 @@ exports.load = function(filepath) {
   exports.stats = config.stats || {};
   exports.database = config.database || {};
   exports.s3 = config.s3 || {};
+  exports.workerName = config.workerName;
   if (exports.stats.prefix) {
     var hostname = process.env.HOSTNAME
     , hostBasename;
