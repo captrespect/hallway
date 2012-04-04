@@ -36,15 +36,17 @@ var scheduler = lscheduler.masterScheduler;
 var airbrake;
 
 var locker = express.createServer(
+       function(req, res, next) {
+         console.error("REQUEST "+req.url);
+         return next();
+  //       if(req.url.indexOf('/auth/') === 0 || (req.session.account_id && req.session.account_id !== '')) return next();
+  //       res.send(401);
+       },
     connect.bodyParser(),
     connect.cookieParser(),
     connect.session({key:'locker.project.id', secret : "locker"}),
     authManager.provider.oauth(),
     authManager.provider.login()
-    // ,function(req, res, next) {
-    //   if(req.url.indexOf('/auth/') === 0 || (req.session.account_id && req.session.account_id !== '')) return next();
-    //   res.send(401);
-    // }
 );
 
 locker.get("/awesome", function(req, res) {
