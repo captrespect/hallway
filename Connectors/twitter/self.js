@@ -15,8 +15,8 @@ exports.sync = function(pi, cb) {
   var resp = {data:{}, auth:pi.auth};
   tw.getMe(pi, function(self){
     resp.auth.profile = self; // also save to auth master
-    resp.auth.id = self.id_str;
-    var base = 'contact:'+self.id_str+'@twitter/self';
+    resp.auth.pid = self.id_str+'@twitter'; // set the normalized auth profile id, pid
+    var base = 'contact:'+resp.auth.pid+'/self';
     resp.data[base] = [self];
   }, function(err) {
         cb(err, resp);
