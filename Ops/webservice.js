@@ -13,6 +13,7 @@ var express = require('express');
 var connect = require('connect');
 var logger = require('logger');
 var authManager = require('authManager');
+var accountsManager = require('accountsManager');
 
 var airbrake;
 
@@ -42,13 +43,33 @@ locker.post('/auth/:id/auth', function(req, res) {
 
 
 // Data access endpoints
+
+
+// return convenient list of all profiles auth'd for this account
+locker.get('/profiles', function(req, res) {
+  if(!req.awesome) return res.send({}, 400);
+  accountsManager.getProfiles(req.awesome.account, function(err, profiles){
+    if(err) logger.error('/profiles failed for ' + JSON.stringify(req.awesome), err);
+    if(err) return res.send({}, 500);
+    var ret = {all:[]};
+    profiles.forEach(function(item) {
+      if(!item.profile || item.profile.indexOf('@') == -1) return; // skip any that don't look right
+      ret.all.push(item.profile); // all profiles raw
+      var parts = item.profile.split('@');
+      ret[parts[1]] = parts[0].toString(); // convenience, top level service->id mapping
+    });
+    res.send(ret);
+  });
+});
+
+// Post out to a service
 locker.post('/services/:serviceName/:serviceEndpoint', function(req, res) {
   syncManager.syncNow(req.params.serviceName, req.params.serviceEndpoint, req.body, function() {
     res.send(true);
   });
 });
 
-// Returns a list of the current set of friends or followers
+// Get data from a service + endpoint combo
 locker.get('/services/:serviceName/:serviceEndpoint', function(req, res) {
   syncManager.getIJOD(req.params.syncletId, req.params.type, false, function(ijod) {
     if(!ijod) return res.send('not found', 404);
@@ -56,6 +77,7 @@ locker.get('/services/:serviceName/:serviceEndpoint', function(req, res) {
   });
 });
 
+// Get an individual object
 locker.get('/services/:serviceName/:serviceEndpoint/:id', function(req, res) {
   syncManager.getIJOD(req.params.serviceName, req.params.serviceEndpoint, false, function(ijod) {
     if(!ijod) return res.send('not found', 404);
