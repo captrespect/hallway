@@ -27,6 +27,7 @@ var logger = require('logger');
 var async = require('async');
 var syncManager = require("syncManager.js");
 var authManager = require("authManager");
+var accountsManager = require("accountsManager");
 
 var lcrypto = require("lcrypto");
 
@@ -52,6 +53,23 @@ var locker = express.createServer(
 locker.get("/awesome", function(req, res) {
   if(req.awesome) return res.send(req.awesome);
   res.send(false);
+});
+
+// return convenient list of all profiles auth'd for this account
+locker.get("/profiles", function(req, res) {
+  if(!req.awesome) return res.send({}, 400);
+  accountsManager.getProfiles(req.awesome.account, function(err, profiles){
+    if(err) logger.error("/profiles failed for "+JSON.stringify(req.awesome),err);
+    if(err) return res.send({}, 500);
+    var ret = {all:[]};
+    profiles.forEach(function(item){
+      if(!item.profile || item.profile.indexOf('@') == -1) return; // skip any that don't look right
+      ret.all.push(item.profile); // all profiles raw
+      var parts = item.profile.split('@');
+      ret[parts[1]] = parts[0].toString(); // convenience, top level service->id mapping
+    });
+    res.send(ret);
+  });
 });
 
 var listeners = {}; // listeners for events
