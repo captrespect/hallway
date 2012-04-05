@@ -20,7 +20,8 @@ exports.sync = function(pi, cb) {
         if(!Array.isArray(js.data)) return cb("no posts array");
         // find the newest!
         js.data.forEach(function(post){ if(post.updated_time > since) since = post.updated_time });
-        resp.data.feed = js.data;
+        var base = 'post:'+pi.auth.pid+'/feed';
+        resp.data[base] = js.data;
         resp.config.feedSince = since;
         // if we got full limit and we're paging through, always use that
         if(js.data.length == arg.limit && js.paging && js.paging.next) {

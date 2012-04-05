@@ -91,21 +91,13 @@ function finishStartup() {
           syncManager.manager.schedule(task);          
         })
       });
-      serviceManager.init(function() {  // this may trigger synclets to start!
-        // TODO:  Here we should be figuring out what set of users we need to run synclets
-        // for and then get them scheduled.
-        syncManager.scheduleAll(function() {
-          runMigrations("postServices", function() {
-            // start web server (so we can all start talking)
-            var webservice = require(__dirname + "/Ops/webservice.js");
-            webservice.startService(lconfig.lockerPort, lconfig.lockerListenIP, function(locker) {
-              if (lconfig.airbrakeKey) locker.initAirbrake(lconfig.airbrakeKey);
-              pipeline.app(locker);
-              exports.alive = true;
-              require('accountsManager').init(postStartup);
-            });
-          });
-        });
+      var webservice = require(__dirname + "/Ops/webservice.js");
+      webservice.startService(lconfig.lockerPort, lconfig.lockerListenIP, function(locker) {
+        // TODO we need to start up synclet processing for whatever set of users!
+        if (lconfig.airbrakeKey) locker.initAirbrake(lconfig.airbrakeKey);
+        pipeline.app(locker);
+        exports.alive = true;
+        require('accountsManager').init(postStartup);
       });
     });
     var lockerPortNext = "1"+lconfig.lockerPort;

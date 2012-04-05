@@ -29,7 +29,6 @@ var locker = express.createServer(
   authManager.provider.login()
 );
 
-
 locker.get('/auth/:id/auth', function(req, res) {
   authManager.authIsAuth(req.params.id, req, res);
 });

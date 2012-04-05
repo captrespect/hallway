@@ -14,7 +14,8 @@
     "auth": {
         "appKey": "67",
         "appSecret": "42",
-        "accessToken": "foo"
+        "accessToken": "foo",
+        "pid":"42@facebook"
     },
     "authed": 1332363644656,
     "type": "connector",
