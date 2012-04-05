@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CareBear OAuth2 Example</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  </head>
+  <body>
+    <h1>Care Bear Stare</h1>
+    <p>This is some bad ass body text</p>
+
+    <script src="/auth/auth.js"></script>
+    <script>
+      $(function() {
+        var singly = $.singly({
+          appName: 'Care Bear Stare',
+          client_id: 1,
+          redirect_url: window.location + '/callback',
+          services: ['twitter', 'facebook']
+        });
+      });
+    </script>
+  </body>
+</html>

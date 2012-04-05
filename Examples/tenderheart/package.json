@@ -1,0 +1,20 @@
+{
+    "name": "tenderheart",
+    "description": "Sample OAuth app for the CareBear",
+    "version": "0.0.0",
+    "homepage": "https://github.com/Singly",
+    "directories": {
+        "lib": "./Common/node"
+    },
+    "engines": {
+        "node": ">= 0.6.8"
+    },
+    "dependencies": {
+        "connect": "=1.8.5",
+        "express": "=2.5.4",
+        "oauth": "=0.9.5",
+        "request": "=2.9.3",
+        "ejs": "=0.4.3",
+        "querystring": "=0.1.0"
+    }
+}
