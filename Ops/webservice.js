@@ -8,6 +8,7 @@
 */
 
 var serviceManager = require('lservicemanager');
+var syncManager = require('syncManager');
 var express = require('express');
 var connect = require('connect');
 var logger = require('logger');
@@ -29,6 +30,8 @@ var locker = express.createServer(
   authManager.provider.login()
 );
 
+
+// Authentication callbacks
 locker.get('/auth/:id/auth', function(req, res) {
   authManager.authIsAuth(req.params.id, req, res);
 });
@@ -37,12 +40,38 @@ locker.post('/auth/:id/auth', function(req, res) {
   authManager.authIsAuth(req.params.id, req, res);
 });
 
+
+// Data access endpoints
+locker.post('/services/:serviceName/:serviceEndpoint', function(req, res) {
+  syncManager.syncNow(req.params.serviceName, req.params.serviceEndpoint, req.body, function() {
+    res.send(true);
+  });
+});
+
+// Returns a list of the current set of friends or followers
+locker.get('/services/:serviceName/:serviceEndpoint', function(req, res) {
+  syncManager.getIJOD(req.params.syncletId, req.params.type, false, function(ijod) {
+    if(!ijod) return res.send('not found', 404);
+    ijod.reqCurrent(req, res);
+  });
+});
+
+locker.get('/services/:serviceName/:serviceEndpoint/:id', function(req, res) {
+  syncManager.getIJOD(req.params.serviceName, req.params.serviceEndpoint, false, function(ijod) {
+    if(!ijod) return res.send('not found', 404);
+    ijod.reqID(req, res);
+  });
+});
+
+
 // this is a temporary endpoint for testing
 locker.get('/awesome', function(req, res) {
   if(req.awesome) return res.send(req.awesome);
   res.send(false);
 });
 
+
+// error handling
 locker.error(function(err, req, res, next) {
   if(err.stack) logger.error(err.stack);
   if (airbrake) {
@@ -52,8 +81,6 @@ locker.error(function(err, req, res, next) {
   }
   res.send('Something went wrong.', 500);
 });
-
-require('./webservice-synclets')(locker);
 
 
 locker.initAirbrake = function(key) {
