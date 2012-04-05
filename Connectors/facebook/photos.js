@@ -24,9 +24,11 @@ exports.sync = function (pi, cb) {
   }
 
   // now we have albums to process, do one of them!
-  pi.data = {photo:[]};
+  pi.data = {};
+  var base = 'photo:'+pi.auth.pid+'/photos';
+  var photos = pi.data[base] = [];
   fb.getAlbum({id:pi.config.albums.pop().id, accessToken:pi.auth.accessToken},
-              function (photo) { pi.data.photo.push(photo); },
+              function (photo) { photos.push(photo); },
               function (err) {
                 if (pi.config.albums.length > 0) pi.config.nextRun = -1; // if there's more to do!
                 return cb(err, pi);

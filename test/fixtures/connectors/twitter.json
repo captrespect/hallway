@@ -15,6 +15,7 @@
         "oauth_token":"token",
         "oauth_token_secret":"toksec"
       },
+      "pid":"ctide@twitter",
       "profile": {
         "id":"ctide",
         "screen_name":"ctide"

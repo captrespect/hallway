@@ -20,7 +20,8 @@ exports.sync = function(pi, cb) {
         if (!Array.isArray(js.data)) return cb("no posts array");
         // find the newest!
         js.data.forEach(function(post){ if (post.updated_time > since) since = post.updated_time; });
-        resp.data.home = js.data;
+        var base = 'post:'+pi.auth.pid+'/home';
+        resp.data[base] = js.data;
         resp.config.homeSince = since;
         // if we got full limit and we're paging through, always use that
         if (js.data.length == arg.limit && js.paging && js.paging.next) {

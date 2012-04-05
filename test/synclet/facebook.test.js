@@ -59,7 +59,7 @@ describe("Facebook connector", function () {
       friends.sync(pinfo, function (err, response) {
         if (err) return done(err);
 
-        response.data.contact[0].id.should.equal('1234');
+        response.data['contact:42@facebook/friends'][0].id.should.equal('1234');
         return done();
       });
     });
@@ -79,7 +79,7 @@ describe("Facebook connector", function () {
       home.sync(pinfo, function (err, response) {
         if (err) return done(err);
 
-        response.data.home[0].id.should.equal('100002438955325_224550747571079');
+        response.data['post:42@facebook/home'][0].id.should.equal('100002438955325_224550747571079');
         return done();
       });
     });
@@ -114,7 +114,7 @@ describe("Facebook connector", function () {
         photos.sync(response, function (err, response) {
           if (err) return done(err);
 
-          response.data.photo[0].id.should.equal('214713967594');
+          response.data['photo:42@facebook/photos'][0].id.should.equal('214713967594');
           return done();
         });
       });

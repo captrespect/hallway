@@ -11,7 +11,8 @@ var fb = require('./lib.js');
 
 exports.sync = function(pi, cb) {
     var resp = {data: {}};
-    var contacts = resp.data.contact = [];
+    var base = 'contact:'+pi.auth.pid+'/friends';
+    var contacts = resp.data[base] = [];
     fb.getFriends({id:"me", accessToken:pi.auth.accessToken},function(friend){
         contacts.push(friend);
     },function(err) {
