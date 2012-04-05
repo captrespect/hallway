@@ -50,6 +50,7 @@ exports.load = function(filepath) {
   exports.stats = config.stats || {};
   exports.database = config.database || {};
   exports.s3 = config.s3 || {};
+  exports.authSecrets = config.authSecrets || {crypt:'foo', sign:'bar'}; // these need to be required to be set in prod, trusted cookies use them during auth
   exports.workerName = config.workerName;
   if (exports.stats.prefix) {
     var hostname = process.env.HOSTNAME
