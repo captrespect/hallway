@@ -17,7 +17,6 @@ var request = require('request');
 var async = require('async');
 var util = require('util');
 var lutil = require('lutil');
-var carrier = require('carrier');
 
 // This lconfig stuff has to come before any other locker modules are loaded!!
 var lconfig = require('lconfig');
