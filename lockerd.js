@@ -49,9 +49,6 @@ var pushManager = require(__dirname + "/Common/node/lpushmanager");
 var lcrypto = require("lcrypto");
 var pipeline = require('pipeline');
 
-var buildInfo = fs.readFileSync(path.join(lconfig.lockerDir, 'build.json'));
-logger.info("CareBear staring with build:" + buildInfo);
-
 if (process.argv.indexOf("offline") >= 0) syncManager.setExecuteable(false);
 
 if (lconfig.lockerHost != "localhost" && lconfig.lockerHost != "127.0.0.1") {
@@ -88,7 +85,7 @@ function finishStartup() {
           if(err) return logger.error("failed pipeline processing: "+err);
           // Reschedule it
           logger.verbose("Reschduling " + JSON.stringify(task));
-          syncManager.manager.schedule(task);          
+          syncManager.manager.schedule(task);
         })
       });
       var webservice = require(__dirname + "/Ops/webservice.js");
