@@ -120,11 +120,7 @@ exports.load = function(filepath) {
   }
 
   var configDir = process.env.LOCKER_CONFIG || 'Config';
-  if (!path.existsSync(path.join(configDir, 'apikeys.json'))) {
-    console.error('You must have an apikeys.json file in the Config directory. See the Config/apikeys.json.example file');
-    process.exit(1);
-  }
-  else {
+  if (path.existsSync(path.join(configDir, 'apikeys.json'))) {
     exports.apikeysPath = path.join(configDir, 'apikeys.json');
   }
 
