@@ -62,6 +62,8 @@ exports.load = function(filepath) {
 
     exports.stats.prefix += '.' + hostBasename;
   }
+  //TODO this should only happen once
+  setFromEnvs();
   setBase();
   exports.registryUpdateInterval = config.registryUpdateInterval || 3600;
   exports.collections = config.collections || [];
