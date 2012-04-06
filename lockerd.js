@@ -91,7 +91,6 @@ function finishStartup() {
       webservice.startService(lconfig.lockerPort, lconfig.lockerListenIP, function(locker) {
         // TODO we need to start up synclet processing for whatever set of users!
         if (lconfig.airbrakeKey) locker.initAirbrake(lconfig.airbrakeKey);
-        pipeline.app(locker);
         exports.alive = true;
         require('accountsManager').init(postStartup);
       });
