@@ -10,7 +10,7 @@
   text-align: center;
 }
 
-.SINGLY-pane {
+#SINGLY-pane {
   display: none;
   border: 1px solid #b3b3b3;
   border-top-style: none;
@@ -86,7 +86,7 @@
   cursor: pointer;
 }
 
-#SINGLY-preview-pane {
+.SINGLY-preview-pane {
   height: 70px;
 }
 
@@ -108,7 +108,7 @@
   right: 30px;
 }
 
-#SINGLY-connect-pane {
+.SINGLY-connect-pane {
   height: 182px;
 }
 
@@ -134,16 +134,15 @@
   border-radius: 6px;
 }
 
-#SINGLY-saveaccess-pane {
+.SINGLY-saveaccess-pane {
   height: 118px;
 }
 
-#SINGLY-connectmore-pane {
+.SINGLY-connectmore-pane {
   height: 148px;
 }
 
 #SINGLY-loggedin-pane {
-  display: none;
   border: 1px solid #b3b3b3;
   border-top-style: none;
   background: #FFF;

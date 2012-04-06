@@ -8,13 +8,13 @@
     <h1>Care Bear Stare</h1>
     <p>This is some bad ass body text</p>
 
-    <script src="/auth/auth.js"></script>
+    <script src="http://localhost:8042/static/auth/auth.js"></script>
     <script>
       $(function() {
         var singly = $.singly({
           appName: 'Care Bear Stare',
           client_id: 1,
-          redirect_url: window.location + '/callback',
+          redirect_url: window.location + 'callback',
           services: ['twitter', 'facebook']
         });
       });

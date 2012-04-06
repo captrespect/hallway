@@ -13,7 +13,6 @@ var app = express.createServer();
 app.configure(function() {
   app.set('views', __dirname + '/views');
   app.set('view engine', 'ejs');
-  app.use(express.static(__dirname + '/static'));
   app.use(express.bodyParser());
 });
 
