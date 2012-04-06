@@ -31,6 +31,8 @@ var locker = express.createServer(
   authManager.provider.login()
 );
 
+// Hosting the js auth api from /static
+locker.use(express.static(__dirname + '/static'));
 
 // Authentication callbacks
 locker.get('/auth/:id/auth', function(req, res) {
