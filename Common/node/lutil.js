@@ -1,6 +1,5 @@
 var fs = require("fs")
 , path = require("path")
-, im = require('imagemagick')
 , url = require("url")
 , async = require("async")
 , request = require("request");
@@ -247,31 +246,6 @@ exports.forEachSeries = function(items, cbEach, cbDone) {
   }
   runOne();
 }
-/*
- * @sourceUrl - URL of the avatar you want to fetch
- * @rawfile - where you want the raw downloaded data stored
- * @destfile - the name of the resized PNG file
- * @callback - function(err, success) that takes the respective strings for failure and success.
- */
-exports.fetchAndResizeImageURL = function (sourceUrl, rawFile, destFile, callback) {
-  request.get({uri: sourceUrl, encoding: 'binary'}, function (err, resp, body) {
-    if (err) return callback("Unable to download avatar from source URL: " + err);
-
-    fs.writeFile(rawFile, body, 'binary', function (err) {
-      if (err) return callback("Unable to save downloaded raw avatar: " + err);
-
-      im.resize({srcPath : rawFile
-        , dstPath : destFile
-        , width   : 48
-        , height  : 48}
-        , function (err, stdout, stderr) {
-          if (err) return callback('Unable to convert avatar to 48x48 PNG: ' + err);
-
-          return callback(null, 'avatar uploaded');
-        });
-    });
-  });
-};
 
 function idrsToServices(dict) {
   var profileMap = {};
@@ -333,7 +307,7 @@ exports.parseAuthor = function(js) {
     } else {
       js.author = {email: js.author};
     }
-  } else {  
+  } else {
     js.author = {name: js.author};
   }
 };
