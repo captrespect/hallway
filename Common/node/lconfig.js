@@ -191,4 +191,5 @@ function setFromEnvs() {
       }
     }
   }
+  if(process.env.PORT) exports.lockerPort = process.env.PORT;
 }
