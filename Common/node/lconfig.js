@@ -147,15 +147,17 @@ exports.load = function(filepath) {
   // load trusted public keys
   var kdir = path.join(path.dirname(filepath), "keys");
   exports.keys = [];
-  if(path.existsSync(kdir))
-    {
-      var keys = fs.readdirSync(kdir);
-      keys.forEach(function(key){
-        if(key.indexOf(".pub") == -1) return;
-        exports.keys.push(fs.readFileSync(path.join(kdir, key)).toString());
-      });
-    }
-    exports.loaded = true;
+  if(path.existsSync(kdir)) {
+    var keys = fs.readdirSync(kdir);
+    keys.forEach(function(key){
+      if(key.indexOf(".pub") == -1) return;
+      exports.keys.push(fs.readFileSync(path.join(kdir, key)).toString());
+    });
+  }
+
+  setFromEnvs();
+  exports.loaded = true;
+  console.error("DEBUG: exports", exports);
 };
 
 function setBase() {
@@ -168,4 +170,25 @@ function setBase() {
   (exports.externalPort && exports.externalPort != 80 && exports.externalPort != 443 ? ':' + exports.externalPort : '');
   if(exports.externalPath)
     exports.externalBase += exports.externalPath;
+}
+
+function setFromEnvs() {
+  for(var i in process.env) {
+    console.error("DEBUG: i", i);
+    if(i.indexOf('LCONFIG_') === 0) {
+      var value = process.env[i];
+      i = i.substring(8);
+      var keys = i.split('_');
+      var obj = exports;
+      for(var j = 0; j < keys.length; j++) {
+        var key = keys[j];
+        if(j === keys.length - 1) {
+          obj[key] = value;
+          continue;
+        }
+        if(!obj[key]) obj[key] = {};
+        obj = obj[key];
+      }
+    }
+  }
 }
