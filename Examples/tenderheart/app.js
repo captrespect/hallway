@@ -36,8 +36,8 @@ app.get('/callback', function(req, res) {
     } catch(err) {
       return res.send(err, 500);
     }
-    res.send('wahoo! <a href="'+hostUrl+'/awesome?access_token='+body.access_token+'">tokenized test</a>');
-    //res.send('<script>window.close()</script>');
+    //res.send('wahoo! <a href="'+hostUrl+'/awesome?access_token='+body.access_token+'">tokenized test</a>');
+    res.send('<script>window.close()</script>');
   });
 });
 
