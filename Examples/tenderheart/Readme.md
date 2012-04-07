@@ -2,12 +2,12 @@ Tenderheart is an example application for testing CareBear's OAuth2
 api. It's a simple node.js / express app that creates a Singly login
 panel for authenticating via Twitter or Facebook.
 
-# Run CareBear
+1. Run CareBear
 Instructions https://github.com/singly/carebear
 
-# Start Tenderheart
+2. Start Tenderheart
  node app.js
 
-# Open browser to http://localhost:8043
+3. Open browser to http://localhost:8043
 
-# Login with Twitter or Facebook
+4. Login with Twitter or Facebook
