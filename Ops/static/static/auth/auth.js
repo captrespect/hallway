@@ -49,39 +49,41 @@
     }
 
     function showPreviewPane() {
-      hidePanes();
-      $('#SINGLY-pane').addClass('SINGLY-preview-pane');
-      $(".SINGLY-pd10").html('<img class="SINGLY-fll" id="SINGLY-preview-pane-symbol" alt="Singly Logo" src="' + options.host + options.baseUrl + 'images/singly-symbol.png"><div class="SINGLY-fll" id="SINGLY-preview-pane-copy">This app is powered by <a class="SINGLY-strong-link" target="_blank" href="https://singly.com">Singly</a>.</div><div><div class="SINGLY-fll SINGLY-action-button" id="SINGLY-preview-app-button">Sign In</div></div><div class="SINGLY-close-x">X</div>');
-      $("#SINGLY-or-signin-link").attr('href', '/login?redir=' + window.location.href);
-      // wire up the events for the new panel
-      $("#SINGLY-preview-app-button").on('click', function(e) {
-        showConnectPane();
+      hidePanes(function() {
+        $('#SINGLY-pane').addClass('SINGLY-preview-pane');
+        $(".SINGLY-pd10").html('<img class="SINGLY-fll" id="SINGLY-preview-pane-symbol" alt="Singly Logo" src="' + options.host + options.baseUrl + 'images/singly-symbol.png"><div class="SINGLY-fll" id="SINGLY-preview-pane-copy">This app is powered by <a class="SINGLY-strong-link" target="_blank" href="https://singly.com">Singly</a>.</div><div><div class="SINGLY-fll SINGLY-action-button" id="SINGLY-preview-app-button">Sign In</div></div><div class="SINGLY-close-x">X</div>');
+        $("#SINGLY-or-signin-link").attr('href', '/login?redir=' + window.location.href);
+        // wire up the events for the new panel
+        $("#SINGLY-preview-app-button").on('click', function(e) {
+          showConnectPane();
+        });
+        closeHandler();
+        showPanes();
       });
-      closeHandler();
-      showPanes();
     }
 
     function showConnectPane() {
-      hidePanes();
-      $('#SINGLY-pane').addClass('SINGLY-connect-pane');
-      $(".SINGLY-pd10").html('<div id="SINGLY-connect-pane-headline"></div><div id="SINGLY-connect-pane-buttons">  <a href="#" id="SINGLY-connect-facebook" data-provider="facebook" data-width="980" data-height="705"><img alt="Login with Facebook" src="' + options.host + options.baseUrl + 'images/facebook-login.png"></a>  <a href="#" id="SINGLY-connect-twitter" data-provider="twitter" data-width="700" data-height="500"><img alt="Login with Twitter" src="' + options.host + options.baseUrl + 'images/twitter-login.png"></a></div><div class="SINGLY-connect-pane-mglt"><img class="SINGLY-fll SINGLY-powered-by" alt="Powered by Singly" src="' + options.host + options.baseUrl + 'images/poweredbysingly.png"></div><div class="SINGLY-close-x">X</div>');
-      $("#SINGLY-connect-pane-headline").html('Connect services to use ' + options.appName);
-      $("#SINGLY-connect-facebook").attr('href', auth_facebook);
-      $("#SINGLY-connect-twitter").attr('href', auth_twitter);
-      // wire up the events for the new panel
-      $("#SINGLY-connect-facebook").on('click', function(e) {
-        e.preventDefault();
-        connectService($(this));
-        //showSaveAccessPane();
-      });
+      hidePanes(function() {
+        $('#SINGLY-pane').addClass('SINGLY-connect-pane');
+        $(".SINGLY-pd10").html('<div id="SINGLY-connect-pane-headline"></div><div id="SINGLY-connect-pane-buttons">  <a href="#" id="SINGLY-connect-facebook" data-provider="facebook" data-width="980" data-height="705"><img alt="Login with Facebook" src="' + options.host + options.baseUrl + 'images/facebook-login.png"></a>  <a href="#" id="SINGLY-connect-twitter" data-provider="twitter" data-width="700" data-height="500"><img alt="Login with Twitter" src="' + options.host + options.baseUrl + 'images/twitter-login.png"></a></div><div class="SINGLY-connect-pane-mglt"><img class="SINGLY-fll SINGLY-powered-by" alt="Powered by Singly" src="' + options.host + options.baseUrl + 'images/poweredbysingly.png"></div><div class="SINGLY-close-x">X</div>');
+        $("#SINGLY-connect-pane-headline").html('Connect services to use ' + options.appName);
+        $("#SINGLY-connect-facebook").attr('href', auth_facebook);
+        $("#SINGLY-connect-twitter").attr('href', auth_twitter);
+        // wire up the events for the new panel
+        $("#SINGLY-connect-facebook").on('click', function(e) {
+          e.preventDefault();
+          connectService($(this));
+          //showSaveAccessPane();
+        });
 
-      $("#SINGLY-connect-twitter").on('click', function(e) {
-        e.preventDefault();
-        connectService($(this));
-        //showSaveAccessPane();
+        $("#SINGLY-connect-twitter").on('click', function(e) {
+          e.preventDefault();
+          connectService($(this));
+          //showSaveAccessPane();
+        });
+        closeHandler();
+        showPanes();
       });
-      closeHandler();
-      showPanes();
     }
 
     /*
@@ -101,7 +103,7 @@
     */
 
     function hidePanes(callback) {
-      $("#SINGLY-pane").fadeOut('fast');
+      $("#SINGLY-pane").removeClass().fadeOut('fast', callback);
     }
 
     function showPanes() {
@@ -123,13 +125,13 @@
       try {
         if (popupUI.closed) {
           if (isLoggedIn()) {
-            window.clearInterval(popupPollInterval);
-            popupPollInterval = null;
             showLoggedInPane();
             hidePanes();
           } else {
             showPreviewPane();
           }
+          window.clearInterval(popupPollInterval);
+          popupPollInterval = null;
         }
       } catch (x) {
         // doh probably got stopped by browser security
