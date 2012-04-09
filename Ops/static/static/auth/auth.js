@@ -10,6 +10,8 @@
 
     options.host = (window.location.hostname == 'localhost') ? 'http://localhost:8042' : 'http://api.singly.com';
 
+    var $opts = $(options);
+
     var auth_twitter = encodeURI(options.host + '/oauth/authorize?client_id=' + options.client_id + '&redirect_uri=' + options.redirect_url + '&service=twitter');
     var auth_facebook = encodeURI(options.host + '/oauth/authorize?client_id=' + options.client_id + '&redirect_uri=' + options.redirect_url + '&service=facebook');
     var popupUI = {};
@@ -110,11 +112,13 @@
       $("#SINGLY-pane").fadeIn('fast');
     }
 
+
     function isLoggedIn() {
       var pairs = document.cookie.split('; ');
       var decode = options.raw ? function(s) { return s; } : decodeURIComponent;
       for (var i=0, pair; pair=pairs[i] && pairs[i].split('='); i++) {
         if (decode(pair[0]) === 'account-' + options.client_id && pair[1] !== '') {
+          $opts.trigger('login');
           return true;
         }
       }
@@ -147,6 +151,8 @@
       popupUI.focus();
       popupPollInterval = window.setInterval(pollPopup, 100);
     }
+
+    return $opts;
   };
 })(jQuery);
 

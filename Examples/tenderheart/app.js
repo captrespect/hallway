@@ -14,11 +14,25 @@ app.configure(function() {
   app.set('views', __dirname + '/views');
   app.set('view engine', 'ejs');
   app.use(express.bodyParser());
+  app.use(express.cookieParser());
+  app.use(express.session({ secret: "magichash" }));
 });
 
 app.get('/', function(req, res) {
   res.render('index', {
-    layout:false
+    layout:false,
+    token: req.session.token,
+    profiles: req.session.profiles
+  });
+});
+
+app.get('/user', function(req, res) {
+  request.get({uri:hostUrl+'/profiles?access_token=' + req.session.token}, function(err, resp, body) {
+    req.session.profiles = JSON.parse(body);
+    res.end(JSON.stringify({
+      profiles:req.session.profiles,
+      token: req.session.token
+    }));
   });
 });
 
@@ -35,6 +49,7 @@ app.get('/callback', function(req, res) {
     } catch(err) {
       return res.send(err, 500);
     }
+    req.session.token = body.access_token;
     //res.send('wahoo! <a href="'+hostUrl+'/awesome?access_token='+body.access_token+'">tokenized test</a>');
     res.send('<script>window.close()</script>');
   });

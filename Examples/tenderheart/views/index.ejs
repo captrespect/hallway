@@ -6,7 +6,10 @@
   </head>
   <body>
     <h1>Care Bear Stare</h1>
-    <p>This is some bad ass body text</p>
+    <ul>
+      <li>Singly Token: <textarea id="singly_token"><% if (token) { %><%= token %><% } else { %><%= 'Not Logged in' %><% } %></textarea></li>
+      <li>Profiles: <span id="singly_profiles"><% if (profiles) { %><%= profiles.all %><% } else { %><%= 'Not Logged in' %><% } %></span></li>
+    </ul>
 
     <script src="http://localhost:8042/static/auth/auth.js"></script>
     <script>
@@ -16,6 +19,18 @@
           client_id: 1,
           redirect_url: window.location + 'callback',
           services: ['twitter', 'facebook']
+        });
+
+        singly.on("login", function(e) {
+          $.ajax({
+            url: '/user',
+            success: function(data){
+              var user = JSON.parse(data);
+              $('#singly_token').val(user.token);
+              $('#singly_profiles').html(user.profiles.all.join(','));
+            },
+            error: function(){}
+          });
         });
       });
     </script>
