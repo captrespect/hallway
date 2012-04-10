@@ -83,6 +83,8 @@ function finishStartup() {
         pipeline.incoming({data:response.data, owner:task.user}, function(err){
           if(err) return logger.error("failed pipeline processing: "+err);
           // Reschedule it
+          task.auth = lutil.extend(true, task.auth, response.auth); // for refresh tokens and profiles
+          task.config = lutil.extend(true, task.config, response.config);
           logger.verbose("Reschduling " + JSON.stringify(task));
           syncManager.manager.schedule(task);
         })
