@@ -1,19 +1,7 @@
-var url = require("url");
-var http = require('http');
-var request = require('request');
-var express = require('express');
-var connect = require('connect');
-var path = require('path');
-var fs = require("fs");
-var querystring = require("querystring");
-var lfs = require(__dirname + "/../Common/node/lfs.js");
-var httpProxy = require('http-proxy');
-var async = require('async');
-
-// base req
 var express = require('express');
 var connect = require('connect');
 var ejs = require("ejs");
+var auth = require('./lib/auth');
 
 var port = 8044;
 
@@ -30,16 +18,43 @@ app.configure(function() {
   app.use(express.bodyParser());
 });
 
-var userGlobals = {
+var users = [];
+users.push({
   "email":"testuser@singly.com",
-  "name":"Test User",
+  "name":"Test User"
+});
+
+var apps = [];
+apps.push({
   "clientId": "1",
   "clientSecret": "1secret",
   "appName": "Demo App",
   "appDescription": "Something cool",
   "appUrl": "http://localhost:8043",
   "callbackUrl": "http://localhost:8043/callback"
-};
+});
+
+app.get("/login", function(req, res) {
+  res.render('login', {
+    layout: "integral.ejs",
+    hideHeader: true
+  });
+});
+
+app.post("/login", function(req, res) {
+  if(auth.validateLogin()) {
+    res.redirect('/');
+  } else {
+
+  }
+});
+
+app.get("/logout", function(req, res) {
+  req.logout();
+  req.session.destroy();
+  res.writeHead(303, { 'Location': this.logoutRedirectPath() });
+  res.end();
+});
 
 app.get("/settings", function(req, res) {
   res.render('settings', {

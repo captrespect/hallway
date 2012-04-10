@@ -1,0 +1,20 @@
+<% var template_styles = ['base'] %>
+<form class="solo login" action="/login" method="POST">
+  <a href="/" class="home"><img src="/imgs/round.png" alt="Singly" /></a>
+  <div class="fields">
+    <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+      <p class="error">
+        <%- errors[0] %>
+      </p>
+    <% } %>
+    <input type="text" placeholder="Email" name="email" />
+    <input type="password" placeholder="Password" name="password" />
+    <div class="other-links">
+      <a href="/auth/github">New? Sign up with GitHub.</a>
+      <a href="/users/forgotPassword">Forgot your password?</a>
+    </div>
+    <div class="buttons">
+      <input type="submit" class="action-button" value="Sign In!">
+    </div>
+  </div>
+</form>
