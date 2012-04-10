@@ -14,6 +14,8 @@ var connect = require('connect');
 var logger = require('logger');
 var authManager = require('authManager');
 var accountsManager = require('accountsManager');
+var ijod = require('ijod');
+var dMap = require('dMap');
 
 var airbrake;
 
@@ -71,19 +73,59 @@ locker.post('/services/:serviceName/:serviceEndpoint', function(req, res) {
   });
 });
 
-// Get data from a service + endpoint combo
+// Get a set of data from a service + endpoint combo
 locker.get('/services/:serviceName/:serviceEndpoint', function(req, res) {
-  syncManager.getIJOD(req.params.syncletId, req.params.type, false, function(ijod) {
-    if(!ijod) return res.send('not found', 404);
-    ijod.reqCurrent(req, res);
+  if(!req.awesome) return res.send('missing or invalid token', 400);
+  var service = req.params.serviceName;
+  accountsManager.getProfiles(req.awesome.account, function(err, profiles) {
+    if(err) return res.send('complain loudly! '+err, 500);
+    var pid;
+    profiles.forEach(function(item) {
+      if(item.profile.indexOf(service) > 0) pid = item.profile;
+    });
+    if(!pid) return res.send('missing profile for '+service, 500);
+    // construct the base, get the default type for this endpoint
+    var base = dMap.defaults(service, req.params.serviceEndpoint) + ':' + pid + '/' + req.params.serviceEndpoint;
+    var options = {};
+    options.start = parseInt(req.query['offset'] || 0);
+    options.end = options.start + parseInt(req.query['limit'] || 20);
+    var written;
+    // write out the return array progressively, pseudo-streaming
+    res.writeHead(200, {'Content-Type': 'text/javascript'});
+    console.error('getRange '+base+' '+JSON.stringify(options));
+    ijod.getRange(base, options, function(item) {
+      if(!written) res.write('[');
+      if(written) res.write(',');
+      written = true;
+      res.write(JSON.stringify(item));
+      written = true;
+    }, function(err) {
+      // handling errors here is a bit funky
+      if(err) logger.error('error sending results for getRange '+base+':',err);
+      if(written) return res.end(']');
+      return res.end('[]');
+    })
   });
 });
 
-// Get an individual object
+// Get an individual object (pardon the stupidlication for now)
 locker.get('/services/:serviceName/:serviceEndpoint/:id', function(req, res) {
-  syncManager.getIJOD(req.params.serviceName, req.params.serviceEndpoint, false, function(ijod) {
-    if(!ijod) return res.send('not found', 404);
-    ijod.reqID(req, res);
+  if(!req.awesome) return res.send('missing or invalid token', 400);
+  var service = req.params.serviceName;
+  accountsManager.getProfiles(req.awesome.account, function(err, profiles) {
+    if(err) return res.send('complain loudly! '+err, 500);
+    var pid;
+    profiles.forEach(function(item) {
+      if(item.profile.indexOf(service) > 0) pid = item.profile;
+    });
+    if(!pid) return res.send('missing profile for '+service, 500);
+    // construct the base, get the default type for this endpoint
+    var base = dMap.defaults(service, req.params.serviceEndpoint) + ':' + pid + '/' + req.params.serviceEndpoint + '#' + req.params.id;
+    console.error('getOne '+base);
+    ijod.getOne(base, function(err, item) {
+      if(err) return res.send(err, 500);
+      return res.send(item);
+    });
   });
 });
 
