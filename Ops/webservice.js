@@ -68,9 +68,10 @@ locker.get('/profiles', function(req, res) {
 
 // Post out to a service
 locker.post('/services/:serviceName/:serviceEndpoint', function(req, res) {
-  syncManager.syncNow(req.params.serviceName, req.params.serviceEndpoint, req.body, function() {
+// TODO, add back, doesn't currently work!
+//  syncManager.syncNow(req.params.serviceName, req.params.serviceEndpoint, req.body, function() {
     res.send(true);
-  });
+//  });
 });
 
 // Get a set of data from a service + endpoint combo
@@ -109,7 +110,7 @@ locker.get('/services/:serviceName/:serviceEndpoint', function(req, res) {
 });
 
 // Get an individual object (pardon the stupidlication for now)
-locker.get('/services/:serviceName/:serviceEndpoint/:id', function(req, res) {
+locker.get('/services/:serviceName/:serviceEndpoint/id/:id', function(req, res) {
   if(!req.awesome) return res.send('missing or invalid token', 400);
   var service = req.params.serviceName;
   accountsManager.getProfiles(req.awesome.account, function(err, profiles) {
@@ -125,6 +126,27 @@ locker.get('/services/:serviceName/:serviceEndpoint/:id', function(req, res) {
     ijod.getOne(base, function(err, item) {
       if(err) return res.send(err, 500);
       return res.send(item);
+    });
+  });
+});
+
+// force a synclet to run, mostly internal dev util
+locker.get('/services/:serviceName/:serviceEndpoint/run', function(req, res) {
+  if(!req.awesome) return res.send('missing or invalid token', 400);
+  var service = req.params.serviceName;
+  accountsManager.getProfiles(req.awesome.account, function(err, profiles) {
+    if(err) return res.send('complain loudly! '+err, 500);
+    var pid;
+    profiles.forEach(function(item) {
+      if(item.profile.indexOf(service) > 0) pid = item.profile;
+    });
+    if(!pid) return res.send('missing profile for '+service, 500);
+    // construct the base, get the default type for this endpoint
+    var key = pid + '/' + req.params.serviceEndpoint;
+    console.error('run '+key);
+    syncManager.manager.syncNow(key, function(err) {
+      if(err) return res.send(err, 500);
+      return res.send(true);
     });
   });
 });
