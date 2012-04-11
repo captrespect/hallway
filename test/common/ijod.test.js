@@ -1,7 +1,10 @@
 var dal = require("dal");
-var ijod = require("ijod");
 var fakeweb = require("node-fakeweb");
 var lconfig = require("lconfig");
+var path = require('path');
+var helper  = require(path.join(__dirname, '..', 'lib', 'locker-helper.js'));
+helper.configurate();
+var ijod = require("ijod");
 
 fakeweb.allowNetConnect = false;
 
