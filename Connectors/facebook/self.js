@@ -14,6 +14,9 @@ exports.sync = function(processInfo, cb) {
         if(err) return cb(err);
         processInfo.auth.profile = self; // map to shared profile
         processInfo.auth.pid = self.id+'@facebook'; // profile id
-        cb(err, {data: { self: [self] }, auth: processInfo.auth});
+        var base = 'contact:'+processInfo.auth.pid+'/self';
+        processInfo.data = {};
+        processInfo.data[base] = [self];
+        cb(err, processInfo);
     });
 };
