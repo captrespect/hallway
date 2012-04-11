@@ -30,6 +30,7 @@ app.get('/', function(req, res) {
 
 app.get('/user', function(req, res) {
   request.get({uri:hostUrl+'/profiles?access_token=' + req.session.token}, function(err, resp, body) {
+    console.error("DEBUG: body", body);
     req.session.profiles = JSON.parse(body);
     res.end(JSON.stringify({
       profiles:req.session.profiles,

@@ -159,7 +159,6 @@ exports.load = function(filepath) {
 
   setFromEnvs();
   exports.loaded = true;
-  console.error("DEBUG: exports", exports);
 };
 
 function setBase() {
@@ -176,7 +175,6 @@ function setBase() {
 
 function setFromEnvs() {
   for(var i in process.env) {
-    console.error("DEBUG: i", i);
     if(i.indexOf('LCONFIG_') === 0) {
       var value = process.env[i];
       i = i.substring(8);
