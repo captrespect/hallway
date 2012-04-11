@@ -88,8 +88,8 @@ locker.get('/services/:serviceName/:serviceEndpoint', function(req, res) {
     // construct the base, get the default type for this endpoint
     var base = dMap.defaults(service, req.params.serviceEndpoint) + ':' + pid + '/' + req.params.serviceEndpoint;
     var options = {};
-    options.start = parseInt(req.query['offset'] || 0);
-    options.end = options.start + parseInt(req.query['limit'] || 20);
+    if(req.query['offset']) options.offset = parseInt(req.query['offset']) || 0;
+    options.limit = parseInt(req.query['limit'] || 20);
     var written;
     // write out the return array progressively, pseudo-streaming
     res.writeHead(200, {'Content-Type': 'text/javascript'});
