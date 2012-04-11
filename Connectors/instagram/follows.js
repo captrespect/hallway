@@ -7,18 +7,12 @@
 *
 */
 
-var instagram = require('./lib.js')
-  , contacts = []
-  ;
+var instagram = require('./lib.js');
 
-exports.sync = function(processInfo, cb) {
-    instagram.init(processInfo.auth);
-    instagram.getFollows({},function(follow){
-        contacts.push({'obj' : follow, timestamp: new Date(), type : 'new'});
-    }, function(err) {
-            if (err) console.error(err);
-            var responseObj = {data : {}};
-            responseObj.data.contact = contacts;
-            cb(err, responseObj);
-    });
+exports.sync = function(pi, cb) {
+  var resp = {data : {}};
+  var contacts = resp.data['contact:'+pi.auth.pid+'/follows'] = [];
+  instagram.getFollows(pi, {}, function(item){ contacts.push(item) }, function(err) {
+    cb(err, resp);
+  });
 }

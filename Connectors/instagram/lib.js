@@ -24,15 +24,13 @@ exports.getSelf = function(pi, cbEach, cbDone) {
   });
 }
 
-exports.getMedia = function(pi, cbEach, cbDone) {
-  var arg = {};
+exports.getMedia = function(pi, arg, cbEach, cbDone) {
   arg.access_token = pi.auth.token && pi.auth.token.access_token;
   arg.path = '/users/self/media/recent';
   getPages(arg, cbEach, cbDone);
 }
 
-exports.getFollows = function(pi, cbEach, cbDone) {
-  var arg = {};
+exports.getFollows = function(pi, arg, cbEach, cbDone) {
   arg.access_token = pi.auth.token && pi.auth.token.access_token;
   arg.path = '/users/self/follows';
   getPages(arg, cbEach, cbDone);
@@ -45,14 +43,12 @@ exports.getFeed = function(pi, arg, cbEach, cbDone) {
 }
 
 // just get one block of recent ones
-exports.getMediaRecent = function(pi, cb) {
-  var arg = {};
+exports.getMediaRecent = function(pi, arg, cb) {
   arg.access_token = pi.auth.token && pi.auth.token.access_token;
   arg.path = '/users/self/media/recent';
   getOne(arg, cb);
 }
-exports.getFeedRecent = function(pi, cb) {
-  var arg = {};
+exports.getFeedRecent = function(pi, arg, cb) {
   arg.access_token = pi.auth.token && pi.auth.token.access_token;
   arg.path = '/users/self/feed';
   getOne(arg, cb);
@@ -83,6 +79,7 @@ function getPages(arg, cbEach, cbDone) {
     api.query = arg;
     arg.uri = url.format(api);
   }
+  console.error(arg.uri);
   request.get({uri:arg.uri, json:true}, function(err, res, body) {
     if(err || !res) return cbDone(err);
     if(res.statusCode != 200) return cbDone("status code "+res.statusCode);
