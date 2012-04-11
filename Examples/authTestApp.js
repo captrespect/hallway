@@ -20,7 +20,12 @@ app.get('/', function(req, res) {
     redirect_uri: 'http://localhost:' + port + '/callback',
     service: 'facebook'
   });
-  res.send('<html><a href="' + hostUrl + '/oauth/authorize?' + tw + '">auth twitter</a> or <a href="' + hostUrl + '/oauth/authorize?' + fb + '">auth facebook</a></html>');
+  var ig = querystring.stringify({
+    client_id: client_id,
+    redirect_uri: 'http://localhost:' + port + '/callback',
+    service: 'instagram'
+  });
+  res.send('<html><a href="' + hostUrl + '/oauth/authorize?' + tw + '">auth twitter</a> or <a href="' + hostUrl + '/oauth/authorize?' + fb + '">auth facebook</a> or <a href="' + hostUrl + '/oauth/authorize?' + ig + '">auth instagram</a></html>');
 })
 
 app.get('/callback', function(req, res) {

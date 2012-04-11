@@ -1,0 +1,21 @@
+{
+    "srcdir": "Connectors/twitter",
+    "id": "twitter",
+    "provider":"twitter",
+    "synclets": [
+      {"name": "follows", "frequency": 360000},
+      {"name": "feed", "frequency": 360000}
+    ],
+    "auth": {
+      "token": {
+        "access_token":"token"
+      },
+      "pid":"42@instagram",
+      "profile": {
+        "id":42,
+        "screen_name":"you"
+      }
+    },
+    "type": "connector",
+    "authed": 1332363644656
+}
