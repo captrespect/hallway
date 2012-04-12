@@ -8,7 +8,7 @@
     options.redirect_url = options.redirect_url || window.location + '/callback';
     options.services = options.services || ['twitter','facebook'];
 
-    options.host = (window.location.hostname == 'localhost') ? 'http://localhost:8042' : 'http://api.singly.com';
+    if (!options.host) options.host = (window.location.hostname == 'localhost') ? 'http://localhost:8042' : 'http://api.singly.com';
 
     var $opts = $(options);
 

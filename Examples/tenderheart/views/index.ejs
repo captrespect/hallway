@@ -11,13 +11,14 @@
       <li>Profiles: <span id="singly_profiles"><% if (profiles) { %><%= profiles.all %><% } else { %><%= 'Not Logged in' %><% } %></span></li>
     </ul>
 
-    <script src="http://localhost:8042/static/auth/auth.js"></script>
+    <script src="<%= hostUrl %>/static/auth/auth.js"></script>
     <script>
       $(function() {
         var singly = $.singly({
           appName: 'Care Bear Stare',
-          client_id: 1,
+          client_id: '<%= client_id %>',
           redirect_url: window.location + 'callback',
+          host: '<%= hostUrl %>',
           services: ['twitter', 'facebook']
         });
 
