@@ -28,7 +28,7 @@ var locker = express.createServer(
   function(req, res, next) {
     console.error('REQUEST '+req.url);
     // return next();
-    if(req.url.indexOf('/auth/') === 0 || req.url.indexOf('/oauth/') === 0 || req.url.indexOf('/static/') === 0 || (req._singly_auth)) return next();
+    if(req.url.indexOf('/auth/') === 0 || req.url.indexOf('/oauth/') === 0 || req.url.indexOf('/static/') === 0 || (req._authsome)) return next();
     res.send(401);
   }
 );
@@ -51,7 +51,7 @@ locker.post('/auth/:id/auth', function(req, res) {
 
 // return convenient list of all profiles auth'd for this account
 locker.get('/profiles', function(req, res) {
-  var profiles = req._singly_auth.profiles;
+  var profiles = req._authsome.profiles;
   var ret = {all:[]};
   profiles.forEach(function(item) {
     if(!item.profile || item.profile.indexOf('@') == -1) return; // skip any that don't look right
@@ -73,7 +73,7 @@ locker.post('/services/:serviceName/:serviceEndpoint', function(req, res) {
 // Get a set of data from a service + endpoint combo
 locker.get('/services/:serviceName/:serviceEndpoint', function(req, res) {
   var service = req.params.serviceName;
-  var profiles = req._singly_auth.profiles;
+  var profiles = req._authsome.profiles;
   var pid;
   profiles.forEach(function(item) {
     if(item.profile.indexOf(service) > 0) pid = item.profile;
@@ -105,7 +105,7 @@ locker.get('/services/:serviceName/:serviceEndpoint', function(req, res) {
 // Get an individual object (pardon the stupidlication for now)
 locker.get('/services/:serviceName/:serviceEndpoint/id/:id', function(req, res) {
   var service = req.params.serviceName;
-  var profiles = req._singly_auth.profiles;
+  var profiles = req._authsome.profiles;
   if(err) return res.send('complain loudly! '+err, 500);
   var pid;
   profiles.forEach(function(item) {
@@ -124,7 +124,7 @@ locker.get('/services/:serviceName/:serviceEndpoint/id/:id', function(req, res) 
 // force a synclet to run, mostly internal dev util
 locker.get('/services/:serviceName/:serviceEndpoint/run', function(req, res) {
   var service = req.params.serviceName;
-  var profiles = req._singly_auth.profiles;
+  var profiles = req._authsome.profiles;
   if(err) return res.send('complain loudly! '+err, 500);
   var pid;
   profiles.forEach(function(item) {
