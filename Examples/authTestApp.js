@@ -2,30 +2,23 @@ var querystring = require('querystring');
 var express = require('express');
 var request = require('request');
 
-var hostUrl = 'http://localhost:8042';
+var hostUrl = process.argv[2] || 'http://localhost:8042';
 var client_id = 1;
 var client_secret = "1secret";
 var port = 8043;
 
+function getUrl(service) {
+  return hostUrl + '/oauth/authorize?' + querystring.stringify({
+    client_id: client_id,
+    redirect_uri: 'http://localhost:' + port + '/callback',
+    service: service
+  });
+}
+
 var app = express.createServer();
 
 app.get('/', function(req, res) {
-  var tw = querystring.stringify({
-    client_id: client_id,
-    redirect_uri: 'http://localhost:' + port + '/callback',
-    service: 'twitter'
-  });
-  var fb = querystring.stringify({
-    client_id: client_id,
-    redirect_uri: 'http://localhost:' + port + '/callback',
-    service: 'facebook'
-  });
-  var ig = querystring.stringify({
-    client_id: client_id,
-    redirect_uri: 'http://localhost:' + port + '/callback',
-    service: 'instagram'
-  });
-  res.send('<html><a href="' + hostUrl + '/oauth/authorize?' + tw + '">auth twitter</a> or <a href="' + hostUrl + '/oauth/authorize?' + fb + '">auth facebook</a> or <a href="' + hostUrl + '/oauth/authorize?' + ig + '">auth instagram</a></html>');
+  res.send('<html><a href="' + getUrl('twitter') + '">auth twitter</a> or <a href="' + getUrl('facebook') + '">auth facebook</a> or <a href="' + getUrl('instagram') + '">auth instagram</a></html>');
 })
 
 app.get('/callback', function(req, res) {
@@ -41,7 +34,7 @@ app.get('/callback', function(req, res) {
     } catch(err) {
       return res.send(err, 500);
     }
-    res.send('wahoo! <a href="'+hostUrl+'/awesome?access_token='+body.access_token+'">tokenized test</a>');
+    res.send('wahoo! <a href="'+hostUrl+'/profiles?access_token='+body.access_token+'">tokenized test</a>');
   });
 });
 
