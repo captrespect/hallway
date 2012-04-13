@@ -47,6 +47,7 @@ var serviceManager = require("lservicemanager");
 var pushManager = require(__dirname + "/Common/node/lpushmanager");
 var lcrypto = require("lcrypto");
 var pipeline = require('pipeline');
+var profileManager = require('profileManager');
 
 if (process.argv.indexOf("offline") >= 0) syncManager.setExecuteable(false);
 
@@ -82,11 +83,13 @@ function finishStartup() {
       syncManager.manager.on("completed", function(response, task) {
         pipeline.incoming({data:response.data, owner:task.user}, function(err){
           if(err) return logger.error("failed pipeline processing: "+err);
-          // Reschedule it
-          task.auth = lutil.extend(true, task.auth, response.auth); // for refresh tokens and profiles
-          task.config = lutil.extend(true, task.config, response.config);
           logger.verbose("Reschduling " + JSON.stringify(task));
-          syncManager.manager.schedule(task);
+          // save any changes and reschedule
+          async.series([
+            function(cb) { if(!response.auth) return cb(); profileManager.authSet(task.profile, response.auth, cb) },
+            function(cb) { if(!response.config) return cb(); profileManager.configSet(task.profile, response.config, cb) },
+            function() { syncManager.manager.schedule(task) }
+          ]);
         })
       });
       var webservice = require(__dirname + "/Ops/webservice.js");
@@ -94,7 +97,9 @@ function finishStartup() {
         // TODO we need to start up synclet processing for whatever set of users!
         if (lconfig.airbrakeKey) locker.initAirbrake(lconfig.airbrakeKey);
         exports.alive = true;
-        require('accountsManager').init(postStartup);
+        require('accountsManager').init(function(){
+          profileManager.init(postStartup);
+        });
       });
     });
     var lockerPortNext = "1"+lconfig.lockerPort;
