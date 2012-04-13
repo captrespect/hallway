@@ -12,8 +12,10 @@ var syncManager = require('syncManager');
 var express = require('express');
 var connect = require('connect');
 var logger = require('logger');
+var async = require('async');
 var authManager = require('authManager');
 var accountsManager = require('accountsManager');
+var profileManager = require('profileManager');
 var ijod = require('ijod');
 var dMap = require('dMap');
 
@@ -48,6 +50,16 @@ locker.post('/auth/:id/auth', function(req, res) {
 
 // Data access endpoints
 
+// simple util for consistent but flexible binary options
+function isTrue(field)
+{
+  if(!field) return false;
+  if(field === true) return true;
+  if(field == "true") return true;
+  if(field == "1") return true;
+  if(field == "yes") return true;
+  return false;
+}
 
 // return convenient list of all profiles auth'd for this account
 locker.get('/profiles', function(req, res) {
@@ -59,7 +71,20 @@ locker.get('/profiles', function(req, res) {
     var parts = item.profile.split('@');
     ret[parts[1]] = parts[0].toString(); // convenience, top level service->id mapping
   });
-  res.send(ret);
+  // if no expanded, return immediately
+  if(!isTrue(req.query.data)) return res.send(ret);
+  ret.data = {};
+  async.forEach(ret.all, function(pid, cb){
+    console.error("getting ",pid);
+    profileManager.authGet(pid, function(err, auth){
+      if(err || !auth) return cb(err);
+      ret.data[pid] = auth.profile;
+      cb();
+    });
+  }, function(err){
+    if(err) logger.error("failed to expaind data for /profiles ",err);
+    res.send(ret);
+  })
 });
 
 // Post out to a service
