@@ -25,11 +25,13 @@ var locker = express.createServer(
   connect.bodyParser(),
   connect.cookieParser(),
   connect.session({key:'locker.project.id', secret : 'locker'}),
+  function(req, res, next) {
+    console.error('REQUEST '+req.url);
+    return next();
+  },
   authManager.provider.oauth(),
   authManager.provider.login(),
   function(req, res, next) {
-    console.error('REQUEST '+req.url);
-    // return next();
     if(req.url.indexOf('/auth/') === 0 || req.url.indexOf('/oauth/') === 0 || req.url.indexOf('/static/') === 0 || (req._authsome)) return next();
     res.send(401);
   }
