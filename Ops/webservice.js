@@ -151,9 +151,6 @@ locker.error(function(err, req, res, next) {
   res.send('Something went wrong.', 500);
 });
 
-locker.get('/cd', function(req, res) {
-  res.send({yes:'sir'});
-});
 
 locker.initAirbrake = function(key) {
   airbrake = require('airbrake').createClient(key);
