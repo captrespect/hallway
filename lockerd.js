@@ -83,12 +83,14 @@ function finishStartup() {
       syncManager.manager.on("completed", function(response, task) {
         pipeline.incoming({data:response.data, owner:task.user}, function(err){
           if(err) return logger.error("failed pipeline processing: "+err);
-          logger.verbose("Reschduling " + JSON.stringify(task));
+          logger.verbose("Reschduling " + JSON.stringify(task) + " and config "+JSON.stringify(response.config));
           // save any changes and reschedule
+          var nextRun = response.config && response.config.nextRun;
+          if(nextRun) delete response.config.nextRun; // don't want this getting stored!
           async.series([
             function(cb) { if(!response.auth) return cb(); profileManager.authSet(task.profile, response.auth, cb) },
             function(cb) { if(!response.config) return cb(); profileManager.configSet(task.profile, response.config, cb) },
-            function() { syncManager.manager.schedule(task, response.config && response.config.nextRun) }
+            function() { syncManager.manager.schedule(task, nextRun) }
           ]);
         })
       });
