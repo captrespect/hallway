@@ -88,7 +88,7 @@ function finishStartup() {
           async.series([
             function(cb) { if(!response.auth) return cb(); profileManager.authSet(task.profile, response.auth, cb) },
             function(cb) { if(!response.config) return cb(); profileManager.configSet(task.profile, response.config, cb) },
-            function() { syncManager.manager.schedule(task) }
+            function() { syncManager.manager.schedule(task, response.config && response.config.nextRun) }
           ]);
         })
       });
