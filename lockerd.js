@@ -49,7 +49,7 @@ var lcrypto = require("lcrypto");
 var pipeline = require('pipeline');
 var profileManager = require('profileManager');
 
-if (process.argv.indexOf("offline") >= 0) syncManager.setExecuteable(false);
+if (process.argv.indexOf("offline") >= 0) syncManager.manager.offlineMode = true;
 
 if (lconfig.lockerHost != "localhost" && lconfig.lockerHost != "127.0.0.1") {
     logger.warn('If I\'m running on a public IP, I need to have password protection,' + // uniquely self (de?)referential? lolz!
