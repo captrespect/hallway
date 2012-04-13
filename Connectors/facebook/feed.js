@@ -12,6 +12,7 @@ var fb = require('./lib.js');
 exports.sync = function(pi, cb) {
     var arg = {id:"me",type:"feed",limit:100,accessToken:pi.auth.accessToken};
     var since=0;
+    if (!pi.config) pi.config = {};
     if (pi.config.feedSince) since = arg.since = pi.config.feedSince;
     if (pi.config.feedNext) arg.page = pi.config.feedNext; // if we're paging the first time
     var resp = {data: {}, config: {}};
