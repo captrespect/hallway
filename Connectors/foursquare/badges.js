@@ -13,7 +13,7 @@ var util = require('util');
 exports.sync = function(pi, cb) {
     auth = processInfo.auth;
     exports.syncBadges(pi.auth, function(err, newBadges) {
-        var data : {};
+        var data = {};
         data['badge:'+pi.auth.pid+'/badges'] = newBadges;
         cb(err, {data:data});
     });
