@@ -39,7 +39,7 @@ if (!path.existsSync(path.join(lconfig.lockerDir,lconfig.me))) fs.mkdirSync(path
 
 fs.writeFileSync(path.join(lconfig.lockerdir, 'Logs', 'locker.pid'), "" + process.pid);
 
-var logger = require("logger");
+var logger = require("logger").logger("lockerd");
 logger.info('process id:' + process.pid);
 var lscheduler = require("lscheduler");
 var syncManager = require("syncManager.js");
@@ -81,7 +81,7 @@ function finishStartup() {
     // Dear lord this massive waterfall is so scary
     syncManager.manager.init(serviceManager, function() {
       syncManager.manager.on("completed", function(response, task) {
-        pipeline.incoming({data:response.data, owner:task.user}, function(err){
+        pipeline.inject(response.data, function(err) {
           if(err) return logger.error("failed pipeline processing: "+err);
           logger.verbose("Reschduling " + JSON.stringify(task) + " and config "+JSON.stringify(response.config));
           // save any changes and reschedule
@@ -193,9 +193,8 @@ function shutdown(returnCode, callback) {
 }
 
 function exit(returnCode) {
-    logger.info("Shutdown complete", {}, function (err, level, msg, meta) {
-        process.exit(returnCode);
-    });
+  logger.info("Shutdown complete");
+  process.exit(returnCode);
 }
 
 process.on("SIGINT", function() {
