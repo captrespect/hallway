@@ -8,7 +8,7 @@ var ijod = require("ijod");
 
 fakeweb.allowNetConnect = false;
 
-fakeweb.registerUri({uri:"http://cb-testing.s3.amazonaws.com:80/e69942676329c6293c3d48bd069a82/ijod.1334104891338", body:""});
+fakeweb.registerUri({uri:"http://cb-testing.s3.amazonaws.com:80/d92975de47127d19af4b2a2b24864810/ijod.1334104891338", body:""});
 
 dal.setBackend("fake");
 fakeDB = dal.getBackendModule();
@@ -27,7 +27,9 @@ describe("IJOD", function() {
       return [];
     });
     it("should save all entries", function(cbDone) {
-      ijod.batchSmartAdd("test:1@test/testing", [{id:1}], function(error) {
+      console.log("GOING TO SAVE");
+      ijod.batchSmartAdd([{idr:"test:1@testing/test#1"}], function(error) {
+        console.log("************ DONE");
         cbDone();
       });
     });

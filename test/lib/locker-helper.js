@@ -131,6 +131,10 @@ exports.fakeInstagram = function (done) {
   exports.fakeout('instagram', done);
 };
 
+exports.fakefoursquare = function (done) {
+  exports.fakeout('foursquare', done);
+};
+
 exports.fakeGithub = function (done) {
   exports.fakeout('github', done);
 };

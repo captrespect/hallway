@@ -39,7 +39,7 @@ if (!path.existsSync(path.join(lconfig.lockerDir,lconfig.me))) fs.mkdirSync(path
 
 fs.writeFileSync(path.join(lconfig.lockerdir, 'Logs', 'locker.pid'), "" + process.pid);
 
-var logger = require("logger");
+var logger = require("logger").logger("lockerd");
 logger.info('process id:' + process.pid);
 var lscheduler = require("lscheduler");
 var syncManager = require("syncManager.js");
@@ -49,7 +49,7 @@ var lcrypto = require("lcrypto");
 var pipeline = require('pipeline');
 var profileManager = require('profileManager');
 
-if (process.argv.indexOf("offline") >= 0) syncManager.setExecuteable(false);
+if (process.argv.indexOf("offline") >= 0) syncManager.manager.offlineMode = true;
 
 if (lconfig.lockerHost != "localhost" && lconfig.lockerHost != "127.0.0.1") {
     logger.warn('If I\'m running on a public IP, I need to have password protection,' + // uniquely self (de?)referential? lolz!
@@ -59,19 +59,19 @@ if (lconfig.lockerHost != "localhost" && lconfig.lockerHost != "127.0.0.1") {
 var shuttingDown_ = false;
 
 function checkKeys() {
-    lcrypto.generateSymKey(function(hasKey) {
-        if (!hasKey) {
-            shutdown(1);
-            return;
-        }
-        lcrypto.generatePKKeys(function(hasKeys) {
-            if (!hasKeys) {
-                shutdown(1);
-                return;
-            }
-            runMigrations("preServices", finishStartup);
-        });
+  lcrypto.generateSymKey(function(hasKey) {
+    if (!hasKey) {
+      shutdown(1);
+      return;
+    }
+    lcrypto.generatePKKeys(function(hasKeys) {
+      if (!hasKeys) {
+        shutdown(1);
+        return;
+      }
+      runMigrations("preServices", finishStartup);
     });
+  });
 }
 
 function finishStartup() {
@@ -81,7 +81,8 @@ function finishStartup() {
     // Dear lord this massive waterfall is so scary
     syncManager.manager.init(serviceManager, function() {
       syncManager.manager.on("completed", function(response, task) {
-        pipeline.incoming({data:response.data, owner:task.user}, function(err){
+        logger.info("Got a completion from %s", task.profile);
+        pipeline.inject(response.data, function(err) {
           if(err) return logger.error("failed pipeline processing: "+err);
           logger.verbose("Reschduling " + JSON.stringify(task) + " and config "+JSON.stringify(response.config));
           // save any changes and reschedule
@@ -193,9 +194,8 @@ function shutdown(returnCode, callback) {
 }
 
 function exit(returnCode) {
-    logger.info("Shutdown complete", {}, function (err, level, msg, meta) {
-        process.exit(returnCode);
-    });
+  logger.info("Shutdown complete");
+  process.exit(returnCode);
 }
 
 process.on("SIGINT", function() {
