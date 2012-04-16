@@ -7,137 +7,54 @@
 *
 */
 
-var fs = require('fs')
-  , request = require('request')
-  , auth
-  , contacts = []
-  , friendIDs = []
-  , photos = []
-  , self
-  ;
+var request = require('request');
+var util = require('util');
 
-exports.sync = function(processInfo, cb) {
-    auth = processInfo.auth;
-    exports.syncFriends(function(err) {
-        if (err) console.error(err);
-        var responseObj = {data : {}, config: {}};
-        responseObj.config.ids = {contact: friendIDs};
-        responseObj.data.contact = contacts;
-        responseObj.data.photo = photos;
-        auth.profile = self;
-        responseObj.auth = auth; // save self in auth
-        cb(err, responseObj);
-    });
+exports.sync = function(pi, cb) {
+  exports.syncFriends(pi.auth, function(err, friends) {
+    var data = {};
+    data['contact:'+pi.auth.pid+'/friends'] = friends;
+    cb(err, {data:data});
+  });
 };
 
-exports.syncFriends = function(callback) {
-    getMe(function(err, resp, data) {
-        if(err) {
-            return callback(err);
-        } else if(resp && resp.statusCode > 500) { //fail whale
-            return callback("500'd");
-        }
-        try {
-            self = JSON.parse(data).response.user;
-        }catch(E){
-            return callback(E);
-        }
-        if (self === undefined) {
-            return callback('error attempting to get profile data - ' + data);
-        }
-        var userID = self.id;
-        if (self.photo.indexOf("userpix") > 0) {
-            request.get({uri:self.photo, encoding: 'binary'}, function(err, resp, body) {
-                if (err)
-                    console.error(err);
-                else {
-                    fs.writeFile('photos/' + self.id + '.jpg', body, 'binary');
-                    photos.push({'obj' : {'photoID' : self.id}});
-                }
+exports.syncFriends = function(auth, callback) {
+  // TODO: add paging and don't just limit at 500, also any way to detect which ones changed?
+  request.get({uri:'https://api.foursquare.com/v2/users/self/friends.json?oauth_token=' + auth.accessToken + '&limit=500', json:true}, function(err, resp, js) {
+    if(err) return callback(err);
+    if(resp.statusCode != 200) return callback(new Error("status code "+resp.statusCode+" "+util.inspect(js)));
+    if(!js || !js.response || !js.response.friends || !js.response.friends.items) return callback(new Error("missing response.friends.items: "+util.inspect(js)));
+    var friends = js.response.friends.items.map(function(item) {return item.id});
+    // get the rich versions of each friend
+    downloadUsers(auth, friends, callback);
+  });
+}
 
-            });
-        }
-        request.get({uri:'https://api.foursquare.com/v2/users/self/friends.json?oauth_token=' + auth.accessToken + '&limit=500'}, function(err, resp, body) {
-            if(err || !body) return callback(err);
-            try{
-                var friends = JSON.parse(body).response.friends.items.map(function(item) {return item.id});
-                friendIDs = JSON.parse(body).response.friends.items.map(function(item) {return item.id});
-                downloadUsers(friends, function(err) {
-                    callback(err);
-                });
-            } catch(E) {
-                callback(E);
-            }
-        });
+// multi-fetcher
+function downloadUsers(auth, users, callback) {
+  var coll = users.slice(0);
+  var contacts = [];
+  (function downloadUser() {
+    if (coll.length == 0) {
+      return callback(null, contacts);
+    }
+    var friends = coll.splice(0, 5);
+    var requestUrl = 'https://api.foursquare.com/v2/multi?requests=';
+    for (var i = 0; i < friends.length; i++) {
+      requestUrl += "/users/" + friends[i] + ",";
+    }
+    request.get({uri:requestUrl + "&oauth_token=" + auth.accessToken, json:true}, function(err, resp, js) {
+      if(err) return callback(err, contacts);
+      if(resp.statusCode != 200) return callback(new Error("status code "+resp.statusCode+" "+util.inspect(js)), contacts);
+      if(!js || !js.response || !js.response.responses) return callback(new Error("missing response.friends.items: "+util.inspect(js)), contacts);
+      var responses = js.response.responses;
+      // loop through each result
+      (function parseUser() {
+        var friend = responses.splice(0, 1)[0];
+        if (friend == undefined || friend.response == undefined || friend.response.user == undefined) return downloadUser();
+        contacts.push(friend.response.user);
+        parseUser();
+      })();
     });
-}
-
-function getMe(callback) {
-    request.get({uri:'https://api.foursquare.com/v2/users/self.json?oauth_token=' + auth.accessToken}, callback);
-}
-
-function downloadUsers(users, callback) {
-    var coll = users.slice(0);
-    (function downloadUser() {
-        if (coll.length == 0) {
-            return callback();
-        }
-        var friends = coll.splice(0, 5);
-        try {
-            var requestUrl = 'https://api.foursquare.com/v2/multi?requests=';
-            for (var i = 0; i < friends.length; i++) {
-                requestUrl += "/users/" + friends[i] + ",";
-            }
-            request.get({uri:requestUrl + "&oauth_token=" + auth.accessToken}, function(err, resp, data) {
-                try {
-                    var response = JSON.parse(data);
-                    if(response.meta.code >= 400) {
-                        allKnownIDs = JSON.parse(fs.readFileSync('allKnownIDs.json'));
-                        for (var i = 0; i < friends.length; i++) {
-                            friends.push({'obj' : {'id' : friends[i]},'type' : 'delete'});
-                        }
-                        if (coll.length == 0) {
-                            return callback();
-                        } else {
-                            downloadUser();
-                        }
-                    }
-                    var responses = JSON.parse(data).response.responses;
-                    (function parseUser() {
-                        var friend = responses.splice(0, 1)[0];
-                        if (friend == undefined || friend.response == undefined || friend.response.user == undefined) {
-                            downloadUser();
-                            return;
-                        }
-                        var js = friend.response.user;
-                        js.name = js.firstName + " " + js.lastName;
-                        if (js.photo.indexOf("userpix") > 0) {
-                            // fetch photo
-                            request.get({uri:js.photo, encoding: 'binary'}, function(err, resp, body) {
-                                if (err)
-                                    console.error(err);
-                                else {
-                                    fs.writeFile('photos/' + js.id + '.jpg', body, 'binary');
-                                    photos.push({'obj' : {'photoID' : js.id}});
-                                }
-                            });
-                        }
-                        contacts.push({'obj' : js, timestamp: new Date(), type : 'new'});
-                        parseUser();
-                    })();
-                } catch (E) {
-                    return callback(E);
-                }
-            });
-        } catch (exception) {
-            return callback(exception);
-        }
-    })();
-}
-
-function addAll(thisArray, anotherArray) {
-    if(!(thisArray && anotherArray && anotherArray.length))
-        return;
-    for(var i = 0; i < anotherArray.length; i++)
-        thisArray.push(anotherArray[i]);
+  })();
 }

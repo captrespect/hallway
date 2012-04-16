@@ -7,49 +7,26 @@
 *
 */
 
-var fs = require('fs')
-  , request = require('request')
-  , auth
-  , seenIDs = {}
-  , recents = []
-  , lastCheckins = {}
-  , newRecents = []
-  ;
+var request = require('request');
+var util = require('util');
 
-exports.sync = function(processInfo, cb) {
-    auth = processInfo.auth;
-    if (processInfo.config && processInfo.config.recents) {
-        lastCheckins = processInfo.config.recents;
-    }
-    exports.syncRecent(function(err) {
-        var responseObj = {data : {}, config : {}};
-        responseObj.data.recents = newRecents;
-        responseObj.config.recents = seenIDs;
-        cb(err, responseObj);
-    });
+exports.sync = function(pi, cb) {
+  exports.syncRecent(pi.auth, function(err, recents) {
+    var data = {};
+    data['checkin:'+pi.auth.pid+'/recent'] = recents;
+    cb(err, {data:data});
+  });
 };
 
-
-exports.syncRecent = function (callback) {
-    getRecent(auth.accessToken, function(err, resp, data) {
-        if(err || !data || !JSON.parse(data).response.recent) return callback("broke" + err);
-        var checkins = JSON.parse(data).response.recent;
-        if (checkins === undefined) {
-            return callback('error attempting to get profile data - ' + data);
-        }
-        if (!checkins || checkins.length == 0) {
-            return callback();
-        }
-        recents = JSON.stringify(checkins);
-        for(var i = 0; i < checkins.length; i++) {
-            if (lastCheckins[checkins[i].id]) break;
-            newRecents.push({obj: checkins[i], timestamp: Date.now()});
-            seenIDs[checkins[i].id] = true;
-        }
-        callback();
-    });
+exports.syncRecent = function (auth, callback) {
+  getRecent(auth.accessToken, function(err, resp, js) {
+    if(err) return callback(err);
+    if(resp.statusCode != 200) return callback(new Error("status code "+resp.statusCode+" "+util.inspect(js)));
+    if(!js || !js.response || !js.response.recent) return callback(new Error("missing response.recent: "+util.inspect(js)));
+    callback(null, js.response.recent);
+  });
 }
 
 function getRecent(token, callback) {
-    request.get({uri:'https://api.foursquare.com/v2/checkins/recent.json?limit=100&oauth_token=' + token}, callback);
+  request.get({uri:'https://api.foursquare.com/v2/checkins/recent.json?limit=100&oauth_token=' + token, json:true}, callback);
 }

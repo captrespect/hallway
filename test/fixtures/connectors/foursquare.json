@@ -1,0 +1,13 @@
+{
+    "srcdir": "Connectors/foursquare",
+    "id": "foursquare",
+    "auth": {
+      "accessToken":"token",
+      "pid":"42@foursquare",
+      "profile": {
+        "id":42
+      }
+    },
+    "type": "connector",
+    "authed": 1332363644656
+}
