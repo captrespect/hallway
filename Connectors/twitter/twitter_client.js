@@ -19,6 +19,7 @@
    }
 
    var CLIENT = {
+     callbackURI: callbackURI,
      oauth: new OAuth(
        'https://twitter.com/oauth/request_token'
      , 'https://twitter.com/oauth/access_token'
@@ -95,7 +96,6 @@
 
      var parsed_url = url.parse(req.url, true)
        , protocol = req.socket.encrypted ? 'https' : 'http'
-       , callback_url = protocol + '://' + req.headers.host + parsed_url.pathname
        , has_token = parsed_url.query && parsed_url.query.oauth_token
        , has_secret = req.session.auth && req.session.auth.twitter_oauth_token_secret;
 
@@ -119,7 +119,7 @@
      } else {
 
        CLIENT.oauth.getOAuthRequestToken(
-         { oauth_callback: callback_url },
+         { oauth_callback: CLIENT.callbackURI },
          function (error, oauth_token, oauth_token_secret, oauth_authorize_url, additionalParameters) {
            if (!error) {
              req.session.twitter_redirect_url = req.url;
