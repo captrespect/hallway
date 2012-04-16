@@ -1,5 +1,6 @@
 module.exports = {
     handler : function (host, apiKeys, done, req, res) {
+        console.error("twitter auth entry for "+host+"auth/twitter/auth and "+apiKeys.appKey);
         require('./twitter_client')(apiKeys.appKey, apiKeys.appSecret, host + "auth/twitter/auth")
         .getAccessToken(req, res, function(err, newToken) {
             if(err) return done(err);
