@@ -59,19 +59,19 @@ if (lconfig.lockerHost != "localhost" && lconfig.lockerHost != "127.0.0.1") {
 var shuttingDown_ = false;
 
 function checkKeys() {
-    lcrypto.generateSymKey(function(hasKey) {
-        if (!hasKey) {
-            shutdown(1);
-            return;
-        }
-        lcrypto.generatePKKeys(function(hasKeys) {
-            if (!hasKeys) {
-                shutdown(1);
-                return;
-            }
-            runMigrations("preServices", finishStartup);
-        });
+  lcrypto.generateSymKey(function(hasKey) {
+    if (!hasKey) {
+      shutdown(1);
+      return;
+    }
+    lcrypto.generatePKKeys(function(hasKeys) {
+      if (!hasKeys) {
+        shutdown(1);
+        return;
+      }
+      runMigrations("preServices", finishStartup);
     });
+  });
 }
 
 function finishStartup() {
@@ -81,6 +81,7 @@ function finishStartup() {
     // Dear lord this massive waterfall is so scary
     syncManager.manager.init(serviceManager, function() {
       syncManager.manager.on("completed", function(response, task) {
+        logger.info("Got a completion from %s", task.profile);
         pipeline.inject(response.data, function(err) {
           if(err) return logger.error("failed pipeline processing: "+err);
           logger.verbose("Reschduling " + JSON.stringify(task) + " and config "+JSON.stringify(response.config));
