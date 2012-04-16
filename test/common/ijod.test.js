@@ -11,7 +11,7 @@ fakeweb.allowNetConnect = false;
 fakeweb.registerUri({uri:"http://cb-testing.s3.amazonaws.com:80/d92975de47127d19af4b2a2b24864810/ijod.1334104891338", body:""});
 
 dal.setBackend("fake");
-fakeDB = dal.getBackendModule();
+var fakeDB = dal.getBackendModule();
 
 var realDateNow = Date.now;
 Date.now = function() {
@@ -29,7 +29,6 @@ describe("IJOD", function() {
     it("should save all entries", function(cbDone) {
       console.log("GOING TO SAVE");
       ijod.batchSmartAdd([{idr:"test:1@testing/test#1"}], function(error) {
-        console.log("************ DONE");
         cbDone();
       });
     });

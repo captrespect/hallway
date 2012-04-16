@@ -8,6 +8,10 @@ var mocha       = require('mocha')
   , helper      = require(path.join(__dirname, '..', 'lib', 'locker-helper.js'))
   ;
 
+var dal = require("dal");
+dal.setBackend("fake");
+var fakeDB = dal.getBackendModule();
+
 describe("when creating an OAuth flow", function () {
   var app
     , curAccessToken
@@ -18,6 +22,7 @@ describe("when creating an OAuth flow", function () {
     ;
 
   before(function (done) {
+    fakeDB.addNoOp(/INSERT INTO Profiles \(id, service, worker\) VALUES/);
     app = express.createServer();
 
     app.get('/', function (req, res) {
