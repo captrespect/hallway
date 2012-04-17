@@ -22,8 +22,10 @@ describe("Facebook connector", function () {
   });
 
   beforeEach(function (done) {
+    fakeweb.allowNetConnect = false;
     pinfo = helper.loadFixture(path.join(__dirname, '..', 'fixtures', 'connectors', 'facebook.json'));
     pinfo.absoluteSrcdir = path.join(__dirname, '..', '..', 'Connectors', 'facebook');
+    pinfo.config = {};
     return done();
   });
 
@@ -87,9 +89,9 @@ describe("Facebook connector", function () {
 
   describe("photos synclet", function () {
     beforeEach(function (done) {
-      fakeweb.registerUri({uri : 'https://graph.facebook.com:443/427822997594/photos?access_token=foo&date_format=U',
+      fakeweb.registerUri({uri : 'https://graph.facebook.com:443/113387497594/photos?access_token=foo&date_format=U',
                            file : __dirname + '/../fixtures/synclets/facebook/photos.js'});
-      fakeweb.registerUri({uri : apiBase + 'albums?access_token=foo&date_format=U',
+      fakeweb.registerUri({uri : 'https://graph.facebook.com:443/fql?q=SELECT%20object_id%2C%20modified%20FROM%20album%20WHERE%20owner%3Dme()%20AND%20modified%20%3E%200&access_token=foo',
                            file : __dirname + '/../fixtures/synclets/facebook/albums.js'});
       fakeweb.registerUri({uri : apiBase + 'photos?access_token=foo&date_format=U',
                            file : __dirname + '/../fixtures/synclets/facebook/photos.js'});
@@ -101,7 +103,7 @@ describe("Facebook connector", function () {
       photos.sync(pinfo, function (err, response) {
         if (err) return done(err);
 
-        response.config.albums[0].cover_photo.should.equal('214713967594');
+        response.config.albums[0].since.should.equal(0);
         return done();
       });
     });
