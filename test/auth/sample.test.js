@@ -5,7 +5,7 @@ var mocha       = require('mocha')
   , request     = require('request')
   , async       = require('async')
   , path        = require('path')
-  , helper      = require(path.join(__dirname, '..', 'lib', 'locker-helper.js'))
+  , helper      = require(path.join(__dirname, '..', 'support', 'locker-helper.js'))
   ;
 
 var dal = require("dal");

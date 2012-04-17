@@ -53,6 +53,11 @@ newtest: build
 	@env NODE_PATH="lib:$(PWD)/Common/node" \
 	$(MOCHA) $(MOCHA_TESTS)
 
+MOCHA_UNIT_TESTS=$(shell find test -name "*.unit.test.js")
+unittest: build
+	@env NODE_PATH="lib:$(PWD)/Common/node" \
+		$(MOCHA) $(MOCHA_UNIT_TESTS)
+
 # old style vows tests
 oldtest: build
 	cd tests && \

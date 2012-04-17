@@ -2,7 +2,7 @@ var dal = require("dal");
 var fakeweb = require("node-fakeweb");
 var lconfig = require("lconfig");
 var path = require('path');
-var helper  = require(path.join(__dirname, '..', 'lib', 'locker-helper.js'));
+var helper  = require(path.join(__dirname, '..', 'support', 'locker-helper.js'));
 helper.configurate();
 var ijod = require("ijod");
 
