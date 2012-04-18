@@ -76,16 +76,16 @@ DISTFILE=$(SUBDIR).tar.gz
 # create a ready-to-run tarball with a complete build inside
 bindist: $(DISTFILE)
 
-$(DISTFILE): 
+$(DISTFILE):
 	./scripts/build-tarball "$(SUBDIR)" "$@"
 
 # create a ready-to-run tarball, and then run tests on the contents
 test-bindist: $(DISTFILE)
 	./scripts/test-tarball "$(SUBDIR)" "$<"
 
-# this is the rule that Jenkins runs as of 2012-03-16
+# this is the rule that Jenkins runs as of 2012-04-18
 jenkins:
-	xvfb-run -a --server-args="-screen 0 1280x960x24" $(MAKE) test-bindist
+	$(MAKE) test-bindist
 
 clean:
 	rm -f "$(DISTFILE)" "$(TEMPLATE_OUTPUT)" build.json tests/build.json
