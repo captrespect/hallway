@@ -66,6 +66,7 @@ function isTrue(field)
 // return convenient list of all profiles auth'd for this account
 locker.get('/profiles', function(req, res) {
   var profiles = req._authsome.profiles;
+  if(!profiles) return res.send(500);
   var ret = {all:[]};
   profiles.forEach(function(item) {
     if(!item.profile || item.profile.indexOf('@') == -1) return; // skip any that don't look right
