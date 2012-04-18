@@ -8,6 +8,8 @@ var mocha       = require('mocha')
   , helper      = require(path.join(__dirname, '..', 'support', 'locker-helper.js'))
   ;
 
+helper.configurate();
+
 var dal = require("dal");
 dal.setBackend("fake");
 var fakeDB = dal.getBackendModule();
