@@ -26,12 +26,13 @@ describe("IJOD", function() {
     fakeDB.addFake(/^REPLACE INTO ijod VALUES/, function(binds) {
       return [];
     });
-    it("should save all entries", function(cbDone) {
-      console.log("GOING TO SAVE");
-      ijod.batchSmartAdd([{idr:"test:1@testing/test#1"}], function(error) {
-        cbDone();
-      });
-    });
+    it("should save all entries");
+    // it("should save all entries", function(cbDone) {
+    //   console.log("GOING TO SAVE");
+    //   ijod.batchSmartAdd([{idr:"test:1@testing/test#1"}], function(error) {
+    //     cbDone();
+    //   });
+    // });
   });
 });
 
