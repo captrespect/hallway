@@ -37,6 +37,7 @@
         "knox":"",
         "generic-pool":"",
         "colors":"",
-        "moment":""
+        "moment":"",
+        "mysql-libmysqlclient":""
     }
 }
