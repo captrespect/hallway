@@ -80,7 +80,7 @@ phantomtest: build
 	@env NODE_PATH="$(PWD)/Common/node" \
 	$(MOCHA) $(PHANTOM_TESTS)
 
-SUBDIR=carebear-$(BUILD_NUMBER)
+SUBDIR=hallway-$(BUILD_NUMBER)
 DISTFILE=$(SUBDIR).tar.gz
 
 # create a ready-to-run tarball with a complete build inside
@@ -99,6 +99,6 @@ jenkins:
 
 clean:
 	rm -f "$(DISTFILE)" "$(TEMPLATE_OUTPUT)" build.json tests/build.json
-	rm -f "carebear-git-*.tar.gz"
+	rm -f "hallway-git-*.tar.gz"
 	rm -rf node_modules
 	rm -rf Me.*.test

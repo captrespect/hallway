@@ -3,7 +3,7 @@ var express = require('express');
 var request = require('request');
 var ejs = require('ejs');
 
-var hostUrl = process.env.CAREBEAR_HOST || 'http://localhost:8042';
+var hostUrl = process.env.HALLWAY_HOST || 'http://localhost:8042';
 var client_id = 1;
 var client_secret = "1secret";
 var port = 8043;
@@ -60,4 +60,4 @@ app.get('/callback', function(req, res) {
 
 app.listen(port);
 console.log('listening at http://localhost:' + port + '/');
-console.log('CareBear expected at ' + hostUrl);
+console.log('Hallway expected at ' + hostUrl);
