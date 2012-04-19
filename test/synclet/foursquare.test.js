@@ -14,14 +14,6 @@ describe("foursquare connector", function () {
   var pinfo;
   var apiBase = "https://api.foursquare.com:443/v2/users/";
 
-  before(function (done) {
-    fakeweb.allowNetConnect = false;
-    helper.fakefoursquare(function () {
-      process.chdir(path.join(process.env.LOCKER_ROOT, process.env.LOCKER_ME, 'foursquare'));
-      return done();
-    });
-  });
-
   beforeEach(function (done) {
     fakeweb.allowNetConnect = false;
     pinfo = helper.loadFixture(path.join(__dirname, '..', 'fixtures', 'connectors', 'foursquare.json'));
@@ -32,11 +24,6 @@ describe("foursquare connector", function () {
   afterEach(function (done) {
     fakeweb.tearDown();
     return done();
-  });
-
-  after(function (done) {
-    process.chdir(process.env.LOCKER_ROOT);
-    helper.teardownMe(null, done);
   });
 
   describe("self synclet", function () {

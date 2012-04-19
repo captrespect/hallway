@@ -19,8 +19,6 @@ exports.configurate = function () {
     process.env.LOCKER_TEST = "oh yeah";
     process.env.LOCKER_ROOT = path.join(__dirname, '..', '..');
     process.env.LOCKER_CONFIG = path.join(__dirname, '..', 'resources');
-    process.env.LOCKER_ME = temp.path({prefix : 'Me.',
-                                       suffix : '.test'});
 
     lconfig = require(path.join(__dirname, '..', '..', 'Common', 'node', 'lconfig.js'));
     lconfig.load(path.join(process.env.LOCKER_CONFIG, 'config.json'));
@@ -29,135 +27,7 @@ exports.configurate = function () {
   return lconfig;
 };
 
-function waitOnLocker(done) {
-  if (locker && locker.alive) {
-    console.error('locker started!');
-    return done();
-  } else {
-    console.error('locker waiting...');
-    setTimeout(function () { waitOnLocker(done); }, 250);
-  }
-}
-
-exports.lockerificate = function (done) {
-  exports.configurate();
-  if (!locker) {
-    try {
-      console.error("loading locker!");
-      locker = require(path.join(__dirname, '..', '..', 'lockerd.js'));
-      console.error("locker loaded!");
-    }
-    catch (err) {
-      return done(err);
-    }
-  }
-
-  return waitOnLocker(done);
-};
-
-exports.delockerificate = function (done) {
-  if (locker) {
-    locker.shutdown(0, function (returnCode) {
-      if (returnCode !== 0) return done('nonzero shutdown code returned during shutdown: ' + returnCode);
-      else return done();
-    });
-  }
-  else {
-    return done();
-  }
-};
-
-// Node is a funny ol' thing
-function cp(source, destination, callback) {
-  return util.pump(fs.createReadStream(source), fs.createWriteStream(destination), callback);
-}
-
-exports.copyToMe = function (me, name, done) {
-  var source = path.join(__dirname, '..', 'fixtures', 'connectors', name + '.json');
-  var destdir = path.join(me, name);
-  var destination = path.join(destdir, 'me.json');
-
-  path.exists(destdir, function (exists) {
-    if (!exists) {
-      fs.mkdir(destdir, function (err) {
-        if (err) return done(err);
-
-        return cp(source, destination, done);
-      });
-    }
-    else {
-      return cp(source, destination, done);
-    }
-  });
-};
-
-exports.withMe = function (callback) {
-  var config = exports.configurate();
-  path.exists(config.me, function (exists) {
-    if (!exists) {
-      fs.mkdir(config.me, function (err) {
-        if (err) return callback(err);
-
-        return callback(null, config.me);
-      });
-    }
-    else {
-      return callback(null, config.me);
-    }
-  });
-};
-
-exports.fakeout = function (name, done) {
-  exports.withMe(function (err, me) {
-    if (err) return done(err);
-
-    exports.copyToMe(me, name, done);
-  });
-};
-
 exports.loadFixture = function (path) {
   return JSON.parse(fs.readFileSync(path));
 };
 
-exports.fakeTwitter = function (done) {
-  exports.fakeout('twitter', done);
-};
-
-exports.fakeFacebook = function (done) {
-  exports.fakeout('facebook', done);
-};
-
-exports.fakeInstagram = function (done) {
-  exports.fakeout('instagram', done);
-};
-
-exports.fakefoursquare = function (done) {
-  exports.fakeout('foursquare', done);
-};
-
-exports.fakeGithub = function (done) {
-  exports.fakeout('github', done);
-};
-
-exports.bootstrap = function (done) {
-  exports.lockerificate(done);
-};
-
-exports.teardownMe = function (err, callback) {
-  if (err) return callback(err);
-
-  try {
-    wrench.rmdirSyncRecursive(path.join(process.env.LOCKER_ROOT, process.env.LOCKER_ME), false);
-  }
-  catch (err) {
-    return callback(err);
-  }
-
-  return callback();
-};
-
-exports.shutdown = function (done) {
-  exports.delockerificate(function (err) {
-    exports.teardownMe(err, done);
-  });
-};

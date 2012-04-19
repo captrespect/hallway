@@ -15,15 +15,8 @@ describe("Twitter connector", function () {
     , apiSuffix = '&include_entities=true'
     , pinfo;
 
-  before(function (done) {
-    fakeweb.allowNetConnect = false;
-    helper.fakeTwitter(function () {
-      process.chdir(path.join(process.env.LOCKER_ROOT, process.env.LOCKER_ME, 'twitter'));
-      return done();
-    });
-  });
-
   beforeEach(function (done) {
+    fakeweb.allowNetConnect = false;
     pinfo = helper.loadFixture(path.join(__dirname, '..', 'fixtures', 'connectors', 'twitter.json'));
     pinfo.absoluteSrcdir = path.join(__dirname, '..', '..', 'Connectors', 'twitter');
     return done();
@@ -32,11 +25,6 @@ describe("Twitter connector", function () {
   afterEach(function (done) {
     fakeweb.tearDown();
     return done();
-  });
-
-  after(function (done) {
-    process.chdir(process.env.LOCKER_ROOT);
-    helper.teardownMe(null, done);
   });
 
   describe("friends synclet", function () {

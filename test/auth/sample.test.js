@@ -75,11 +75,8 @@ describe("when creating an OAuth flow", function () {
 
     app.listen(port);
 
-    return async.series([helper.fakeTwitter,
-                         helper.fakeFacebook,
-                         helper.fakeGithub,
-                         helper.bootstrap],
-                        done);
+    return done();
+
   });
 
   it("should be able to start Twitter auth flow", function (done) {
