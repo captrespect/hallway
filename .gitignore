@@ -18,3 +18,5 @@ Config/*
 Logs/*
 !.gitignore
 build.json
+lib-cov/
+coverage.*
