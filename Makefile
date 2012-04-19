@@ -61,7 +61,7 @@ unittest: build
 _MOCHA=./node_modules/.bin/_mocha
 cov: check-cover check_deps npm_modules
 	@env NODE_PATH="lib:$(PWD)/Common/node" \
-		cover run $(_MOCHA) $(MOCHA_UNIT_TESTS)
+		cover run $(_MOCHA) $(MOCHA_TESTS)
 	@cover report html
 
 check-cover:
