@@ -14,8 +14,8 @@
    , memoize = {};
 
  module.exports = function (key, secret, callbackURI) {
-   if (memoize[key + secret]) {
-     return memoize[key + secret];
+   if (memoize[key + secret + callbackURI]) {
+     return memoize[key + secret + callbackURI];
    }
 
    var CLIENT = {
