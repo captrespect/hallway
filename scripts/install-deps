@@ -7,7 +7,6 @@ set -e
 NODE_DOWNLOAD='http://nodejs.org/dist/v0.6.10/node-v0.6.10.tar.gz'
 NPM_DOWNLOAD='http://npmjs.org/install.sh'
 VIRTUALENV_DOWNLOAD='http://github.com/pypa/virtualenv/raw/develop/virtualenv.py'
-MONGODB_DOWNLOAD='http://fastdl.mongodb.org/OS/mongodb-OS-ARCH-2.0.0.tgz'
 
 #### Helper functions
 
@@ -162,46 +161,6 @@ then
         echo "Installed npm into ${prefix}"
     else
         echo "Failed to install npm into ${prefix}" >&2
-        exit 1
-    fi
-fi
-
-if ! check_for mongoDB mongod "mongod --version" 1.8.0
-then
-    if [ "$check_only" = true ]; then exit 1; fi
-
-    OS=`uname -s`
-    case "${OS}" in
-        Linux)
-            OS=linux
-            ;;
-        Darwin)
-            OS=osx
-            ;;
-        *)
-            echo "Don't recognize OS ${OS}" >&2
-            exit 1
-    esac
-    BITS=`getconf LONG_BIT`
-    ARCH='x86_64'
-    if [ "${BITS}" -ne 64 ]
-    then
-        ARCH="i386"
-        if [ "${OS}" != "osx" ]
-        then
-            ARCH="i686"
-        fi
-    fi
-    echo ""
-    echo "Downloading and installing locally mongoDB"
-    MONGODB_DOWNLOAD=$(echo ${MONGODB_DOWNLOAD} | sed -e "s/OS/${OS}/g" -e "s/ARCH/${ARCH}/g")
-    download "${MONGODB_DOWNLOAD}"
-    if tar zxf $(basename "${MONGODB_DOWNLOAD}") &&
-        cp $(basename "${MONGODB_DOWNLOAD}" .tgz)/bin/* "${prefix}/local/bin"
-    then
-        echo "Installed local mongoDB."
-    else
-        echo "Failed to install local mongoDB." >&2
         exit 1
     fi
 fi
