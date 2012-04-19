@@ -101,6 +101,7 @@
 
      // Acces token
      if (has_token &&  has_secret) {
+       console.error("SESSIONAGE TWO ",req.session);
 
        CLIENT.oauth.getOAuthAccessToken(
          parsed_url.query.oauth_token,
@@ -117,7 +118,7 @@
 
      // Request token
      } else {
-
+console.error("TWITTER getOAuthRequestToken ",CLIENT.callbackURI);
        CLIENT.oauth.getOAuthRequestToken(
          { oauth_callback: CLIENT.callbackURI },
          function (error, oauth_token, oauth_token_secret, oauth_authorize_url, additionalParameters) {
@@ -126,6 +127,7 @@
              req.session.auth = req.session.auth || {};
              req.session.auth.twitter_oauth_token_secret = oauth_token_secret;
              req.session.auth.twitter_oauth_token = oauth_token;
+             console.error("SESSIONAGE ",req.session);
              res.redirect('http://api.twitter.com/oauth/authorize?oauth_token=' + oauth_token);
            } else {
              callback(error, null);
