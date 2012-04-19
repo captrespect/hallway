@@ -59,13 +59,11 @@ unittest: build
 		$(MOCHA) $(MOCHA_UNIT_TESTS)
 
 _MOCHA=./node_modules/.bin/_mocha
-cov: check-cover check_deps npm_modules
+COVER=./node_modules/cover/bin/cover
+cov: check_deps npm_modules
 	@env NODE_PATH="lib:$(PWD)/Common/node" \
-		cover run $(_MOCHA) $(MOCHA_TESTS)
-	@cover report html
-
-check-cover:
-	which cover
+		$(COVER) run $(_MOCHA) $(MOCHA_TESTS)
+	$(COVER) report html
 
 # old style vows tests
 oldtest: build
