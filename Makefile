@@ -58,15 +58,12 @@ unittest: build
 	@env NODE_PATH="lib:$(PWD)/Common/node" \
 		$(MOCHA) $(MOCHA_UNIT_TESTS)
 
-cov: check-jscoverage check_deps npm_modules
-	rm -rf lib-cov
-	jscoverage lib lib-cov
-	@env RUNNING_COVERAGE=1 \
-		   NODE_PATH="lib-cov:$(PWD)/Common/node" \
-	$(MOCHA) --no-highlight -R html-cov $(MOCHA_TESTS) > coverage.html
-
-check-jscoverage:
-	which jscoverage
+_MOCHA=./node_modules/.bin/_mocha
+COVER=./node_modules/cover/bin/cover
+cov: check_deps npm_modules
+	@env NODE_PATH="lib:$(PWD)/Common/node" \
+		$(COVER) run $(_MOCHA) $(MOCHA_TESTS)
+	$(COVER) report html
 
 # old style vows tests
 oldtest: build

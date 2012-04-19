@@ -19,6 +19,7 @@
         "colors":"",
         "compress-buffer": "=0.5.1",
         "connect": "=1.8.5",
+        "cover": "",
         "ejs": "=0.4.3",
         "express": "=2.5.4",
         "facebook-js": "=1.0.0",
