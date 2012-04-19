@@ -107,7 +107,7 @@ describe("when creating an OAuth flow", function () {
     });
   });
 
-  it("should be able to authenticate Twitter via CareBear");
+  it("should be able to authenticate Twitter via Hallway");
   // TODO: do that
 
   it("should be able to start Facebook auth flow", function (done) {
@@ -134,7 +134,7 @@ describe("when creating an OAuth flow", function () {
        */
     });
 
-    it("should be able to authenticate Facebook via CareBear");
+    it("should be able to authenticate Facebook via Hallway");
     // TODO: do that
   });
 });
