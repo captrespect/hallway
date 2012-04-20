@@ -14,7 +14,6 @@ var connect = require('connect');
 var logger = require('logger');
 var async = require('async');
 var authManager = require('authManager');
-var accountsManager = require('accountsManager');
 var profileManager = require('profileManager');
 var ijod = require('ijod');
 var dMap = require('dMap');

@@ -75,7 +75,7 @@ syncManager.manager.init(function() {
     if (lconfig.airbrakeKey) locker.initAirbrake(lconfig.airbrakeKey);
     exports.alive = true;
     require('ijod').initDB(function(err){ if(err) console.error(err); }); // just async for now
-    require('accountsManager').init(function(){
+    require('acl').init(function(){
       profileManager.init(postStartup);
     });
   });
