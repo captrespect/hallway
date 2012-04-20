@@ -3,8 +3,8 @@ var mocha   = require('mocha')
   , fakeweb = require('node-fakeweb')
   , path    = require('path')
   , helper  = require(path.join(__dirname, '..', 'support', 'locker-helper.js'))
-  , follows = require(path.join(__dirname, '..', '..', 'Connectors', 'instagram', 'follows.js'))
-  , feed    = require(path.join(__dirname, '..', '..', 'Connectors', 'instagram', 'feed.js'))
+  , follows = require(path.join('services', 'instagram', 'follows.js'))
+  , feed    = require(path.join('services', 'instagram', 'feed.js'))
   , util    = require('util')
   ;
 

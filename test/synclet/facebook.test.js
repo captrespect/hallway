@@ -3,9 +3,9 @@ var mocha   = require('mocha')
   , fakeweb = require('node-fakeweb')
   , path    = require('path')
   , helper  = require(path.join(__dirname, '..', 'support', 'locker-helper.js'))
-  , friends = require(path.join(__dirname, '..', '..', 'Connectors', 'facebook', 'friends.js'))
-  , home    = require(path.join(__dirname, '..', '..', 'Connectors', 'facebook', 'home.js'))
-  , photos  = require(path.join(__dirname, '..', '..', 'Connectors', 'facebook', 'photos.js'))
+  , friends = require(path.join('services', 'facebook', 'friends.js'))
+  , home    = require(path.join('services', 'facebook', 'home.js'))
+  , photos  = require(path.join('services', 'facebook', 'photos.js'))
   , util    = require('util')
   ;
 
@@ -21,7 +21,6 @@ describe("Facebook connector", function () {
   beforeEach(function (done) {
     fakeweb.allowNetConnect = false;
     pinfo = helper.loadFixture(path.join(__dirname, '..', 'fixtures', 'connectors', 'facebook.json'));
-    pinfo.absoluteSrcdir = path.join(__dirname, '..', '..', 'Connectors', 'facebook');
     pinfo.config = {};
     return done();
   });
