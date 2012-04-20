@@ -69,7 +69,7 @@ syncManager.manager.init(function() {
       ]);
     })
   });
-  var webservice = require(__dirname + "/Ops/webservice.js");
+  var webservice = require('webservice');
   webservice.startService(lconfig.lockerPort, lconfig.lockerListenIP, function(locker) {
     // TODO we need to start up synclet processing for whatever set of users!
     if (lconfig.airbrakeKey) locker.initAirbrake(lconfig.airbrakeKey);
