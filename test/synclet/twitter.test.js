@@ -7,6 +7,7 @@ var mocha    = require('mocha')
   , timeline = require(path.join('services', 'twitter', 'timeline.js'))
   , mentions = require(path.join('services', 'twitter', 'mentions.js'))
   , tweets   = require(path.join('services', 'twitter', 'tweets.js'))
+  , related  = require(path.join('services', 'twitter', 'related.js'))
   , util     = require('util')
   ;
 
@@ -81,6 +82,23 @@ describe("Twitter connector", function () {
         if (err) return done(err);
 
         response.data["tweet:ctide@twitter/mentions"][0].id_str.should.equal('71348168469643264');
+        return done();
+      });
+    });
+  });
+
+  describe("related synclet", function() {
+    beforeEach(function (done) {
+      fakeweb.registerUri({uri : apiBase + 'statuses/home_timeline.json?screen_name=ctide&count=50&path=%2Fstatuses%2Fhome_timeline.json' + apiSuffix, file : __dirname + '/../fixtures/synclets/twitter/home_timeline1.js'});
+      fakeweb.registerUri({uri : apiBase + 'related_results/show/193779319057813505.json?path=%2Frelated_results%2Fshow%2F193779319057813505.json' + apiSuffix, file : __dirname + '/../fixtures/synclets/twitter/related.js'});
+      fakeweb.registerUri({uri : apiBase + 'statuses/193779319057813505/retweeted_by.json?path=%2Fstatuses%2F193779319057813505%2Fretweeted_by.json' + apiSuffix, file : __dirname + '/../fixtures/synclets/twitter/retweeted.js'});
+      return done();
+    });
+
+    it("can fetch related", function (done) {
+      related.sync(pinfo, function (err, response) {
+        if (err) return done(err);
+        response.data["related:ctide@twitter/related"][0][0].results[0].kind.should.equal('Tweet');
         return done();
       });
     });
