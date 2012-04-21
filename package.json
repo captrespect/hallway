@@ -27,7 +27,7 @@
         "knox":"",
         "mocha": "",
         "moment":"",
-        "murmurhash3": "",
+        "murmurhash3": "=0.0.8",
         "mysql":"",
         "mysql-libmysqlclient":"",
         "node-fakeweb": "=0.0.7",
