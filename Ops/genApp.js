@@ -1,4 +1,4 @@
-// to use, might need to: export NODE_PATH="/Users/jer/CareBear/Common/node:/Users/jer/CareBear/lib"
+// to use, might need to: export NODE_PATH="/Users/jer/hallway/Common/node:/Users/jer/hallway/lib"
 var path = require('path');
 var fs = require('fs');
 var lconfig = require(path.join(__dirname, "../Common/node/lconfig.js"));

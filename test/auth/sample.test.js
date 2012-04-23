@@ -5,8 +5,14 @@ var mocha       = require('mocha')
   , request     = require('request')
   , async       = require('async')
   , path        = require('path')
-  , helper      = require(path.join(__dirname, '..', 'lib', 'locker-helper.js'))
+  , helper      = require(path.join(__dirname, '..', 'support', 'locker-helper.js'))
   ;
+
+helper.configurate();
+
+var dal = require("dal");
+dal.setBackend("fake");
+var fakeDB = dal.getBackendModule();
 
 describe("when creating an OAuth flow", function () {
   var app
@@ -18,6 +24,7 @@ describe("when creating an OAuth flow", function () {
     ;
 
   before(function (done) {
+    fakeDB.addNoOp(/INSERT INTO Profiles \(id, service, worker\) VALUES/);
     app = express.createServer();
 
     app.get('/', function (req, res) {
@@ -68,11 +75,8 @@ describe("when creating an OAuth flow", function () {
 
     app.listen(port);
 
-    return async.series([helper.fakeTwitter,
-                         helper.fakeFacebook,
-                         helper.fakeGithub,
-                         helper.bootstrap],
-                        done);
+    return done();
+
   });
 
   it("should be able to start Twitter auth flow", function (done) {
@@ -100,7 +104,7 @@ describe("when creating an OAuth flow", function () {
     });
   });
 
-  it("should be able to authenticate Twitter via CareBear");
+  it("should be able to authenticate Twitter via Hallway");
   // TODO: do that
 
   it("should be able to start Facebook auth flow", function (done) {
@@ -127,7 +131,7 @@ describe("when creating an OAuth flow", function () {
        */
     });
 
-    it("should be able to authenticate Facebook via CareBear");
+    it("should be able to authenticate Facebook via Hallway");
     // TODO: do that
   });
 });

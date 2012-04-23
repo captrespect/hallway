@@ -2,7 +2,7 @@ var dal = require("dal");
 var fakeweb = require("node-fakeweb");
 var lconfig = require("lconfig");
 var path = require('path');
-var helper  = require(path.join(__dirname, '..', 'lib', 'locker-helper.js'));
+var helper  = require(path.join(__dirname, '..', 'support', 'locker-helper.js'));
 helper.configurate();
 var ijod = require("ijod");
 
@@ -11,7 +11,7 @@ fakeweb.allowNetConnect = false;
 fakeweb.registerUri({uri:"http://cb-testing.s3.amazonaws.com:80/d92975de47127d19af4b2a2b24864810/ijod.1334104891338", body:""});
 
 dal.setBackend("fake");
-fakeDB = dal.getBackendModule();
+var fakeDB = dal.getBackendModule();
 
 var realDateNow = Date.now;
 Date.now = function() {
@@ -26,13 +26,13 @@ describe("IJOD", function() {
     fakeDB.addFake(/^REPLACE INTO ijod VALUES/, function(binds) {
       return [];
     });
-    it("should save all entries", function(cbDone) {
-      console.log("GOING TO SAVE");
-      ijod.batchSmartAdd([{idr:"test:1@testing/test#1"}], function(error) {
-        console.log("************ DONE");
-        cbDone();
-      });
-    });
+    it("should save all entries");
+    // it("should save all entries", function(cbDone) {
+    //   console.log("GOING TO SAVE");
+    //   ijod.batchSmartAdd([{idr:"test:1@testing/test#1"}], function(error) {
+    //     cbDone();
+    //   });
+    // });
   });
 });
 

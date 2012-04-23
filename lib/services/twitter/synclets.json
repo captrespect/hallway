@@ -21,6 +21,7 @@
         {"name": "friends", "frequency": 3600},
         {"name": "tweets", "frequency": 600},
         {"name": "timeline", "frequency": 120},
+        {"name": "related", "frequency": 7000},
         {"name": "mentions", "frequency": 600}
 		]
 }

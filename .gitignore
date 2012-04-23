@@ -18,3 +18,5 @@ Config/*
 Logs/*
 !.gitignore
 build.json
+.coverage_data/
+cover_html/

@@ -53,6 +53,18 @@ newtest: build
 	@env NODE_PATH="lib:$(PWD)/Common/node" \
 	$(MOCHA) $(MOCHA_TESTS)
 
+MOCHA_UNIT_TESTS=$(shell find test -name "*.unit.test.js")
+unittest: build
+	@env NODE_PATH="lib:$(PWD)/Common/node" \
+		$(MOCHA) $(MOCHA_UNIT_TESTS)
+
+_MOCHA=./node_modules/.bin/_mocha
+COVER=./node_modules/cover/bin/cover
+cov: check_deps npm_modules
+	@env NODE_PATH="lib:$(PWD)/Common/node" \
+		$(COVER) run $(_MOCHA) $(MOCHA_TESTS)
+	$(COVER) report html
+
 # old style vows tests
 oldtest: build
 	cd tests && \
@@ -65,25 +77,25 @@ phantomtest: build
 	@env NODE_PATH="$(PWD)/Common/node" \
 	$(MOCHA) $(PHANTOM_TESTS)
 
-SUBDIR=carebear-$(BUILD_NUMBER)
+SUBDIR=hallway-$(BUILD_NUMBER)
 DISTFILE=$(SUBDIR).tar.gz
 
 # create a ready-to-run tarball with a complete build inside
 bindist: $(DISTFILE)
 
-$(DISTFILE): 
+$(DISTFILE):
 	./scripts/build-tarball "$(SUBDIR)" "$@"
 
 # create a ready-to-run tarball, and then run tests on the contents
 test-bindist: $(DISTFILE)
 	./scripts/test-tarball "$(SUBDIR)" "$<"
 
-# this is the rule that Jenkins runs as of 2012-03-16
+# this is the rule that Jenkins runs as of 2012-04-18
 jenkins:
-	xvfb-run -a --server-args="-screen 0 1280x960x24" $(MAKE) test-bindist
+	$(MAKE) test-bindist
 
 clean:
 	rm -f "$(DISTFILE)" "$(TEMPLATE_OUTPUT)" build.json tests/build.json
-	rm -f "carebear-git-*.tar.gz"
+	rm -f "hallway-git-*.tar.gz"
 	rm -rf node_modules
 	rm -rf Me.*.test

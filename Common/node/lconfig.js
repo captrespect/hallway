@@ -49,6 +49,7 @@ exports.load = function(filepath) {
   exports.airbrakeKey = config.airbrakeKey || undefined;
   exports.stats = config.stats || {};
   exports.database = config.database || {};
+  if(!exports.database.maxConnections) exports.database.maxConnections = 10;
   exports.s3 = config.s3 || {};
   exports.authSecrets = config.authSecrets || {crypt:'foo', sign:'bar'}; // these need to be required to be set in prod, trusted cookies use them during auth
   exports.cookieExpire = config.cookieExpire || (60 * 60 * 24 * 30); // default 30 days
@@ -66,35 +67,6 @@ exports.load = function(filepath) {
   setFromEnvs();
   setBase();
   exports.registryUpdateInterval = config.registryUpdateInterval || 3600;
-  exports.collections = config.collections || [];
-  /*
-  [
-    "contacts:Collections/Contacts",
-    "links:Collections/Links",
-    "photos:Collections/Photos",
-    "places:Collections/Places",
-    "search:Collections/Search"
-  ];
-  */
-  exports.apps = config.apps || [];
-  /*
-  [
-    "helloplaces:Apps/HelloPlaces",
-    "linkalatte:Apps/LinkaLatte",
-    "contactsviewer:Apps/MergedContacts",
-    "devdocs:Apps/DevDocs",
-    "photosviewer:Apps/PhotosViewer",
-    "smtp:Connectors/SMTP",
-    "facebook:Connectors/Facebook",
-    "flickr:Connectors/Flickr",
-    "github:Connectors/GitHub",
-    "gcontacts:Connectors/GoogleContacts",
-    "instagram:Connectors/Instagram",
-    "twitter:Connectors/Twitter",
-    "foursquare:Connectors/foursquare",
-    "lastfm:Connectors/LastFM"
-  ];
-  */
 
   // FIXME: me should get resolved into an absolute path, but much of the code base uses it relatively.
   //

@@ -2,11 +2,11 @@ var mocha   = require('mocha')
   , should  = require('should')
   , fakeweb = require('node-fakeweb')
   , path    = require('path')
-  , helper  = require(path.join(__dirname, '..', 'lib', 'locker-helper.js'))
-  , friends = require(path.join(__dirname, '..', '..', 'Connectors', 'foursquare', 'friends.js'))
-  , checkins    = require(path.join(__dirname, '..', '..', 'Connectors', 'foursquare', 'checkins.js'))
-  , self    = require(path.join(__dirname, '..', '..', 'Connectors', 'foursquare', 'self.js'))
-  , recent    = require(path.join(__dirname, '..', '..', 'Connectors', 'foursquare', 'recent.js'))
+  , helper  = require(path.join(__dirname, '..', 'support', 'locker-helper.js'))
+  , friends = require(path.join('services', 'foursquare', 'friends.js'))
+  , checkins    = require(path.join('services', 'foursquare', 'checkins.js'))
+  , self    = require(path.join('services', 'foursquare', 'self.js'))
+  , recent    = require(path.join('services', 'foursquare', 'recent.js'))
   , util    = require('util')
   ;
 
@@ -14,29 +14,15 @@ describe("foursquare connector", function () {
   var pinfo;
   var apiBase = "https://api.foursquare.com:443/v2/users/";
 
-  before(function (done) {
-    fakeweb.allowNetConnect = false;
-    helper.fakefoursquare(function () {
-      process.chdir(path.join(process.env.LOCKER_ROOT, process.env.LOCKER_ME, 'foursquare'));
-      return done();
-    });
-  });
-
   beforeEach(function (done) {
     fakeweb.allowNetConnect = false;
     pinfo = helper.loadFixture(path.join(__dirname, '..', 'fixtures', 'connectors', 'foursquare.json'));
-    pinfo.absoluteSrcdir = path.join(__dirname, '..', '..', 'Connectors', 'foursquare');
     return done();
   });
 
   afterEach(function (done) {
     fakeweb.tearDown();
     return done();
-  });
-
-  after(function (done) {
-    process.chdir(process.env.LOCKER_ROOT);
-    helper.teardownMe(null, done);
   });
 
   describe("self synclet", function () {
