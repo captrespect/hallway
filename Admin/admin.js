@@ -1,7 +1,6 @@
 var express = require('express');
 var connect = require('connect');
 var ejs = require("ejs");
-
 var port = 8044;
 
 var app = express.createServer(
@@ -24,24 +23,6 @@ app.configure(function() {
   app.use(express.cookieParser());
   app.use(express.session({ secret: "magichash" }));
 });
-
-/*
-var users = [];
-users.push({
-  "email":"testuser@singly.com",
-  "name":"Test User"
-});
-
-var apps = [];
-apps.push({
-  "clientId": "1",
-  "clientSecret": "1secret",
-  "appName": "Demo App",
-  "appDescription": "Something cool",
-  "appUrl": "http://localhost:8043",
-  "callbackUrl": "http://localhost:8043/callback"
-});
-*/
 
 app.get("/", function(req, res) {
   res.render('index', {
