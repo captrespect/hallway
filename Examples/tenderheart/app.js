@@ -19,6 +19,7 @@ app.configure(function() {
 });
 
 app.get('/', function(req, res) {
+  console.log(hostUrl);
   res.render('index', {
     layout:false,
     token: req.session.token,
@@ -26,6 +27,11 @@ app.get('/', function(req, res) {
     client_id: client_id,
     hostUrl: hostUrl
   });
+});
+
+app.get('/logout', function(req, res) {
+  req.session.destroy();
+  res.redirect('/');
 });
 
 app.get('/user', function(req, res) {
@@ -56,6 +62,11 @@ app.get('/callback', function(req, res) {
     //res.send('wahoo! <a href="'+hostUrl+'/awesome?access_token='+body.access_token+'">tokenized test</a>');
     res.send('<script>window.close()</script>');
   });
+});
+
+app.get('/deauth', function(req, res) {
+  req.session.destroy();
+  res.redirect('/');
 });
 
 app.listen(port);

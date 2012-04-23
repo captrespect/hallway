@@ -6,7 +6,10 @@
   </head>
   <body>
     <h1>Care Bear Stare</h1>
+    <a href="#" id="signin">Login</a>
+    <a href="/logout">Logout</a>
     <ul>
+      <li>Signed in: <span id="singly_loggedin"></span></li>
       <li>Singly Token: <textarea id="singly_token"><% if (token) { %><%= token %><% } else { %><%= 'Not Logged in' %><% } %></textarea></li>
       <li>Profiles: <span id="singly_profiles"><% if (profiles) { %><%= profiles.all %><% } else { %><%= 'Not Logged in' %><% } %></span></li>
     </ul>
@@ -17,12 +20,15 @@
         var singly = $.singly({
           appName: 'Care Bear Stare',
           client_id: '<%= client_id %>',
-          redirect_url: window.location + 'callback',
+          redirect_url: window.location.origin + '/callback',
           host: '<%= hostUrl %>',
           services: ['twitter', 'facebook']
         });
 
+        $('#signin').on("click", singly.login);
+
         singly.on("login", function(e) {
+          $('#singly_loggedin').html('True');
           $.ajax({
             url: '/user',
             success: function(data){

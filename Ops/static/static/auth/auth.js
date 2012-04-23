@@ -5,7 +5,7 @@
     options.baseUrl = '/static/auth/';
     options.client_id = options.client_id || '';
 
-    options.redirect_url = options.redirect_url || window.location + '/callback';
+    options.redirect_url = options.redirect_url || window.location.origin + '/callback';
     options.services = options.services || ['twitter','facebook'];
 
     if (!options.host) options.host = (window.location.hostname == 'localhost') ? 'http://localhost:8042' : 'http://api.singly.com';
@@ -21,11 +21,17 @@
 
     $('body').prepend('<div id="SINGLY-auth-container"><div id="SINGLY-pane"><div class="SINGLY-pd10"></div></div></div>');
 
-    if (isLoggedIn()) {
-      showLoggedInPane();
-    } else {
-      showPreviewPane();
-    }
+    $opts.isLoggedIn = function() {
+      return isLoggedIn();
+    };
+
+    $opts.login = function() {
+      if (isLoggedIn()) {
+        showLoggedInPane();
+      } else {
+        showPreviewPane();
+      }
+    };
 
     /*
     $("#SINGLY-temp-savepreview").on('click', function(e) {
@@ -33,10 +39,6 @@
       showSaveAccessPane();
     });
 
-    $("#SINGLY-temp-connectmore").on('click', function(e) {
-      // TODO: save preview account and send e-mail
-      showConnectMorePane();
-    });
     */
 
     function closeHandler() {
@@ -47,7 +49,28 @@
 
     function showLoggedInPane() {
       hidePanes();
-      $('body').prepend('<div id="SINGLY-loggedin-pane"><div class="SINGLY-ctr">Username</div><img class="SINGLY-fll SINGLY-powered-by" alt="Powered by Singly" src="' + options.host + options.baseUrl + 'images/poweredbysingly.png"></div>');
+      //$('body').prepend('<div id="SINGLY-loggedin-pane"><div class="SINGLY-ctr">Username</div><img class="SINGLY-fll SINGLY-powered-by" alt="Powered by Singly" src="' + options.host + options.baseUrl + 'images/poweredbysingly.png"></div>');
+      $('body').prepend('<div id="SINGLY-loggedin-pane">  <div class="SINGLY-ctr">    <a href="#" target="_blank" id="SINGLY-myaccount-link" class="SINGLY-subtle-link">My account</a>&nbsp;    <a href="/deauth" class="SINGLY-subtle-link">Log out</a> <a href="#" class="SINGLY-subtle-link" id="SINGLY-temp-savepreview">(1)</a> <a href="#" class="SINGLY-subtle-link" id="SINGLY-temp-connectmore">(2)</a>    <div>          </div>    <div>          </div>  </div>  <img class="SINGLY-fll SINGLY-powered-by" src="' + options.host + options.baseUrl + 'images/poweredbysingly.png"></div>');
+
+      $("#SINGLY-loggedin-pane").on('mouseenter', function(e) {
+        $(this).animate({
+          'margin-top': '0px',
+          opacity: 1
+        }, 200);
+      });
+
+      $("#SINGLY-loggedin-pane").on('mouseleave', function(e) {
+        $(this).delay(800).animate({
+          'margin-top': '-22px',
+          opacity: 0.5
+        }, 200);
+      });
+
+      $("#SINGLY-temp-connectmore").on('click', function(e) {
+        // TODO: save preview account and send e-mail
+        showConnectMorePane();
+      });
+
     }
 
     function showPreviewPane() {
@@ -71,6 +94,7 @@
         $("#SINGLY-connect-pane-headline").html('Connect services to use ' + options.appName);
         $("#SINGLY-connect-facebook").attr('href', auth_facebook);
         $("#SINGLY-connect-twitter").attr('href', auth_twitter);
+
         // wire up the events for the new panel
         $("#SINGLY-connect-facebook").on('click', function(e) {
           e.preventDefault();
@@ -88,18 +112,18 @@
       });
     }
 
+    function showConnectMorePane() {
+      $('#SINGLY-pane').addClass('SINGLY-connectmore-pane');
+      $(".SINGLY-pd10").html('Connect More pane! (load connectors here from registry or map?)<div class="SINGLY-connect-pane-mglt"><img class="SINGLY-fll SINGLY-powered-by" alt="Powered by Singly" src="' + options.host + options.baseUrl + 'images/poweredbysingly.png"></div><div class="SINGLY-close-x">X</div>');
+      closeHandler();
+      showPanes();
+    }
+
     /*
     function showSaveAccessPane() {
       hidePanes();
       $('#SINGLY-pane').addClass('SINGLY-saveaccess-pane');
       $(".SINGLY-pd10").html('<div>Save access to this app?  We&0020;ll send you a password and details.</div><div><input type="text"></div><div id="SINGLY-save-preview-button">Save Preview</div><div class="SINGLY-connect-pane-mglt"><img class="SINGLY-fll SINGLY-powered-by" alt="Powered by Singly" src="' + options.host + options.baseUrl + 'images/poweredbysingly.png"></div><div class="SINGLY-close-x">X</div>');
-      showPanes();
-    }
-
-    function showConnectMorePane() {
-      hidePanes();
-      $('#SINGLY-pane').addClass('SINGLY-connectmore-pane');
-      $(".SINGLY-pd10").html('Connect More pane! (load connectors here from registry or map?)<div class="SINGLY-connect-pane-mglt"><img class="SINGLY-fll SINGLY-powered-by" alt="Powered by Singly" src="' + options.host + options.baseUrl + 'images/poweredbysingly.png"></div><div class="SINGLY-close-x">X</div>');
       showPanes();
     }
     */
@@ -111,7 +135,6 @@
     function showPanes() {
       $("#SINGLY-pane").fadeIn('fast');
     }
-
 
     function isLoggedIn() {
       var pairs = document.cookie.split('; ');
@@ -155,7 +178,3 @@
     return $opts;
   };
 })(jQuery);
-
-syncletInstalled = function(synclet) {
-  window.location.reload();
-};
