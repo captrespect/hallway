@@ -1,7 +1,10 @@
 var express = require('express');
 var connect = require('connect');
 var ejs = require("ejs");
-var auth = require('./lib/auth');
+
+var hostUrl = process.env.CAREBEAR_HOST || 'http://localhost:8042';
+var client_id = 1;
+var client_secret = "1secret";
 
 var port = 8044;
 
@@ -18,20 +21,15 @@ app.configure(function() {
   app.use(express.bodyParser());
 });
 
-var users = [];
-users.push({
-  "email":"testuser@singly.com",
-  "name":"Test User"
-});
+app.get("/", function(req, res) {
+  res.render('index', {
+    layout:false,
+    token: req.session.token,
+    profiles: req.session.profiles,
+    client_id: client_id,
+    hostUrl: hostUrl
+  });
 
-var apps = [];
-apps.push({
-  "clientId": "1",
-  "clientSecret": "1secret",
-  "appName": "Demo App",
-  "appDescription": "Something cool",
-  "appUrl": "http://localhost:8043",
-  "callbackUrl": "http://localhost:8043/callback"
 });
 
 app.get("/login", function(req, res) {
