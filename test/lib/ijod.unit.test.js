@@ -1,9 +1,9 @@
-var dal = require("dal");
 var fakeweb = require("node-fakeweb");
 var lconfig = require("lconfig");
 var path = require('path');
 var helper  = require(path.join(__dirname, '..', 'support', 'locker-helper.js'));
 helper.configurate();
+var dal = require("dal");
 var ijod = require("ijod");
 
 fakeweb.allowNetConnect = false;
@@ -34,6 +34,22 @@ describe("IJOD", function() {
     //   });
     // });
   });
+  describe("getOne", function() {
+// TODO, need help from @temas!
+//    fakeDB.addFake(/^SELECT path, offset, len FROM ijod WHERE idr/, function(binds) {
+//      return [];
+//    });
+    it("should return one by idr", function(done) {
+      ijod.getOne("contact:709761820@facebook/friends#3409545", function(err, entry){
+        done();
+      })
+    });
+    it("should return one by id", function(done) {
+      ijod.getOne("f9935b4fbae0d99aa758039539a47b96", function(err, entry){
+        done();
+      })
+    });
+  })
 });
 
     /*
