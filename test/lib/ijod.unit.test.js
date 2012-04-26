@@ -5,6 +5,7 @@ var helper  = require(path.join(__dirname, '..', 'support', 'locker-helper.js'))
 helper.configurate();
 var dal = require("dal");
 var ijod = require("ijod");
+var should = require("should");
 
 fakeweb.allowNetConnect = false;
 
@@ -49,7 +50,15 @@ describe("IJOD", function() {
         done();
       })
     });
-  })
+  });
+  describe("countBase", function() {
+    it("should return a count of a base", function(done) {
+      fakeDB.addFake(/SELECT COUNT\(\*\) AS baseCount FROM ijod WHERE base/, [{baseCount:42}]);
+      ijod.countBase("test:1@testing/test", function(count) {
+        done((count == 42 ? null : new Error("Wrong count, expected 42 got " + count)));
+      });
+    });
+  });
 });
 
     /*
