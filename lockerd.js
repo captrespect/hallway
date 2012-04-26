@@ -69,13 +69,13 @@ syncManager.manager.init(function() {
       ]);
     })
   });
-  var webservice = require(__dirname + "/Ops/webservice.js");
+  var webservice = require('webservice');
   webservice.startService(lconfig.lockerPort, lconfig.lockerListenIP, function(locker) {
     // TODO we need to start up synclet processing for whatever set of users!
     if (lconfig.airbrakeKey) locker.initAirbrake(lconfig.airbrakeKey);
     exports.alive = true;
     require('ijod').initDB(function(err){ if(err) console.error(err); }); // just async for now
-    require('accountsManager').init(function(){
+    require('acl').init(function(){
       profileManager.init(postStartup);
     });
   });

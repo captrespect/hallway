@@ -3,10 +3,10 @@ var mocha   = require('mocha')
   , fakeweb = require('node-fakeweb')
   , path    = require('path')
   , helper  = require(path.join(__dirname, '..', 'support', 'locker-helper.js'))
-  , friends = require(path.join(__dirname, '..', '..', 'Connectors', 'foursquare', 'friends.js'))
-  , checkins    = require(path.join(__dirname, '..', '..', 'Connectors', 'foursquare', 'checkins.js'))
-  , self    = require(path.join(__dirname, '..', '..', 'Connectors', 'foursquare', 'self.js'))
-  , recent    = require(path.join(__dirname, '..', '..', 'Connectors', 'foursquare', 'recent.js'))
+  , friends = require(path.join('services', 'foursquare', 'friends.js'))
+  , checkins    = require(path.join('services', 'foursquare', 'checkins.js'))
+  , self    = require(path.join('services', 'foursquare', 'self.js'))
+  , recent    = require(path.join('services', 'foursquare', 'recent.js'))
   , util    = require('util')
   ;
 
@@ -17,7 +17,6 @@ describe("foursquare connector", function () {
   beforeEach(function (done) {
     fakeweb.allowNetConnect = false;
     pinfo = helper.loadFixture(path.join(__dirname, '..', 'fixtures', 'connectors', 'foursquare.json'));
-    pinfo.absoluteSrcdir = path.join(__dirname, '..', '..', 'Connectors', 'foursquare');
     return done();
   });
 
