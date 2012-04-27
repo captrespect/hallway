@@ -15,5 +15,13 @@ describe("dMap", function() {
       done();
     });
   });
+  describe("returns bases", function() {
+    it("has contact", function(done){
+      var bases = dMap.bases(['42@facebook','42@instagram']);
+      bases.indexOf('contact:42@facebook/self').should.be.above(-1);
+      bases.indexOf('contact:42@instagram/self').should.be.above(-1);
+      done();
+    });
+  });
 });
 
