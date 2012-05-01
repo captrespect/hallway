@@ -1,5 +1,9 @@
 {
     "synclets": [
+    	{
+        	"frequency": 3600,
+        	"name": "self"
+    	},
         {
             "frequency": 3600,
             "name": "friends"
