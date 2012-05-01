@@ -1,1 +1,1 @@
-web: node lockerd.js
+web: node hallwayd.js
