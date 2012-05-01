@@ -18,6 +18,10 @@
             "name": "recent"
         },
         {
+            "frequency": 43200,
+            "name": "photos"
+        },
+        {
             "frequency": 3600,
             "name": "badges"
         }
