@@ -2,20 +2,20 @@
 
 show_help() {
     cat <<EOF
-Usage: locker [options]
+Usage: hallway [options]
 Options:
     --production    Run in production mode (default: development mode)
 
 EOF
 }
 
-locker_mode=development
+hallway_mode=development
 
 # Parse command line options
 while true; do
     case "$1" in
       -h|--help|-\?) show_help; exit 0;;
-      --production) locker_mode=production; shift ;;
+      --production) hallway_mode=production; shift ;;
       --development) shift ;;
       --) shift; break;;
       -*) echo "invalid option: $1" 1>&2; show_help; exit 1;;
@@ -42,9 +42,9 @@ monitor() {
         start_time=$(date +%s)
         # start the command
         $* &
-        lockerd_pid=$!
+        hallwayd_pid=$!
 
-        if wait $lockerd_pid; then
+        if wait $hallwayd_pid; then
             # Clean shutdown
             exit 0
         fi
@@ -54,38 +54,38 @@ monitor() {
         end_time=$(date +%s)
         runtime=$(($end_time - $start_time))
         if [ "$runtime" -lt 10 ]; then
-            echo "locker was only running for $runtime seconds, not respawning" >&2
+            echo "hallway was only running for $runtime seconds, not respawning" >&2
             exit 1
         fi
 
         wait=5
-        echo "Locker exited unexpectedly, respawning in $wait seconds..." >&2
+        echo "Hallway exited unexpectedly, respawning in $wait seconds..." >&2
         sleep $wait
     done
 }
 
 shutdown() {
-    kill -TERM $lockerd_pid
-    wait $lockerd_pid
+    kill -TERM $hallwayd_pid
+    wait $hallwayd_pid
     status=$?
-    echo "locker exited with status $status"
+    echo "hallway exited with status $status"
     exit $status
 }
 
 # Extra paths to search for files : separated
 export NODE_PATH=lib:Common/node
 
-# Start the locker
-case "$locker_mode" in
+# Start the hallway
+case "$hallway_mode" in
     production)
         # Tell node to run in production mode
         NODE_ENV=production
         export NODE_ENV
-        monitor node lockerd.js "$@"
+        monitor node hallwayd.js "$@"
         ;;
     development|*)
         # Just run it
-        exec node lockerd.js "$@"
+        exec node hallwayd.js "$@"
         ;;
 esac
 
