@@ -105,6 +105,12 @@ describe("Facebook connector", function () {
 
   describe("photos synclet", function () {
     beforeEach(function (done) {
+      fakeweb.registerUri({uri : 'https://graph.facebook.com:443/10150465363772595/photos?access_token=foo&date_format=U',
+                           file : __dirname + '/../fixtures/synclets/facebook/photos.js'});
+      fakeweb.registerUri({uri : 'https://graph.facebook.com:443/10150465363772595?access_token=foo&date_format=U',
+                           file : __dirname + '/../fixtures/synclets/facebook/album.json'});
+      fakeweb.registerUri({uri : 'https://graph.facebook.com:443/59354442594?access_token=foo&date_format=U',
+                           file : __dirname + '/../fixtures/synclets/facebook/album.json'});
       fakeweb.registerUri({uri : 'https://graph.facebook.com:443/113387497594/photos?access_token=foo&date_format=U',
                            file : __dirname + '/../fixtures/synclets/facebook/photos.js'});
       fakeweb.registerUri({uri : 'https://graph.facebook.com:443/fql?q=SELECT%20object_id%2C%20modified%20FROM%20album%20WHERE%20owner%3Dme()%20AND%20modified%20%3E%200&access_token=foo',
@@ -118,7 +124,7 @@ describe("Facebook connector", function () {
     it('can fetch photo albums', function (done) {
       photos.sync(pinfo, function (err, response) {
         if (err) return done(err);
-
+        response.data['album:42@facebook/albums'][0].id.should.equal('59354442594');
         response.config.albums[0].since.should.equal(0);
         return done();
       });
