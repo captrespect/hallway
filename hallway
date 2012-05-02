@@ -1,0 +1,92 @@
+#!/bin/sh
+
+show_help() {
+    cat <<EOF
+Usage: hallway [options]
+Options:
+    --production    Run in production mode (default: development mode)
+
+EOF
+}
+
+hallway_mode=development
+
+# Parse command line options
+while true; do
+    case "$1" in
+      -h|--help|-\?) show_help; exit 0;;
+      --production) hallway_mode=production; shift ;;
+      --development) shift ;;
+      --) shift; break;;
+      -*) echo "invalid option: $1" 1>&2; show_help; exit 1;;
+      *)  break;;
+    esac
+done
+
+# If our dependencies are installed in the source tree, find them there
+. scripts/use-deps.sh
+
+# Make sure we have some API keys, otherwise we can't do much
+apikeys=Config/apikeys.json
+if [ ! -f "$apikeys" ]; then
+    echo "No API keys found in $apikeys" >&2
+    echo "see https://github.com/LockerProject/Locker/wiki/GettingAPIKeys" >&2
+    exit 1
+fi
+
+monitor() {
+    # Monitor the process and restart it if it dies
+
+    trap shutdown INT TERM
+    while true; do
+        start_time=$(date +%s)
+        # start the command
+        $* &
+        hallwayd_pid=$!
+
+        if wait $hallwayd_pid; then
+            # Clean shutdown
+            exit 0
+        fi
+
+        # Abnormal exit
+
+        end_time=$(date +%s)
+        runtime=$(($end_time - $start_time))
+        if [ "$runtime" -lt 10 ]; then
+            echo "hallway was only running for $runtime seconds, not respawning" >&2
+            exit 1
+        fi
+
+        wait=5
+        echo "Hallway exited unexpectedly, respawning in $wait seconds..." >&2
+        sleep $wait
+    done
+}
+
+shutdown() {
+    kill -TERM $hallwayd_pid
+    wait $hallwayd_pid
+    status=$?
+    echo "hallway exited with status $status"
+    exit $status
+}
+
+# Extra paths to search for files : separated
+export NODE_PATH=lib:Common/node
+
+# Start the hallway
+case "$hallway_mode" in
+    production)
+        # Tell node to run in production mode
+        NODE_ENV=production
+        export NODE_ENV
+        monitor node hallwayd.js "$@"
+        ;;
+    development|*)
+        # Just run it
+        exec node hallwayd.js "$@"
+        ;;
+esac
+
+exit 1

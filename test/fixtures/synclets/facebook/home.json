@@ -94,7 +94,8 @@
             "description": "Everyone",
             "value": "EVERYONE"
          },
-         "type": "status",
+         "type": "photo",
+		"object_id": "3488997579924",
          "created_time": 1305843879,
          "updated_time": 1305855204,
          "likes": {

@@ -5,6 +5,7 @@ var mocha   = require('mocha')
   , helper  = require(path.join(__dirname, '..', 'support', 'locker-helper.js'))
   , friends = require(path.join('services', 'foursquare', 'friends.js'))
   , checkins    = require(path.join('services', 'foursquare', 'checkins.js'))
+  , photos    = require(path.join('services', 'foursquare', 'photos.js'))
   , self    = require(path.join('services', 'foursquare', 'self.js'))
   , recent    = require(path.join('services', 'foursquare', 'recent.js'))
   , util    = require('util')
@@ -73,6 +74,23 @@ describe("foursquare connector", function () {
       checkins.sync(pinfo, function (err, response) {
         if (err) return done(err);
         response.data['checkin:42@foursquare/checkins'][0].id.should.equal('4f8bfeefe4b01f95a53521b9');
+        return done();
+      });
+    });
+  });
+
+  describe("photos synclet", function () {
+    beforeEach(function (done) {
+      fakeweb.registerUri({uri : apiBase + 'self/photos.json?limit=250&offset=0&oauth_token=token',
+                           file : __dirname + '/../fixtures/synclets/foursquare/photos.json'});
+      return done();
+    });
+
+    it('can fetch photos', function (done) {
+      pinfo.config = {};
+      photos.sync(pinfo, function (err, response) {
+        if (err) return done(err);
+        response.data['photo:42@foursquare/photos'][0].id.should.equal('4f9c352ae4b0e9595aeb8c12');
         return done();
       });
     });

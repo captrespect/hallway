@@ -61,6 +61,8 @@ describe("Facebook connector", function () {
 
   describe("home synclet", function () {
     beforeEach(function (done) {
+      fakeweb.registerUri({uri : 'https://graph.facebook.com:443/3488997579924?access_token=foo&date_format=U',
+                           file : __dirname + '/../fixtures/synclets/facebook/photo.json'});
       fakeweb.registerUri({uri : apiBase + 'home?access_token=foo&date_format=U&limit=100',
                            file : __dirname + '/../fixtures/synclets/facebook/home.json'});
       fakeweb.registerUri({uri : apiBase + 'feed?date_format=U&access_token=abc&limit=25&until=1305843879',
@@ -74,9 +76,11 @@ describe("Facebook connector", function () {
         if (err) return done(err);
 
         response.data['post:42@facebook/home'][0].id.should.equal('100002438955325_224550747571079');
+        response.data['photo:42@facebook/home_photos'][0].id.should.equal('3488997579924');
         return done();
       });
     });
+
   });
 
   describe("home update synclet", function () {
@@ -101,6 +105,12 @@ describe("Facebook connector", function () {
 
   describe("photos synclet", function () {
     beforeEach(function (done) {
+      fakeweb.registerUri({uri : 'https://graph.facebook.com:443/10150465363772595/photos?access_token=foo&date_format=U',
+                           file : __dirname + '/../fixtures/synclets/facebook/photos.js'});
+      fakeweb.registerUri({uri : 'https://graph.facebook.com:443/10150465363772595?access_token=foo&date_format=U',
+                           file : __dirname + '/../fixtures/synclets/facebook/album.json'});
+      fakeweb.registerUri({uri : 'https://graph.facebook.com:443/59354442594?access_token=foo&date_format=U',
+                           file : __dirname + '/../fixtures/synclets/facebook/album.json'});
       fakeweb.registerUri({uri : 'https://graph.facebook.com:443/113387497594/photos?access_token=foo&date_format=U',
                            file : __dirname + '/../fixtures/synclets/facebook/photos.js'});
       fakeweb.registerUri({uri : 'https://graph.facebook.com:443/fql?q=SELECT%20object_id%2C%20modified%20FROM%20album%20WHERE%20owner%3Dme()%20AND%20modified%20%3E%200&access_token=foo',
@@ -114,7 +124,7 @@ describe("Facebook connector", function () {
     it('can fetch photo albums', function (done) {
       photos.sync(pinfo, function (err, response) {
         if (err) return done(err);
-
+        response.data['album:42@facebook/albums'][0].id.should.equal('59354442594');
         response.config.albums[0].since.should.equal(0);
         return done();
       });

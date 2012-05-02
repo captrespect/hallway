@@ -1,5 +1,9 @@
 {
     "synclets": [
+    	{
+        	"frequency": 3600,
+        	"name": "self"
+    	},
         {
             "frequency": 3600,
             "name": "friends"
@@ -12,6 +16,10 @@
             "frequency": 300,
             "threshold": 2,
             "name": "recent"
+        },
+        {
+            "frequency": 43200,
+            "name": "photos"
         },
         {
             "frequency": 3600,
