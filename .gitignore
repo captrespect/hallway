@@ -9,6 +9,7 @@ Me/*
 *.tmproj
 node_modules
 scheduler.json
+test/resources/config.json
 tests/Data/
 tests/output.xml
 lockerbox*
