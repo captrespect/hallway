@@ -32,7 +32,6 @@ describe("links services", function () {
       resolve.pump([entry], function (err, set) {
         if (err) return done(err);
         Object.keys(set[0].refs).length.should.equal(2);
-        "42".should.equal("69");
         return done();
       });
     });
