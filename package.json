@@ -36,6 +36,7 @@
         "phantom": ">=0.3.3",
         "request": "=2.9.3",
         "should": "",
+        "optimist": "",
 	    "serializer": ">=0.0.2 <0.1.0",
         "temp": ">=0.4.0",
         "winston": "=0.5.2",
