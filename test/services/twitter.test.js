@@ -52,7 +52,7 @@ describe("Twitter connector", function () {
     beforeEach(function (done) {
       fakeweb.registerUri({uri  : apiBase + 'account/verify_credentials.json?path=%2Faccount%2Fverify_credentials.json' + apiSuffix,
                            file : __dirname + '/../fixtures/synclets/twitter/verify_credentials.js'});
-      fakeweb.registerUri({uri  : apiBase + 'statuses/home_timeline.json?screen_name=ctide&page=1&since_id=1&path=%2Fstatuses%2Fhome_timeline.json&count=200' + apiSuffix,
+      fakeweb.registerUri({uri  : apiBase + 'statuses/home_timeline.json?screen_name=ctide&since_id=1&path=%2Fstatuses%2Fhome_timeline.json&count=200' + apiSuffix,
                            file : __dirname + '/../fixtures/synclets/twitter/home_timeline.js'});
 
       return done();
@@ -72,7 +72,7 @@ describe("Twitter connector", function () {
     beforeEach(function (done) {
       fakeweb.registerUri({uri : apiBase + 'account/verify_credentials.json?path=%2Faccount%2Fverify_credentials.json' + apiSuffix,
                            file : __dirname + '/../fixtures/synclets/twitter/verify_credentials.js'});
-      fakeweb.registerUri({uri : apiBase + 'statuses/mentions.json?screen_name=ctide&page=1&since_id=1&path=%2Fstatuses%2Fmentions.json&count=200' + apiSuffix,
+      fakeweb.registerUri({uri : apiBase + 'statuses/mentions.json?screen_name=ctide&since_id=1&path=%2Fstatuses%2Fmentions.json&count=200' + apiSuffix,
                            file : __dirname + '/../fixtures/synclets/twitter/home_timeline.js'});
       return done();
     });
@@ -108,7 +108,7 @@ describe("Twitter connector", function () {
     beforeEach(function (done) {
       fakeweb.registerUri({uri : apiBase + 'account/verify_credentials.json?path=%2Faccount%2Fverify_credentials.json' + apiSuffix,
                            file : __dirname + '/../fixtures/synclets/twitter/verify_credentials.js'});
-      fakeweb.registerUri({uri : apiBase + 'statuses/user_timeline.json?screen_name=ctide&page=1&since_id=1&path=%2Fstatuses%2Fuser_timeline.json&include_rts=true&count=200' + apiSuffix,
+      fakeweb.registerUri({uri : apiBase + 'statuses/user_timeline.json?screen_name=ctide&since_id=1&path=%2Fstatuses%2Fuser_timeline.json&include_rts=true&count=200' + apiSuffix,
                            file : __dirname + '/../fixtures/synclets/twitter/home_timeline.js'});
       return done();
     });
