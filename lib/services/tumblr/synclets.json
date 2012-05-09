@@ -1,0 +1,19 @@
+{
+    "synclets": [
+	{
+        "name": "self",
+        "frequency": 3600
+    },
+	{
+        "name": "following",
+        "frequency": 3600
+    },
+    {
+        "name": "dashboard",
+        "frequency": 600
+    },
+    {
+        "name": "posts",
+        "frequency": 1200
+    }]
+}

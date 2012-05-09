@@ -1,0 +1,16 @@
+{
+   "meta": {
+      "status": 200,
+      "msg": "OK"
+   },
+   "response": {
+       "total_blogs": 259,
+       "blogs": [
+          {
+             "name": "david",
+             "url": "http:\/\/www.davidslog.com",
+             "updated": 1308781073
+          }
+       ]
+   }
+}
