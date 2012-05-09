@@ -16,6 +16,14 @@ var async = require('async');
 var util = require('util');
 var argv = require("optimist").argv;
 
+var Roles = {
+  worker:{},
+  apihost:{
+    startup:startAPIHost
+  }
+};
+var role = Roles.apihost;
+
 // This lconfig stuff has to come before any other locker modules are loaded!!
 var lconfig = require('lconfig');
 var configDir = process.env.LOCKER_CONFIG || 'Config';
@@ -49,24 +57,29 @@ if (lconfig.lockerHost != "localhost" && lconfig.lockerHost != "127.0.0.1") {
 var shuttingDown_ = false;
 
 
-function startWorker(cbDone) {
-  logger.info("Starting a worker.");
-  syncManager.manager.init(function() {
-    syncManager.manager.on("completed", function(response, task) {
-      logger.info("Got a completion from %s", task.profile);
-      pipeline.inject(response.data, function(err) {
-        if(err) return logger.error("failed pipeline processing: "+err);
-        logger.verbose("Reschduling " + JSON.stringify(task) + " and config "+JSON.stringify(response.config));
-        // save any changes and reschedule
-        var nextRun = response.config && response.config.nextRun;
-        if(nextRun) delete response.config.nextRun; // don't want this getting stored!
-        async.series([
-          function(cb) { if(!response.auth) return cb(); profileManager.authSet(task.profile, response.auth, cb) },
-          function(cb) { if(!response.config) return cb(); profileManager.configSet(task.profile, response.config, cb) },
-          function() { syncManager.manager.schedule(task, nextRun) }
-        ]);
-      })
-    });
+function syncComplete(response, task) {
+  logger.info("Got a completion from %s", task.profile);
+  pipeline.inject(response.data, function(err) {
+    if(err) return logger.error("failed pipeline processing: "+err);
+    logger.verbose("Reschduling " + JSON.stringify(task) + " and config "+JSON.stringify(response.config));
+    // save any changes and reschedule
+    var nextRun = response.config && response.config.nextRun;
+    if(nextRun) delete response.config.nextRun; // don't want this getting stored!
+    async.series([
+      function(cb) { if(!response.auth) return cb(); profileManager.authSet(task.profile, response.auth, cb) },
+      function(cb) { if(!response.config) return cb(); profileManager.configSet(task.profile, response.config, cb) },
+      function() { syncManager.manager.schedule(task, nextRun) }
+    ]);
+  })
+}
+
+function startSyncmanager(cbDone) {
+  var isWorker = (role === Roles.worker);
+  syncManager.manager.init(isWorker, function() {
+    if (isWorker) {
+      logger.info("Starting a worker.");
+      syncManager.manager.on("completed", syncComplete);
+    }
     cbDone();
   });
 }
@@ -81,23 +94,16 @@ function startAPIHost(cbDone) {
 }
 
 
-var startupTasks = [];
 if (argv._.length > 0) {
-  switch (argv._[0]) {
-    case "worker":
-      startupTasks.push(startWorker);
-      break;
-    case "apihost":
-      startupTasks.push(startAPIHost);
-      break;
-    default:
-      logger.error("The %s job is unknown.", argv._[0]);
-      break;
+  if (!Roles.hasOwnProperty(argv._[0])) {
+    logger.error("The %s role is unknown.", argv._[0]);
+    return shutdown(1);
   }
-} else {
-  startupTasks.push(startWorker);
-  startupTasks.push(startAPIHost);
+  role = Roles[argv._[0]];
 }
+
+var startupTasks = [startSyncmanager];
+if (role.startup) startupTasks.push(role.startup);
 if (lconfig.airbrakeKey) startupTasks.push(function(cbDone) { locker.initAirbrake(lconfig.airbrakeKey); cbDone(); });
 startupTasks.push(require('ijod').initDB);
 startupTasks.push(require('acl').init);
