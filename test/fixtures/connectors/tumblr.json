@@ -1,0 +1,9 @@
+{
+    "auth": {
+	"token":{},
+      "pid":"42@tumblr",
+      "profile": {
+        "blogs":[{"primary":true,"url":"http://foo/"}]
+      }
+    }
+}

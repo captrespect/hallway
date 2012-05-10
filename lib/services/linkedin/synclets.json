@@ -1,0 +1,6 @@
+{
+    "synclets":[
+        {"name": "self", "frequency": 86400},
+        {"name": "connections", "frequency": 86400}
+    ]
+}
