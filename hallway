@@ -73,7 +73,7 @@ shutdown() {
 }
 
 # Extra paths to search for files : separated
-export NODE_PATH=lib:Common/node
+export NODE_PATH=lib
 
 # Start the hallway
 case "$hallway_mode" in
