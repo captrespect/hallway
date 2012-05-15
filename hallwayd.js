@@ -112,7 +112,6 @@ if (argv._.length > 0) {
 
 var startupTasks = [startSyncmanager];
 if (role.startup) startupTasks.push(role.startup);
-if (lconfig.airbrakeKey) startupTasks.push(function(cbDone) { locker.initAirbrake(lconfig.airbrakeKey); cbDone(); });
 startupTasks.push(require('ijod').initDB);
 startupTasks.push(require('acl').init);
 startupTasks.push(profileManager.init);

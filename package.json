@@ -14,7 +14,6 @@
         "start": "./locker"
     },
     "dependencies": {
-        "airbrake": "=0.2.2",
         "async": "=0.1.15",
         "colors":"",
         "compress-buffer": "=0.5.1",
