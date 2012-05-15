@@ -18,7 +18,7 @@ function getUrl(service) {
 var app = express.createServer();
 
 app.get('/', function(req, res) {
-  res.send('<html><a href="' + getUrl('twitter') + '">auth twitter</a> or <a href="' + getUrl('facebook') + '">auth facebook</a> or <a href="' + getUrl('instagram') + '">auth instagram</a> or <a href="' + getUrl('foursquare') + '">auth foursquare</a> or <a href="' + getUrl('tumblr') + '">auth tumblr</a> or <a href="' + getUrl('linkedin') + '">auth linkedin</a> or <a href="' + getUrl('email') + '">auth email</a></html>');
+  res.send('<html><a href="' + getUrl('twitter') + '">auth twitter</a> or <a href="' + getUrl('facebook') + '">auth facebook</a> or <a href="' + getUrl('instagram') + '">auth instagram</a> or <a href="' + getUrl('foursquare') + '">auth foursquare</a> or <a href="' + getUrl('tumblr') + '">auth tumblr</a> or <a href="' + getUrl('linkedin') + '">auth linkedin</a> or <a href="' + getUrl('email') + '">auth email</a> or <a href="' + getUrl('fitbit') + '">auth fitbit</a></html>');
 })
 
 app.get('/callback', function(req, res) {
