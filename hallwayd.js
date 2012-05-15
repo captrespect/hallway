@@ -43,6 +43,14 @@ else {
 
 var logger = require("logger").logger("lockerd");
 logger.info('process id:' + process.pid);
+var alerting = require("alerting");
+if (lconfig.alerting && lconfig.alerting.key) {
+  alerting.init(lconfig.alerting);
+  alerting.install(function(E) {
+    logger.error("Uncaught exception: %s", E.message);
+    shutdown(1);
+  });
+}
 var syncManager = require("syncManager.js");
 var pipeline = require('pipeline');
 var profileManager = require('profileManager');
@@ -104,7 +112,6 @@ if (argv._.length > 0) {
 
 var startupTasks = [startSyncmanager];
 if (role.startup) startupTasks.push(role.startup);
-if (lconfig.airbrakeKey) startupTasks.push(function(cbDone) { locker.initAirbrake(lconfig.airbrakeKey); cbDone(); });
 startupTasks.push(require('ijod').initDB);
 startupTasks.push(require('acl').init);
 startupTasks.push(profileManager.init);
