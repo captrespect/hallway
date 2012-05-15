@@ -43,6 +43,14 @@ else {
 
 var logger = require("logger").logger("lockerd");
 logger.info('process id:' + process.pid);
+var alerting = require("alerting");
+if (lconfig.alerting && lconfig.alerting.key) {
+  alerting.init(lconfig.alerting);
+  alerting.install(function(E) {
+    logger.error("Uncaught exception: %s", E.message);
+    shutdown(1);
+  });
+}
 var syncManager = require("syncManager.js");
 var pipeline = require('pipeline');
 var profileManager = require('profileManager');
