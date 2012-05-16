@@ -81,11 +81,11 @@ describe("IDR", function() {
   describe("#baseHash", function() {
     it ("should return a hash of the base idr string", function() {
       var res = idr.baseHash(parsedIDR);
-      res.should.equal("d52acb76ea27ddc12eebf21cb4da292");
+      res.should.equal("0d52acb76ea27ddc12eebf21cb4da292");
     });
     it ("should return the same hash for a string idr", function() {
       var res = idr.baseHash(testIDR);
-      res.should.equal("d52acb76ea27ddc12eebf21cb4da292");
+      res.should.equal("0d52acb76ea27ddc12eebf21cb4da292");
     });
   });
   describe("#id", function() {
