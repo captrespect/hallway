@@ -1,0 +1,3 @@
+{
+    "synclets":[{"name":"self", "frequency":3600}, {"name":"contacts", "frequency":3600}, {"name":"photos", "frequency":3600}, {"name":"photos_feed", "frequency":3600}]
+}

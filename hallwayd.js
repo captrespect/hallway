@@ -12,10 +12,17 @@ exports.alive = false;
 
 var fs = require('fs');
 var path = require('path');
-var request = require('request');
 var async = require('async');
 var util = require('util');
-var lutil = require('lutil');
+var argv = require("optimist").argv;
+
+var Roles = {
+  worker:{},
+  apihost:{
+    startup:startAPIHost
+  }
+};
+var role = Roles.apihost;
 
 // This lconfig stuff has to come before any other locker modules are loaded!!
 var lconfig = require('lconfig');
@@ -36,8 +43,15 @@ else {
 
 var logger = require("logger").logger("lockerd");
 logger.info('process id:' + process.pid);
+var alerting = require("alerting");
+if (lconfig.alerting && lconfig.alerting.key) {
+  alerting.init(lconfig.alerting);
+  alerting.install(function(E) {
+    logger.error("Uncaught exception: %s", E.message);
+    shutdown(1);
+  });
+}
 var syncManager = require("syncManager.js");
-var lcrypto = require("lcrypto");
 var pipeline = require('pipeline');
 var profileManager = require('profileManager');
 
@@ -51,43 +65,64 @@ if (lconfig.lockerHost != "localhost" && lconfig.lockerHost != "127.0.0.1") {
 var shuttingDown_ = false;
 
 
-// ordering sensitive, as synclet manager is inert during init, servicemanager's init will call into syncletmanager
-// Dear lord this massive waterfall is so scary
-syncManager.manager.init(function() {
-  syncManager.manager.on("completed", function(response, task) {
-    logger.info("Got a completion from %s", task.profile);
-    pipeline.inject(response.data, function(err) {
-      if(err) return logger.error("failed pipeline processing: "+err);
-      logger.verbose("Reschduling " + JSON.stringify(task) + " and config "+JSON.stringify(response.config));
-      // save any changes and reschedule
-      var nextRun = response.config && response.config.nextRun;
-      if(nextRun) delete response.config.nextRun; // don't want this getting stored!
-      async.series([
-        function(cb) { if(!response.auth) return cb(); profileManager.authSet(task.profile, response.auth, cb) },
-        function(cb) { if(!response.config) return cb(); profileManager.configSet(task.profile, response.config, cb) },
-        function() { syncManager.manager.schedule(task, nextRun) }
-      ]);
-    })
-  });
-  var webservice = require('webservice');
-  webservice.startService(lconfig.lockerPort, lconfig.lockerListenIP, function(locker) {
-    // TODO we need to start up synclet processing for whatever set of users!
-    if (lconfig.airbrakeKey) locker.initAirbrake(lconfig.airbrakeKey);
-    exports.alive = true;
-    require('ijod').initDB(function(err){ if(err) console.error(err); }); // just async for now
-    require('acl').init(function(){
-      profileManager.init(postStartup);
-    });
-  });
-});
-
-
-// scheduling and misc things
-function postStartup() {
-    logger.info('hallway is up and running at ' + lconfig.lockerBase);
-    exports.alive = true;
+function syncComplete(response, task) {
+  logger.info("Got a completion from %s", task.profile);
+  pipeline.inject(response.data, function(err) {
+    if(err) return logger.error("failed pipeline processing: "+err);
+    logger.verbose("Reschduling " + JSON.stringify(task) + " and config "+JSON.stringify(response.config));
+    // save any changes and reschedule
+    var nextRun = response.config && response.config.nextRun;
+    if(nextRun) delete response.config.nextRun; // don't want this getting stored!
+    async.series([
+      function(cb) { if(!response.auth) return cb(); profileManager.authSet(task.profile, response.auth, cb) },
+      function(cb) { if(!response.config) return cb(); profileManager.configSet(task.profile, response.config, cb) },
+      function() { syncManager.manager.schedule(task, nextRun) }
+    ]);
+  })
 }
 
+function startSyncmanager(cbDone) {
+  var isWorker = (role === Roles.worker);
+  syncManager.manager.init(isWorker, function() {
+    if (isWorker) {
+      logger.info("Starting a worker.");
+      syncManager.manager.on("completed", syncComplete);
+    }
+    cbDone();
+  });
+}
+
+function startAPIHost(cbDone) {
+  logger.info("Starting an API host");
+  var webservice = require('webservice');
+  webservice.startService(lconfig.lockerPort, lconfig.lockerListenIP, function(locker) {
+    logger.info('Hallway is now listening at ' + lconfig.lockerBase);
+    cbDone();
+  });
+}
+
+
+if (argv._.length > 0) {
+  if (!Roles.hasOwnProperty(argv._[0])) {
+    logger.error("The %s role is unknown.", argv._[0]);
+    return shutdown(1);
+  }
+  role = Roles[argv._[0]];
+}
+
+var startupTasks = [startSyncmanager];
+if (role.startup) startupTasks.push(role.startup);
+startupTasks.push(require('ijod').initDB);
+startupTasks.push(require('acl').init);
+startupTasks.push(profileManager.init);
+
+async.series(startupTasks, function(error) {
+  // TODO:  This needs a cleanup, it's too async
+  logger.info("Hallway is up and running.");
+  exports.alive = true;
+});
+
+// scheduling and misc things
 function shutdown(returnCode, callback) {
     if (shuttingDown_ && returnCode !== 0) {
         try {
