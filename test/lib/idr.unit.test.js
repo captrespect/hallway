@@ -88,4 +88,10 @@ describe("IDR", function() {
       res.should.equal("d52acb76ea27ddc12eebf21cb4da292");
     });
   });
+  describe("#id", function() {
+    it ("should return a unique compound id", function() {
+      var res = idr.id(parsedIDR);
+      res.should.equal("d55d940d8c774d19e3bb6b972f7a0d95_cf5e3670d");
+    });
+  });
 });
