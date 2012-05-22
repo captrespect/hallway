@@ -23,6 +23,7 @@
         "express": "=2.5.4",
         "facebook-js": "=1.0.0",
         "generic-pool":"",
+        "gzippo":"=0.1.4",
         "knox":"",
         "mocha": "",
         "moment":"",
