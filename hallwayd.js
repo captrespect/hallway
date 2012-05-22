@@ -53,6 +53,9 @@ if (lconfig.alerting && lconfig.alerting.key) {
 var syncManager = require("syncManager.js");
 var pipeline = require('pipeline');
 var profileManager = require('profileManager');
+// Set our globalAgent sockets higher
+var http = require("http");
+http.globalAgent.maxSockets = 100;
 
 if (process.argv.indexOf("offline") >= 0) syncManager.manager.offlineMode = true;
 
