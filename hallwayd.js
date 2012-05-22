@@ -9,7 +9,6 @@
 
 exports.alive = false;
 
-
 var fs = require('fs');
 var path = require('path');
 var async = require('async');
@@ -57,19 +56,13 @@ var profileManager = require('profileManager');
 
 if (process.argv.indexOf("offline") >= 0) syncManager.manager.offlineMode = true;
 
-if (lconfig.lockerHost != "localhost" && lconfig.lockerHost != "127.0.0.1") {
-    logger.warn('If I\'m running on a public IP, I need to have password protection,' + // uniquely self (de?)referential? lolz!
-                'which if so inclined can be hacked into lockerd.js and added, since' +
-                ' it\'s apparently still not implemented :)\n\n');
-}
 var shuttingDown_ = false;
-
 
 function syncComplete(response, task) {
   logger.info("Got a completion from %s", task.profile);
   pipeline.inject(response.data, function(err) {
     if(err) return logger.error("failed pipeline processing: "+err);
-    logger.verbose("Reschduling " + JSON.stringify(task) + " and config "+JSON.stringify(response.config));
+    logger.verbose("Rescheduling " + JSON.stringify(task) + " and config "+JSON.stringify(response.config));
     // save any changes and reschedule
     var nextRun = response.config && response.config.nextRun;
     if(nextRun) delete response.config.nextRun; // don't want this getting stored!
@@ -100,7 +93,6 @@ function startAPIHost(cbDone) {
     cbDone();
   });
 }
-
 
 if (argv._.length > 0) {
   if (!Roles.hasOwnProperty(argv._[0])) {
