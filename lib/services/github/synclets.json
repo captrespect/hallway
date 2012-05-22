@@ -10,6 +10,10 @@
         },
         {
             "frequency": 3600,
+            "name": "issues"
+        },
+        {
+            "frequency": 3600,
             "name": "repos"
         },
         {
