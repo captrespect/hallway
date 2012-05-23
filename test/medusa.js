@@ -28,9 +28,9 @@ get('profiles', function(j){
         });
       }, function(){
         var last = {};
-        if(path.exists(path.join(__dirname,'snaps','last.json'))) try {
+        if(path.existsSync(path.join(__dirname,'snaps','last.json'))) try {
           last = JSON.parse(fs.readFileSync(path.join(__dirname,'snaps','last.json')));
-        }catch(E){}
+        }catch(E){console.error(E)}
         var union = {};
         Object.keys(snap).forEach(function(k){union[k]=true});
         Object.keys(last).forEach(function(k){union[k]=true});
@@ -39,8 +39,8 @@ get('profiles', function(j){
           if(snap[k] === last[k]) change = "SAME";
           console.log(change,snap[k],last[k],k);
         });
-        fs.writeFileSync(path.join(__dirname,'snaps','last.json'));
-        fs.writeFileSync(path.join(__dirname,'snaps','at.'+Date.now()+'.json'));
+        fs.writeFileSync(path.join(__dirname,'snaps','last.json'), JSON.stringify(snap));
+        fs.writeFileSync(path.join(__dirname,'snaps','at.'+Date.now()+'.json'), JSON.stringify(snap));
       });      
     });
   });
