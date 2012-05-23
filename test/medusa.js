@@ -10,7 +10,7 @@ token = '?access_token='+token;
 var snap = {};
 get('profiles', function(j){
   async.forEach(Object.keys(j), function(service, cb1){
-    if(service == 'id' || service == 'all') return;
+    if(service == 'id' || service == 'all') return cb1();
     get('services/'+service, function(s){
       async.forEach(Object.keys(s), function(k, cb2){
         get('services/'+service+'/'+k, function(d){
@@ -21,7 +21,7 @@ get('profiles', function(j){
     });
   }, function(){
     get('types', function(t){
-      async.forEach(Object.keys(j), function(type, cb1){
+      async.forEach(Object.keys(t), function(type, cb1){
         get('types/'+type, function(s){
           snap['types/'+type] = s.length;
           cb1()
