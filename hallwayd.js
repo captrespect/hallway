@@ -63,6 +63,8 @@ var shuttingDown_ = false;
 
 function syncComplete(response, task) {
   logger.info("Got a completion from %s", task.profile);
+  if(!response) logger.debug("missing response");
+  if(!response) response = {};
   pipeline.inject(response.data, function(err) {
     if(err) return logger.error("failed pipeline processing: "+err);
     logger.verbose("Rescheduling " + JSON.stringify(task) + " and config "+JSON.stringify(response.config));
