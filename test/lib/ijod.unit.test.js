@@ -20,6 +20,11 @@ Date.now = function() {
 }
 
 describe("IJOD", function() {
+  describe("initializes without memcache", function() {
+    it("should still run", function(done) {
+      ijod.initDB(done);
+    });
+  });
   describe("#batchSmartAdd", function() {
     fakeDB.addNoOp(/^DELETE FROM batchSmartAdd/);
     fakeDB.addNoOp(/^INSERT INTO batchSmartAdd/);
