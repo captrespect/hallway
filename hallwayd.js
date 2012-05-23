@@ -19,6 +19,9 @@ var Roles = {
   worker:{},
   apihost:{
     startup:startAPIHost
+  },
+  dawg:{
+    startup:startDawg
   }
 };
 var role = Roles.apihost;
@@ -95,6 +98,20 @@ function startAPIHost(cbDone) {
   var webservice = require('webservice');
   webservice.startService(lconfig.lockerPort, lconfig.lockerListenIP, function(locker) {
     logger.info('Hallway is now listening at ' + lconfig.lockerBase);
+    cbDone();
+  });
+}
+
+function startDawg(cbDone) {
+  if (!lconfig.dawg || !lconfig.dawg.port || !lconfig.dawg.password) {
+    logger.error("You must specify a dawg section with at least a port and password to run.");
+    shutdown(1);
+  }
+  logger.info("Starting a Hallway Dawg -- Think you can get away without having a hall pass?  Think again.");
+  var dawg = require("dawg");
+  if (!lconfig.dawg.listenIP) lconfig.dawg.listenIP = "0.0.0.0";
+  dawg.startService(lconfig.dawg.port, lconfig.dawg.listenIP, function() {
+    logger.info("The Dawg is now monitoring at port %d", lconfig.dawg.port);
     cbDone();
   });
 }
