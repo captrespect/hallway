@@ -1,4 +1,6 @@
 {
+	"name":"Google Contacts",
+	"desc":"Syncs contacts from any Google account",
     "synclets":[
 		{"name": "self", "frequency": 1700, "note": "frequency has to be < 30min to keep access token alive for media fetches for now, see map.js TODO"}, 
 		{"name": "contacts", "frequency": 86400}

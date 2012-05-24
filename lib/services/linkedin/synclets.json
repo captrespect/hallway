@@ -1,4 +1,6 @@
 {
+	"name":"LinkedIn",
+	"desc":"Syncs connections, shares, and the network updates news feed.",
     "synclets":[
         {"name": "self", "frequency": 86400},
         {"name": "updates", "frequency": 3600},

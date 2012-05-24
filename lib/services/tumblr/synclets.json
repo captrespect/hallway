@@ -1,4 +1,6 @@
 {
+	"name":"Tumblr",
+	"desc":"Syncs blogs followed, dashboard, and all posts.",
     "synclets": [
 	{
         "name": "self",

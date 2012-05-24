@@ -1,8 +1,6 @@
 {
-    "types" : {
-        "feed":"photo"
-    },
-    "provides":["profile/instagram","photo/instagram","contact/instagram","feed/instagram"],
+	"name":"Instagram",
+	"desc":"Syncs photos, photo feed, and friends.",
     "synclets":[
         {"name": "self", "frequency": 3600},
         {"name": "feed", "frequency": 600},

@@ -1,4 +1,6 @@
 {
+	"name":"Fitbit",
+	"desc":"Syncs devices and all activities.",
     "synclets":[{"name":"self", "frequency":7200},
                 {"name":"devices", "frequency": 3600},
                 {"name":"activities", "frequency": 7200}]

@@ -1,4 +1,6 @@
 {
+	"name":"GitHub",
+	"desc":"Syncs friends, followers, issues, repo summary, received and generated events",
     "synclets": [
         {
             "frequency": 3600,
