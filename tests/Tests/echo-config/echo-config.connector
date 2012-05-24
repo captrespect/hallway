@@ -1,7 +1,0 @@
-{
-    "title":"Test spawning valid service",
-    "action":"Should run properly",
-    "desc":"Nothing",
-    "run":"node echo-config.js",
-    "handle":"echo-config"
-}

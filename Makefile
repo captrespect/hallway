@@ -5,10 +5,7 @@ export BUILD_NUMBER?=git-$(GIT_REVISION)
 all: build
 	@echo
 	@echo "Looks like everything worked!"
-	@echo "Get some API keys (https://github.com/LockerProject/Locker/wiki/GettingAPIKeys) and then try running:"
-	@echo "./locker"
 	@echo
-	@echo "Once running, visit http://localhost:8042 in your web browser."
 
 # install system level dependencies into deps/
 deps:
@@ -40,7 +37,7 @@ npm_modules:
 # so drop a copy there too
 build.json:
 	@echo '{ "build" : "$(BUILD_NUMBER)", "gitrev" : "$(GIT_REVISION)" }' \
-	| tee $@ tests/$@
+	| tee $@ test/$@
 .PHONY: build.json
 
 # run all of the tests
@@ -64,12 +61,6 @@ cov: check_deps npm_modules
 	@env NODE_PATH="lib:$(PWD)/Common/node" \
 		$(COVER) run $(_MOCHA) $(MOCHA_TESTS)
 	$(COVER) report html
-
-# old style vows tests
-oldtest: build
-	cd tests && \
-	env NODE_PATH="$(PWD)/lib:$(PWD)/Common/node" \
-	node ./runTests.js
 
 # phantom tests
 PHANTOM_TESTS = $(shell find test -name "*.phantom.js")
@@ -95,7 +86,7 @@ jenkins:
 	$(MAKE) test-bindist
 
 clean:
-	rm -f "$(DISTFILE)" "$(TEMPLATE_OUTPUT)" build.json tests/build.json
+	rm -f "$(DISTFILE)" "$(TEMPLATE_OUTPUT)" build.json test/build.json
 	rm -f "hallway-git-*.tar.gz"
 	rm -rf node_modules
 	rm -rf Me.*.test

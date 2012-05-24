@@ -1,10 +1,6 @@
 {
-    "provides":["contact/facebook", "photo/facebook", "link/facebook", "home/facebook"],
-    "types" : {
-        "home":"post",
-        "self":"contact"
-    },
-    "profileIds" : ["id", "username"],
+	"name":"Facebook",
+	"desc":"Syncs data for photos, wall, news feed, and friends.",
     "synclets":[
         {"name": "self", "frequency": 7200},
         {"name": "feed", "frequency": 3600},

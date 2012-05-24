@@ -1,0 +1,30 @@
+{
+	"name":"GitHub",
+	"desc":"Syncs friends, followers, issues, repo summary, received and generated events",
+    "synclets": [
+        {
+            "frequency": 3600,
+            "name": "self"
+        },
+        {
+            "frequency": 3600,
+            "name": "users"
+        },
+        {
+            "frequency": 3600,
+            "name": "issues"
+        },
+        {
+            "frequency": 3600,
+            "name": "repos"
+        },
+        {
+            "frequency": 3600,
+            "name": "received"
+        },
+        {
+            "frequency": 3600,
+            "name": "events"
+        }
+    ]
+}

@@ -1,4 +1,0 @@
-{
-    "title":"Test Scheduler",
-    "run":"node scheduler-tester.js"
-}

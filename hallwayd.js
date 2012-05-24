@@ -9,7 +9,6 @@
 
 exports.alive = false;
 
-
 var fs = require('fs');
 var path = require('path');
 var async = require('async');
@@ -20,6 +19,9 @@ var Roles = {
   worker:{},
   apihost:{
     startup:startAPIHost
+  },
+  dawg:{
+    startup:startDawg
   }
 };
 var role = Roles.apihost;
@@ -54,22 +56,21 @@ if (lconfig.alerting && lconfig.alerting.key) {
 var syncManager = require("syncManager.js");
 var pipeline = require('pipeline');
 var profileManager = require('profileManager');
+// Set our globalAgent sockets higher
+var http = require("http");
+http.globalAgent.maxSockets = 100;
 
 if (process.argv.indexOf("offline") >= 0) syncManager.manager.offlineMode = true;
 
-if (lconfig.lockerHost != "localhost" && lconfig.lockerHost != "127.0.0.1") {
-    logger.warn('If I\'m running on a public IP, I need to have password protection,' + // uniquely self (de?)referential? lolz!
-                'which if so inclined can be hacked into lockerd.js and added, since' +
-                ' it\'s apparently still not implemented :)\n\n');
-}
 var shuttingDown_ = false;
-
 
 function syncComplete(response, task) {
   logger.info("Got a completion from %s", task.profile);
+  if(!response) logger.debug("missing response");
+  if(!response) response = {};
   pipeline.inject(response.data, function(err) {
     if(err) return logger.error("failed pipeline processing: "+err);
-    logger.verbose("Reschduling " + JSON.stringify(task) + " and config "+JSON.stringify(response.config));
+    logger.verbose("Rescheduling " + JSON.stringify(task) + " and config "+JSON.stringify(response.config));
     // save any changes and reschedule
     var nextRun = response.config && response.config.nextRun;
     if(nextRun) delete response.config.nextRun; // don't want this getting stored!
@@ -101,6 +102,19 @@ function startAPIHost(cbDone) {
   });
 }
 
+function startDawg(cbDone) {
+  if (!lconfig.dawg || !lconfig.dawg.port || !lconfig.dawg.password) {
+    logger.error("You must specify a dawg section with at least a port and password to run.");
+    shutdown(1);
+  }
+  logger.info("Starting a Hallway Dawg -- Think you can get away without having a hall pass?  Think again.");
+  var dawg = require("dawg");
+  if (!lconfig.dawg.listenIP) lconfig.dawg.listenIP = "0.0.0.0";
+  dawg.startService(lconfig.dawg.port, lconfig.dawg.listenIP, function() {
+    logger.info("The Dawg is now monitoring at port %d", lconfig.dawg.port);
+    cbDone();
+  });
+}
 
 if (argv._.length > 0) {
   if (!Roles.hasOwnProperty(argv._[0])) {

@@ -1,4 +1,6 @@
 {
+	"name":"foursquare",
+	"desc":"Syncs checkins, photos, and friends checkins",
     "synclets": [
     	{
         	"frequency": 3600,
@@ -14,7 +16,6 @@
         },
         {
             "frequency": 300,
-            "threshold": 2,
             "name": "recent"
         },
         {
@@ -25,19 +26,5 @@
             "frequency": 3600,
             "name": "badges"
         }
-    ],
-    "mongoId" : {
-        "photos": "photoID"
-    },
-    "profileIds" : ["id", "username"],
-    "types" : {
-        "recents":"checkin"
-    },
-    "provides": [
-        "contact/foursquare",
-        "profile/foursquare",
-        "recents/foursquare",
-        "checkin/foursquare",
-        "badges/foursquare"
     ]
 }

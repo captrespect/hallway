@@ -1,0 +1,16 @@
+{
+   "name": "statsd-singly",
+   "version": "0.0.1",
+   "author": "Singly <nerds@singly.com>",
+   "main": "index",
+   "scripts": {
+      "test": "./node_modules/mocha/bin/mocha -R spec"
+   },
+   "dependencies": {
+   },
+   "devDependencies": {
+      "mocha": "*",
+      "should": "*"
+   },
+   "license": "MIT"
+}
