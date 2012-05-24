@@ -1,5 +1,0 @@
-{
-	"title":"Test MongoDB Connections",
-	"mongoCollections" : ["thing1","thing2"],
-	"run":"node mongo-client.js"
-}
