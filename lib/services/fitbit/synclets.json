@@ -1,7 +1,12 @@
 {
 	"name":"Fitbit",
-	"desc":"Syncs devices and all activities.",
-    "synclets":[{"name":"self", "frequency":7200},
-                {"name":"devices", "frequency": 3600},
-                {"name":"activities", "frequency": 7200}]
+	"desc":"Syncs devices, activity, sleep and weight/bodyfat",
+  "synclets":[
+    {"name":"self",       "frequency": 7200},
+    {"name":"activities", "frequency": 7200},
+    {"name":"devices",    "frequency": 3600},
+    {"name":"fat",        "frequency": 7200},
+    {"name":"sleep",      "frequency": 7200},
+    {"name":"weight",     "frequency": 7200}
+  ]
 }
