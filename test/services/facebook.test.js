@@ -63,7 +63,7 @@ describe("Facebook connector", function () {
     beforeEach(function (done) {
       fakeweb.registerUri({uri : 'https://graph.facebook.com:443/3488997579924?access_token=foo&date_format=U',
                            file : __dirname + '/../fixtures/synclets/facebook/photo.json'});
-      fakeweb.registerUri({uri : apiBase + 'home?access_token=foo&date_format=U&limit=100',
+      fakeweb.registerUri({uri : apiBase + 'home?access_token=foo&date_format=U&limit=200',
                            file : __dirname + '/../fixtures/synclets/facebook/home.json'});
       fakeweb.registerUri({uri : apiBase + 'feed?date_format=U&access_token=abc&limit=25&until=1305843879',
                            body : '{"data":[]}'});
