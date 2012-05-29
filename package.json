@@ -31,6 +31,7 @@
         "mysql":"",
         "mysql-libmysqlclient":"=1.3.3",
         "node-fakeweb": "=0.0.7",
+	"natural": "",
         "oauth": "=0.9.6",
         "oauth2-provider": ">=1.0.0 <2.0.0",
         "request": "=2.9.3",
