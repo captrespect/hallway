@@ -16,7 +16,9 @@ var util = require('util');
 var argv = require("optimist").argv;
 
 var Roles = {
-  worker:{},
+  worker:{
+    startup:startWorkerWS
+  },
   apihost:{
     startup:startAPIHost
   },
@@ -64,7 +66,7 @@ if (process.argv.indexOf("offline") >= 0) syncManager.manager.offlineMode = true
 
 var shuttingDown_ = false;
 
-function syncComplete(response, task) {
+function syncComplete(response, task, callback) {
   logger.info("Got a completion from %s", task.profile);
   if(!response) logger.debug("missing response");
   if(!response) response = {};
@@ -77,18 +79,18 @@ function syncComplete(response, task) {
     async.series([
       function(cb) { if(!response.auth) return cb(); profileManager.authSet(task.profile, response.auth, cb) },
       function(cb) { if(!response.config) return cb(); profileManager.configSet(task.profile, response.config, cb) },
-      function() { syncManager.manager.schedule(task, nextRun) }
-    ]);
+      function(cb) { syncManager.manager.schedule(task, nextRun, cb); },
+    ], callback);
   })
 }
 
 function startSyncmanager(cbDone) {
   var isWorker = (role === Roles.worker);
+  if (isWorker) {
+    syncManager.manager.completed = syncComplete;
+    logger.info("Starting a worker.");
+  }
   syncManager.manager.init(isWorker, function() {
-    if (isWorker) {
-      logger.info("Starting a worker.");
-      syncManager.manager.on("completed", syncComplete);
-    }
     cbDone();
   });
 }
@@ -112,6 +114,19 @@ function startDawg(cbDone) {
   if (!lconfig.dawg.listenIP) lconfig.dawg.listenIP = "0.0.0.0";
   dawg.startService(lconfig.dawg.port, lconfig.dawg.listenIP, function() {
     logger.info("The Dawg is now monitoring at port %d", lconfig.dawg.port);
+    cbDone();
+  });
+}
+
+function startWorkerWS(cbDone) {
+  if (!lconfig.worker || !lconfig.worker.port) {
+    logger.error("You must specify a worker section with at least a port and password to run.");
+    shutdown(1);
+  }
+  var worker = require("worker");
+  if (!lconfig.worker.listenIP) lconfig.worker.listenIP = "0.0.0.0";
+  worker.startService(syncManager.manager, lconfig.worker.port, lconfig.worker.listenIP, function() {
+    logger.info("Starting a Hallway Worker, thou shalt be digitized",lconfig.worker);
     cbDone();
   });
 }
