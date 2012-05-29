@@ -16,7 +16,9 @@ var util = require('util');
 var argv = require("optimist").argv;
 
 var Roles = {
-  worker:{},
+  worker:{
+    startup:startWorkerWS
+  },
   apihost:{
     startup:startAPIHost
   },
@@ -112,6 +114,19 @@ function startDawg(cbDone) {
   if (!lconfig.dawg.listenIP) lconfig.dawg.listenIP = "0.0.0.0";
   dawg.startService(lconfig.dawg.port, lconfig.dawg.listenIP, function() {
     logger.info("The Dawg is now monitoring at port %d", lconfig.dawg.port);
+    cbDone();
+  });
+}
+
+function startWorkerWS(cbDone) {
+  if (!lconfig.worker || !lconfig.worker.port) {
+    logger.error("You must specify a worker section with at least a port and password to run.");
+    shutdown(1);
+  }
+  var worker = require("worker");
+  if (!lconfig.worker.listenIP) lconfig.worker.listenIP = "0.0.0.0";
+  worker.startService(syncManager.manager, lconfig.worker.port, lconfig.worker.listenIP, function() {
+    logger.info("Starting a Hallway Worker, thou shalt be digitized",lconfig.worker);
     cbDone();
   });
 }
