@@ -39,6 +39,7 @@
       "oauth2-provider": ">=1.0.0 <2.0.0",
       "optimist": "",
       "request": "=2.9.3",
+      "sanitizer": "",
       "serializer": ">=0.0.2 <0.1.0",
       "should": "",
       "temp": ">=0.4.0",
