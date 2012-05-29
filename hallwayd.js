@@ -66,7 +66,7 @@ if (process.argv.indexOf("offline") >= 0) syncManager.manager.offlineMode = true
 
 var shuttingDown_ = false;
 
-function syncComplete(response, task) {
+function syncComplete(response, task, callback) {
   logger.info("Got a completion from %s", task.profile);
   if(!response) logger.debug("missing response");
   if(!response) response = {};
@@ -79,18 +79,18 @@ function syncComplete(response, task) {
     async.series([
       function(cb) { if(!response.auth) return cb(); profileManager.authSet(task.profile, response.auth, cb) },
       function(cb) { if(!response.config) return cb(); profileManager.configSet(task.profile, response.config, cb) },
-      function() { syncManager.manager.schedule(task, nextRun) }
-    ]);
+      function(cb) { syncManager.manager.schedule(task, nextRun, cb); },
+    ], callback);
   })
 }
 
 function startSyncmanager(cbDone) {
   var isWorker = (role === Roles.worker);
+  if (isWorker) {
+    syncManager.manager.completed = syncComplete;
+    logger.info("Starting a worker.");
+  }
   syncManager.manager.init(isWorker, function() {
-    if (isWorker) {
-      logger.info("Starting a worker.");
-      syncManager.manager.on("completed", syncComplete);
-    }
     cbDone();
   });
 }
