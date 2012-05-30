@@ -1,0 +1,22 @@
+<html>
+<head>
+	<title>hallway dawg</title>
+</head>
+<body>
+	<img src="dawg.jpg">
+	<h2>Overall</h2>
+	<a href="apps/active">active apps (24h)</a><br>
+	<a href="stats/ijod">ijod totals</a><br>
+	<a href="slag">service lag</a><br>
+	<a href="workers/state">workers state</a><br>
+	<a href="links/link">live links</a><br>
+	<h2>Profiles</h2>
+	<form method=get action="profiles/get">id@service lookup:<input name=pid></form>
+	<form method=get action="profiles/syncing">syncing status:<input name=q></form>
+	<form method=get action="profiles/resync">force resync (id@svc):<input name=pid></form>
+	<form method=get action="profiles/notes">see notes/actions:<input name=pid></form>
+	<form method=get action="profiles/note">add note - pid:<input name=pid> note:<input name=note></form>
+	<h2>Apps</h2>
+	<form method=get action="apps/get">key lookup:<input name=key></form>
+</body>
+</html>
