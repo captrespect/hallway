@@ -1,27 +1,128 @@
+<!DOCTYPE html>
 <html>
-<head>
-	<title>hallway dawg</title>
-</head>
-<body>
-	<img src="dawg.jpg">
-	<h2>Overall</h2>
-	<a href="apps/active">active apps (24h)</a><br>
-	<a href="stats/ijod">ijod totals</a><br>
-	<a href="slag">service lag</a><br>
-	<a href="workers/state">workers state</a><br>
-	<a href="links/link">live links</a><br>
-  <h2>Logs</h2>
-  <a href="https://papertrailapp.com/searches/40135">hallway-api</a><br />
-  <a href="https://papertrailapp.com/searches/40145">hallway-worker</a><br />
-  <a href="https://papertrailapp.com/searches/46721">hallway-dawg</a><br />
-	<h2>Profiles</h2>
-	<form method=get action="profiles/get">id@service lookup:<input name=pid></form>
-	<form method=get action="profiles/syncing">syncing status:<input name=q></form>
-	<form method=get action="profiles/resync">force resync (id@svc):<input name=pid></form>
-	<form method=get action="profiles/notes">see notes/actions:<input name=pid></form>
-	<form method=get action="profiles/note">add note - pid:<input name=pid> note:<input name=note></form>
-	<h2>Apps</h2>
-	<form method=get action="apps/get">key lookup:<input name=key></form>
-	<form method=get action="apps/logs">api logs:<input name=key></form>
-</body>
+ <head>
+  <title>hallway dawg</title>
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+
+  <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="/bootstrap/css/bootstrap-responsive.min.css" />
+
+  <link rel="stylesheet" href="/dawg.css" />
+ </head>
+
+ <body>
+  <div class="container">
+   <img src="dawg.jpg" />
+
+   <h1>Hello? Yes, this is dawg.</h1>
+
+   <h2>Overall Metrics</h2>
+
+   <ul>
+    <li><a href="apps/active">active apps (24h)</a></li>
+    <li><a href="stats/ijod">ijod totals</a></li>
+    <li><a href="slag">service lag</a></li>
+    <li><a href="workers/state">workers state</a></li>
+    <li><a href="links/link">live links</a></li>
+   </ul>
+
+   <h2>Papertrail Logs</h2>
+
+   <ul>
+    <li><a href="https://papertrailapp.com/searches/40135">hallway-api</a></li>
+    <li><a href="https://papertrailapp.com/searches/40145">hallway-worker</a></li>
+    <li><a href="https://papertrailapp.com/searches/46721">hallway-dawg</a></li>
+   </ul>
+
+   <h2>Profiles</h2>
+
+   <form class="form-horizontal" method="get" action="profiles/get">
+    <div class="control-group">
+     <label for="pid-1" class="control-label">Profile lookup</label>
+
+     <div class="controls">
+      <input id="pid-1" name="pid" placeholder="id@service" />
+
+      <button type="submit" class="btn btn-primary">Go</button>
+     </div>
+    </div>
+   </form>
+
+   <form class="form-horizontal" method="get" action="profiles/syncing">
+    <div class="control-group">
+     <label for="q-1" class="control-label">Syncing status</label>
+
+     <div class="controls">
+      <input id="q-1" name="q" placeholder="id@service (partial)" />
+
+      <button type="submit" class="btn btn-primary">Go</button>
+     </div>
+    </div>
+   </form>
+
+   <form class="form-horizontal" method="get" action="profiles/resync">
+    <div class="control-group">
+     <label for="pid-2" class="control-label">Force resync</label>
+
+     <div class="controls">
+      <input id="pid-2" name="pid" placeholder="id@service" />
+
+      <button type="submit" class="btn btn-primary">Go</button>
+     </div>
+    </div>
+   </form>
+
+   <form class="form-horizontal" method="get" action="profiles/notes">
+    <div class="control-group">
+     <label for="pid-3" class="control-label">See notes</label>
+
+     <div class="controls">
+      <input id="pid-3" name="pid" placeholder="id@service" />
+
+      <button type="submit" class="btn btn-primary">Go</button>
+     </div>
+    </div>
+   </form>
+
+   <form class="form-horizontal" method="get" action="profiles/note">
+    <div class="control-group">
+     <label for="pid-4" class="control-label">Add note</label>
+
+     <div class="controls">
+      <input id="pid-4" name="pid" class="span1" placeholder="id@service" />
+      <input id="note-1" name="note" class="span2" placeholder="note" />
+
+      <button type="submit" class="btn btn-primary">Go</button>
+     </div>
+    </div>
+   </form>
+
+   <h2>Apps</h2>
+
+   <form class="form-horizontal" method="get" action="apps/get">
+    <div class="control-group">
+     <label for="key-1" class="control-label">App lookup</label>
+
+     <div class="controls">
+      <input id="key-1" name="key" placeholder="client key" />
+
+      <button type="submit" class="btn btn-primary">Go</button>
+     </div>
+    </div>
+   </form>
+
+   <form class="form-horizontal" method="get" action="apps/logs">
+    <div class="control-group">
+     <label for="key-2" class="control-label">App logs</label>
+
+     <div class="controls">
+      <input id="key-2" name="key" placeholder="client key" />
+
+      <button type="submit" class="btn btn-primary">Go</button>
+     </div>
+    </div>
+   </form>
+  </div>
+ </body>
 </html>
