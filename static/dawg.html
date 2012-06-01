@@ -124,6 +124,30 @@
      </div>
     </div>
    </form>
+
+   <form class="form-horizontal" id='appact' method="get" action="apps/account">
+    <div class="control-group">
+     <label for="key-2" class="control-label">App User Account</label>
+
+     <div class="controls">
+      <input id="key-2" name="id" placeholder="account id" />
+
+      <button type="submit" class="btn btn-primary">Go</button>
+      <button type="submit" class="btn btn-primary" onclick="return appact(this)">Token</button>
+<script>
+function appact(b)
+{
+	$.getJSON('/apps/account',{id:document.forms.appact.id.value}, function(data) {
+	        if(!data || !data.token) return window.alert("I AM LOST! Heeeeeeellllllllpppppp");
+			window.location.replace('https://api.singly.com/profiles?access_token='+data.token);
+	    });
+	return false;
+}
+</script>
+     </div>
+    </div>
+   </form>
+
   </div>
  </body>
 </html>
