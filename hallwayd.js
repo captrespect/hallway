@@ -179,7 +179,17 @@ function exit(returnCode) {
 }
 
 process.on("SIGINT", function() {
+  switch (role) {
+  case Roles.worker:
+    syncManager.manager.stop(function() {
+      shutdown(0);
+    });
+    break;
+  case Roles.apihost:
+  default:
     shutdown(0);
+    break;
+  };
 });
 
 process.on("SIGTERM", function() {
