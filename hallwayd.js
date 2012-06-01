@@ -179,6 +179,7 @@ function exit(returnCode) {
 }
 
 process.on("SIGINT", function() {
+  logger.info("Shutting down...");
   switch (role) {
   case Roles.worker:
     syncManager.manager.stop(function() {
