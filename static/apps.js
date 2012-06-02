@@ -24,6 +24,8 @@ function refresh() {
                 appUrl: ''
               }
             };
+          } else {
+            info.notes.appUrl = '<a href="' + info.notes.appUrl + '">' + info.notes.appUrl + '</a>';
           }
 
           if (currentApp === 'total') {
