@@ -77,7 +77,7 @@ function syncComplete(response, task, callback) {
     var nextRun = response.config && response.config.nextRun;
     if(nextRun) delete response.config.nextRun; // don't want this getting stored!
     async.series([
-      function(cb) { if(!response.auth) return cb(); profileManager.authSet(task.profile, response.auth, cb) },
+      function(cb) { if(!response.auth) return cb(); profileManager.authSet(task.profile, response.auth, null, cb) },
       function(cb) { if(!response.config) return cb(); profileManager.configSet(task.profile, response.config, cb) },
       function(cb) { syncManager.manager.schedule(task, nextRun, cb); },
     ], callback);
