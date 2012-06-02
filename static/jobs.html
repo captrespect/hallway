@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="/bootstrap/css/bootstrap-responsive.min.css" />
 
   <link rel="stylesheet" href="/dawg.css" />
+  <link rel="stylesheet" href="/jobs.css" />
 
   <script src="/js/moment.min.js"></script>
 
@@ -17,6 +18,8 @@
 
  <body>
   <div class="container">
+   <input type="button" value="Refresh" class="btn btn-primary btn-large" id="refresh" />
+
    <table class="table table-striped">
     <thead>
      <tr>
@@ -30,7 +33,7 @@
     </thead>
 
     <tbody id="rows">
-
+     <!-- Fill programatically -->
     </tbody>
    </table>
   </div>
