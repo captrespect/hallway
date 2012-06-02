@@ -40,10 +40,22 @@
 
    <form class="form-horizontal" method="get" action="profiles/get">
     <div class="control-group">
-     <label for="pid-1" class="control-label">Profile lookup</label>
+     <label for="pid-1" class="control-label">Profile lookup by id</label>
 
      <div class="controls">
       <input id="pid-1" name="pid" placeholder="id@service" />
+
+      <button type="submit" class="btn btn-primary">Go</button>
+     </div>
+    </div>
+   </form>
+
+   <form class="form-horizontal" method="get" action="profiles/search">
+    <div class="control-group">
+     <label for="pid-1" class="control-label">Profile search by handle</label>
+
+     <div class="controls">
+      <input id="pid-1" name="q" placeholder="username" />
 
       <button type="submit" class="btn btn-primary">Go</button>
      </div>
