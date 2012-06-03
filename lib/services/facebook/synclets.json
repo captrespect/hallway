@@ -4,6 +4,7 @@
     "synclets":[
         {"name": "self", "frequency": 7200},
         {"name": "feed", "frequency": 3600},
+        {"name": "checkins", "frequency": 1800},
         {"name": "friends", "frequency": 3600},
         {"name": "home", "frequency": 600},
         {"name": "home_update", "frequency": 7000},
