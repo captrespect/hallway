@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="/apps.css" />
 
   <script src="/js/moment.min.js"></script>
+  <script src="/js/jquery.ba-bbq.min.js"></script>
   <script src="/js/jquery.sortElements.js"></script>
 
   <script src="/apps.js"></script>
@@ -20,6 +21,12 @@
  <body>
   <div class="container">
    <input type="button" value="Refresh" class="btn btn-primary btn-large" id="refresh" />
+
+   <a href="/apps.html?since=10">10 minutes</a> |
+   <a href="/apps.html?since=60">1 hour</a> |
+   <a href="/apps.html?since=360">6 hours</a> |
+   <a href="/apps.html?since=1440">1 day</a> |
+   <a href="/apps.html?since=10080">1 week</a>
 
    <table class="table table-striped">
     <thead>

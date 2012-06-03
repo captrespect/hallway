@@ -5,3 +5,7 @@ body {
 table {
   margin-top: 1em;
 }
+
+#refresh {
+  margin-right: 1em;
+}
