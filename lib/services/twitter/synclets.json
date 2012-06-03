@@ -1,9 +1,10 @@
 {
 	"name":"Twitter",
-	"desc":"Syncs tweets, mentions, timeline, and friends.",
+	"desc":"Syncs tweets, mentions, timeline, friends, and followers (up to 1k of them).",
     "synclets":[
         {"name": "self", "frequency": 7200},
-        {"name": "friends", "frequency": 3600},
+        {"name": "friends", "frequency": 7200},
+        {"name": "followers", "frequency": 21600},
         {"name": "tweets", "frequency": 600},
         {"name": "timeline", "frequency": 120},
         {"name": "related", "frequency": 7000},
