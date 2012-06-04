@@ -1,0 +1,9 @@
+{
+    "name":"WordPress.com",
+	"desc":"Connect to your activity and blogs on WordPress.com",
+    "synclets":[
+		{"name": "self", "frequency": 3600},
+		{"name": "posts", "frequency": 3600},
+		{"name": "feed", "frequency": 3600}
+	]
+}
