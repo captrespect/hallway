@@ -9,6 +9,8 @@
   <link rel="stylesheet" href="/bootstrap/css/bootstrap-responsive.min.css" />
 
   <link rel="stylesheet" href="/dawg.css" />
+
+  <script src="/dawg.js"></script>
  </head>
 
  <body>
@@ -20,12 +22,13 @@
    <h2>Overall Metrics</h2>
 
    <ul>
-    <li><a href="apps/active">active apps (24h)</a></li>
-    <li><a href="apps/active">api hits by app (24h)</a></li>
-    <li><a href="stats/ijod">ijod totals</a></li>
-    <li><a href="slag">service lag</a></li>
-    <li><a href="workers/state">workers state</a></li>
-    <li><a href="links/link">live links</a></li>
+    <li><a href="/accounts.html">app accounts</a> (<a href="/apps/accounts">raw</a>)</li>
+    <li><a href="/apps/active">active apps (24h)</a></li>
+    <li><a href="/apps.html">api hits by app (24h)</a> (<a href="/apps/hits">raw</a>)</a></li>
+    <li><a href="/stats/ijod">ijod totals</a></li>
+    <li><a href="/slag">service lag</a></li>
+    <li><a href="/jobs.html">workers state</a> (<a href="/workers/state">raw</a>)</li>
+    <li><a href="/links/link">live links</a></li>
    </ul>
 
    <h2>Papertrail Logs</h2>
@@ -40,10 +43,22 @@
 
    <form class="form-horizontal" method="get" action="profiles/get">
     <div class="control-group">
-     <label for="pid-1" class="control-label">Profile lookup</label>
+     <label for="pid-1" class="control-label">Profile lookup by id</label>
 
      <div class="controls">
       <input id="pid-1" name="pid" placeholder="id@service" />
+
+      <button type="submit" class="btn btn-primary">Go</button>
+     </div>
+    </div>
+   </form>
+
+   <form class="form-horizontal" method="get" action="profiles/search">
+    <div class="control-group">
+     <label for="pid-1" class="control-label">Profile search by handle</label>
+
+     <div class="controls">
+      <input id="pid-1" name="q" placeholder="username" />
 
       <button type="submit" class="btn btn-primary">Go</button>
      </div>
@@ -125,7 +140,7 @@
     </div>
    </form>
 
-   <form class="form-horizontal" id='appact' method="get" action="apps/account">
+   <form class="form-horizontal" id="appact" method="get" action="apps/account">
     <div class="control-group">
      <label for="key-2" class="control-label">App User Account</label>
 
@@ -134,20 +149,9 @@
 
       <button type="submit" class="btn btn-primary">Go</button>
       <button type="submit" class="btn btn-primary" onclick="return appact(this)">Token</button>
-<script>
-function appact(b)
-{
-	$.getJSON('/apps/account',{id:document.forms.appact.id.value}, function(data) {
-	        if(!data || !data.token) return window.alert("I AM LOST! Heeeeeeellllllllpppppp");
-			window.location.replace('https://api.singly.com/profiles?access_token='+data.token);
-	    });
-	return false;
-}
-</script>
      </div>
     </div>
    </form>
-
   </div>
  </body>
 </html>

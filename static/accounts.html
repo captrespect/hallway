@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>hallway dawg</title>
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+
+  <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="/bootstrap/css/bootstrap-responsive.min.css" />
+
+  <link rel="stylesheet" href="/dawg.css" />
+  <link rel="stylesheet" href="/accounts.css" />
+
+  <script src="/js/moment.min.js"></script>
+  <script src="/js/jquery.ba-bbq.min.js"></script>
+  <script src="/js/jquery.sortElements.js"></script>
+
+  <script src="/accounts.js"></script>
+ </head>
+
+ <body>
+  <div class="container">
+   <input type="button" value="Refresh" class="btn btn-primary btn-large" id="refresh" />
+
+   <table class="table table-striped">
+    <thead>
+     <tr>
+      <th>App ID</th>
+      <th>App Name</th>
+      <th>Email</th>
+      <th>URL</th>
+      <th>Accounts</th>
+      <th>Created</th>
+     </tr>
+    </thead>
+
+    <tbody id="rows">
+     <!-- Filled programatically -->
+    </tbody>
+   </table>
+  </div>
+ </body>
+</html>

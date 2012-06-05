@@ -1,6 +1,6 @@
 {
 	"name":"Twitter",
-	"desc":"Syncs tweets, mentions, timeline, and friends.",
+	"desc":"Syncs tweets, mentions, timeline, friends, and followers (up to 1k of them).",
   "key": "Consumer Key",
   "secret": "Consumer Secret",
   "icons": [
@@ -9,11 +9,12 @@
     {"height": 32, "width": 32, "source":"http://assets.singly.com/service-icons/32px/twitter.png"}
   ],
   "synclets":[
-    {"name": "self",     "frequency": 7200},
-    {"name": "friends",  "frequency": 3600},
-    {"name": "tweets",   "frequency": 600},
-    {"name": "timeline", "frequency": 120},
-    {"name": "related",  "frequency": 7000},
-    {"name": "mentions", "frequency": 600}
+    {"name": "self",      "frequency": 7200},
+    {"name": "friends",   "frequency": 7200},
+    {"name": "followers", "frequency": 21600},
+    {"name": "tweets",    "frequency": 600},
+    {"name": "timeline",  "frequency": 120},
+    {"name": "related",   "frequency": 7000},
+    {"name": "mentions",  "frequency": 600}
   ]
 }

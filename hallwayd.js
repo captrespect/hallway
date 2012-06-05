@@ -16,13 +16,13 @@ var util = require('util');
 var argv = require("optimist").argv;
 
 var Roles = {
-  worker:{
+  worker: {
     startup:startWorkerWS
   },
-  apihost:{
+  apihost: {
     startup:startAPIHost
   },
-  dawg:{
+  dawg: {
     startup:startDawg
   }
 };
@@ -45,7 +45,7 @@ else {
     console.warn("Locker config already loaded, me is set to", lconfig.me);
 }
 
-var logger = require("logger").logger("lockerd");
+var logger = require("logger").logger("hallwayd");
 logger.info('process id:' + process.pid);
 var alerting = require("alerting");
 if (lconfig.alerting && lconfig.alerting.key) {
@@ -77,7 +77,7 @@ function syncComplete(response, task, callback) {
     var nextRun = response.config && response.config.nextRun;
     if(nextRun) delete response.config.nextRun; // don't want this getting stored!
     async.series([
-      function(cb) { if(!response.auth) return cb(); profileManager.authSet(task.profile, response.auth, cb) },
+      function(cb) { if(!response.auth) return cb(); profileManager.authSet(task.profile, response.auth, null, cb) },
       function(cb) { if(!response.config) return cb(); profileManager.configSet(task.profile, response.config, cb) },
       function(cb) { syncManager.manager.schedule(task, nextRun, cb); },
     ], callback);
@@ -139,11 +139,19 @@ if (argv._.length > 0) {
   role = Roles[argv._[0]];
 }
 
-var startupTasks = [startSyncmanager];
-if (role.startup) startupTasks.push(role.startup);
+var startupTasks = [];
+
 startupTasks.push(require('ijod').initDB);
-startupTasks.push(require('acl').init);
-startupTasks.push(profileManager.init);
+
+if (role !== Roles.dawg) {
+  startupTasks.push(startSyncmanager);
+  startupTasks.push(require('acl').init);
+  startupTasks.push(profileManager.init);
+}
+
+if (role.startup) {
+  startupTasks.push(role.startup);
+}
 
 async.series(startupTasks, function(error) {
   // TODO:  This needs a cleanup, it's too async

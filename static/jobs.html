@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>hallway dawg</title>
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+
+  <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="/bootstrap/css/bootstrap-responsive.min.css" />
+
+  <link rel="stylesheet" href="/dawg.css" />
+  <link rel="stylesheet" href="/jobs.css" />
+
+  <script src="/js/moment.min.js"></script>
+  <script src="/js/underscore-min.js"></script>
+  <script src="/js/jquery.sortElements.js"></script>
+
+  <script src="/jobs.js"></script>
+ </head>
+
+ <body>
+  <div class="container">
+   <input type="button" value="Refresh" class="btn btn-primary btn-large" id="refresh" />
+
+   <table class="table table-striped">
+    <thead>
+     <tr>
+      <th>Worker</th>
+      <th>Synclet</th>
+      <th>Profile</th>
+      <th>State</th>
+      <th>Duration</th>
+      <th>Pipe Duration</th>
+     </tr>
+    </thead>
+
+    <tbody id="rows">
+     <!-- Filled programatically -->
+    </tbody>
+   </table>
+  </div>
+ </body>
+</html>
