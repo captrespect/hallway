@@ -31,7 +31,7 @@ function refresh() {
         var classes = [];
 
         if (job.tstart < Date.now() - (5 * 60 * 1000)) {
-          classes.push('alert');
+          classes.push('dawgAlert');
         }
 
         $('#rows').append('<tr>' +
