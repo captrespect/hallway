@@ -1,6 +1,13 @@
 {
 	"name":"Tumblr",
 	"desc":"Syncs blogs followed, dashboard, and all posts.",
+  "key": "OAuth Consumer Key",
+  "secret": "Secret Key",
+  "icons": [
+    {"height": 16, "width": 16, "source":"http://duxu47bnnuoax.cloudfront.net/service-icons/16px/tumblr.png"},
+    {"height": 24, "width": 24, "source":"http://duxu47bnnuoax.cloudfront.net/service-icons/24px/tumblr.png"},
+    {"height": 32, "width": 32, "source":"http://duxu47bnnuoax.cloudfront.net/service-icons/32px/tumblr.png"}
+  ],
     "synclets": [
 	{
         "name": "self",

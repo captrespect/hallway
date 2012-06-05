@@ -1,6 +1,13 @@
 {
 	"name":"GitHub",
 	"desc":"Syncs friends, followers, issues, repo summary, received and generated events",
+  "key": "Client ID",
+  "secret": "Secret",
+  "icons": [
+    {"height": 16, "width": 16, "source":"http://duxu47bnnuoax.cloudfront.net/service-icons/16px/github.png"},
+    {"height": 24, "width": 24, "source":"http://duxu47bnnuoax.cloudfront.net/service-icons/24px/github.png"},
+    {"height": 32, "width": 32, "source":"http://duxu47bnnuoax.cloudfront.net/service-icons/32px/github.png"}
+  ],
     "synclets": [
         {
             "frequency": 3600,

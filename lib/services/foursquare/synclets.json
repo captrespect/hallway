@@ -1,6 +1,13 @@
 {
 	"name":"foursquare",
 	"desc":"Syncs checkins, photos, and friends checkins",
+  "key": "Client ID",
+  "secret": "Client Secret",
+  "icons": [
+    {"height": 16, "width": 16, "source":"http://duxu47bnnuoax.cloudfront.net/service-icons/16px/foursquare.png"},
+    {"height": 24, "width": 24, "source":"http://duxu47bnnuoax.cloudfront.net/service-icons/24px/foursquare.png"},
+    {"height": 32, "width": 32, "source":"http://duxu47bnnuoax.cloudfront.net/service-icons/32px/foursquare.png"}
+  ],
     "synclets": [
     	{
         	"frequency": 3600,

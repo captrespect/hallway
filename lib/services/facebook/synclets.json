@@ -1,6 +1,13 @@
 {
 	"name":"Facebook",
 	"desc":"Syncs data for photos, wall, news feed, and friends.",
+  "key": "App ID",
+  "secret": "App Secret",
+  "icons": [
+    {"height": 16, "width": 16, "source":"http://duxu47bnnuoax.cloudfront.net/service-icons/16px/facebook.png"},
+    {"height": 24, "width": 24, "source":"http://duxu47bnnuoax.cloudfront.net/service-icons/24px/facebook.png"},
+    {"height": 32, "width": 32, "source":"http://duxu47bnnuoax.cloudfront.net/service-icons/32px/facebook.png"}
+  ],
     "synclets":[
         {"name": "self", "frequency": 7200},
         {"name": "feed", "frequency": 3600},

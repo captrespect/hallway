@@ -1,6 +1,13 @@
 {
 	"name":"Instagram",
 	"desc":"Syncs photos, photo feed, and friends.",
+  "key": "CLIENT ID",
+  "secret": "CLIENT SECRET",
+  "icons": [
+    {"height": 16, "width": 16, "source":"http://duxu47bnnuoax.cloudfront.net/service-icons/16px/instagram.png"},
+    {"height": 24, "width": 24, "source":"http://duxu47bnnuoax.cloudfront.net/service-icons/24px/instagram.png"},
+    {"height": 32, "width": 32, "source":"http://duxu47bnnuoax.cloudfront.net/service-icons/32px/instagram.png"}
+  ],
     "synclets":[
         {"name": "self", "frequency": 3600},
         {"name": "feed", "frequency": 600},
