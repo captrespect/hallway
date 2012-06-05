@@ -8,30 +8,12 @@
     {"height": 24, "width": 24, "source":"http://assets.singly.com/service-icons/24px/foursquare.png"},
     {"height": 32, "width": 32, "source":"http://assets.singly.com/service-icons/32px/foursquare.png"}
   ],
-    "synclets": [
-    	{
-        	"frequency": 3600,
-        	"name": "self"
-    	},
-        {
-            "frequency": 3600,
-            "name": "friends"
-        },
-        {
-            "frequency": 600,
-            "name": "checkins"
-        },
-        {
-            "frequency": 300,
-            "name": "recent"
-        },
-        {
-            "frequency": 43200,
-            "name": "photos"
-        },
-        {
-            "frequency": 3600,
-            "name": "badges"
-        }
-    ]
+  "synclets": [
+    {"frequency": 3600,  "name": "self"},
+    {"frequency": 3600,  "name": "friends"},
+    {"frequency": 600,   "name": "checkins"},
+    {"frequency": 300,   "name": "recent"},
+    {"frequency": 43200, "name": "photos"},
+    {"frequency": 3600,  "name": "badges"}
+  ]
 }

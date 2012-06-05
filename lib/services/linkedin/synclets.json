@@ -8,10 +8,10 @@
     {"height": 24, "width": 24, "source":"http://assets.singly.com/service-icons/24px/linkedin.png"},
     {"height": 32, "width": 32, "source":"http://assets.singly.com/service-icons/32px/linkedin.png"}
   ],
-    "synclets":[
-        {"name": "self", "frequency": 86400},
-        {"name": "updates", "frequency": 3600},
-        {"name": "network", "frequency": 3600},
-        {"name": "connections", "frequency": 86400}
-    ]
+  "synclets":[
+    {"name": "self",        "frequency": 86400},
+    {"name": "updates",     "frequency": 3600},
+    {"name": "network",     "frequency": 3600},
+    {"name": "connections", "frequency": 86400}
+  ]
 }

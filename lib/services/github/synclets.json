@@ -8,30 +8,12 @@
     {"height": 24, "width": 24, "source":"http://assets.singly.com/service-icons/24px/github.png"},
     {"height": 32, "width": 32, "source":"http://assets.singly.com/service-icons/32px/github.png"}
   ],
-    "synclets": [
-        {
-            "frequency": 3600,
-            "name": "self"
-        },
-        {
-            "frequency": 3600,
-            "name": "users"
-        },
-        {
-            "frequency": 3600,
-            "name": "issues"
-        },
-        {
-            "frequency": 3600,
-            "name": "repos"
-        },
-        {
-            "frequency": 3600,
-            "name": "received"
-        },
-        {
-            "frequency": 3600,
-            "name": "events"
-        }
-    ]
+  "synclets": [
+    {"frequency": 3600, "name": "self"},
+    {"frequency": 3600, "name": "users"},
+    {"frequency": 3600, "name": "issues"},
+    {"frequency": 3600, "name": "repos"},
+    {"frequency": 3600, "name": "received"},
+    {"frequency": 3600, "name": "events"}
+  ]
 }

@@ -8,21 +8,10 @@
     {"height": 24, "width": 24, "source":"http://assets.singly.com/service-icons/24px/tumblr.png"},
     {"height": 32, "width": 32, "source":"http://assets.singly.com/service-icons/32px/tumblr.png"}
   ],
-    "synclets": [
-	{
-        "name": "self",
-        "frequency": 3600
-    },
-	{
-        "name": "following",
-        "frequency": 3600
-    },
-    {
-        "name": "dashboard",
-        "frequency": 600
-    },
-    {
-        "name": "posts",
-        "frequency": 1200
-    }]
+  "synclets": [
+	  {"name": "self",      "frequency": 3600},
+    {"name": "following", "frequency": 3600},
+    {"name": "dashboard", "frequency": 600},
+    {"name": "posts",     "frequency": 1200}
+  ]
 }

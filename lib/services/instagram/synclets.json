@@ -9,10 +9,10 @@
     {"height": 32, "width": 32, "source":"http://assets.singly.com/service-icons/32px/instagram.png"}
   ],
     "synclets":[
-        {"name": "self", "frequency": 3600},
-        {"name": "feed", "frequency": 600},
+        {"name": "self",    "frequency": 3600},
+        {"name": "feed",    "frequency": 600},
         {"name": "follows", "frequency": 3600},
         {"name": "updated", "frequency": 4200},
-        {"name": "media", "frequency": 1200}
+        {"name": "media",   "frequency": 1200}
     ]
 }
