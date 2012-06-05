@@ -4,9 +4,9 @@
   "key": "Consumer Key",
   "secret": "Consumer Secret",
   "icons": [
-    {"height": 16, "width": 16, "source":"http://duxu47bnnuoax.cloudfront.net/service-icons/16px/twitter.png"},
-    {"height": 24, "width": 24, "source":"http://duxu47bnnuoax.cloudfront.net/service-icons/24px/twitter.png"},
-    {"height": 32, "width": 32, "source":"http://duxu47bnnuoax.cloudfront.net/service-icons/32px/twitter.png"}
+    {"height": 16, "width": 16, "source":"http://assets.singly.com/service-icons/16px/twitter.png"},
+    {"height": 24, "width": 24, "source":"http://assets.singly.com/service-icons/24px/twitter.png"},
+    {"height": 32, "width": 32, "source":"http://assets.singly.com/service-icons/32px/twitter.png"}
   ],
     "synclets":[
         {"name": "self", "frequency": 7200},
