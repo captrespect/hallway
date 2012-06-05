@@ -1,6 +1,6 @@
 function sortTable() {
   $('table').find('td').filter(function() {
-    return $(this).index() === 3;
+    return $(this).index() === 4;
   }).sortElements(function(a, b) {
     return parseInt($.text([a]), 10) > parseInt($.text([b]), 10) ? -1 : 1;
   }, function() {
@@ -28,6 +28,12 @@ function refresh() {
             info.notes.appUrl = '<a href="' + info.notes.appUrl + '">' + info.notes.appUrl + '</a>';
           }
 
+          var email = '';
+
+          if (info.profile && info.profile.data && info.profile.data.email) {
+            email = '<a href="mailto:'+ info.profile.data.email + '">' + info.profile.data.email + '</a>';
+          }
+
           if (currentApp === 'total') {
             return;
           }
@@ -41,6 +47,7 @@ function refresh() {
           $('#rows').append('<tr>' +
               '<td>' + currentApp.id + '</td>' +
               '<td>' + info.notes.appName  + '</td>' +
+              '<td>' + email + '</td>' +
               '<td>' + info.notes.appUrl  + '</td>' +
               '<td>' + currentApp.accounts + '</td>' +
               '<td>' + info.cat + '</td>' +
