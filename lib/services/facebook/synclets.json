@@ -1,13 +1,20 @@
 {
 	"name":"Facebook",
 	"desc":"Syncs data for photos, wall, news feed, and friends.",
-    "synclets":[
-        {"name": "self", "frequency": 7200},
-        {"name": "feed", "frequency": 3600},
-        {"name": "checkins", "frequency": 1800},
-        {"name": "friends", "frequency": 3600},
-        {"name": "home", "frequency": 600},
-        {"name": "home_update", "frequency": 7000},
-        {"name": "photos", "frequency": 86400}
-    ]
+  "key": "App ID",
+  "secret": "App Secret",
+  "icons": [
+    {"height": 16, "width": 16, "source":"http://assets.singly.com/service-icons/16px/facebook.png"},
+    {"height": 24, "width": 24, "source":"http://assets.singly.com/service-icons/24px/facebook.png"},
+    {"height": 32, "width": 32, "source":"http://assets.singly.com/service-icons/32px/facebook.png"}
+  ],
+  "synclets":[
+    {"name": "self",        "frequency": 7200},
+    {"name": "feed",        "frequency": 3600},
+    {"name": "checkins",    "frequency": 1800},
+    {"name": "friends",     "frequency": 3600},
+    {"name": "home",        "frequency": 600},
+    {"name": "home_update", "frequency": 7000},
+    {"name": "photos",      "frequency": 86400}
+  ]
 }

@@ -1,11 +1,18 @@
 {
 	"name":"Instagram",
 	"desc":"Syncs photos, photo feed, and friends.",
+  "key": "CLIENT ID",
+  "secret": "CLIENT SECRET",
+  "icons": [
+    {"height": 16, "width": 16, "source":"http://assets.singly.com/service-icons/16px/instagram.png"},
+    {"height": 24, "width": 24, "source":"http://assets.singly.com/service-icons/24px/instagram.png"},
+    {"height": 32, "width": 32, "source":"http://assets.singly.com/service-icons/32px/instagram.png"}
+  ],
     "synclets":[
-        {"name": "self", "frequency": 3600},
-        {"name": "feed", "frequency": 600},
+        {"name": "self",    "frequency": 3600},
+        {"name": "feed",    "frequency": 600},
         {"name": "follows", "frequency": 3600},
         {"name": "updated", "frequency": 4200},
-        {"name": "media", "frequency": 1200}
+        {"name": "media",   "frequency": 1200}
     ]
 }

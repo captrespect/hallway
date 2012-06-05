@@ -1,5 +1,15 @@
 {
-	"name":"Email Service",
+  "name":"Email Service",
 	"desc":"Connects to any Gmail or IMAP inbox and provides contacts and photos.",
-    "synclets":[{"name":"self", "frequency":3600}, {"name":"contacts", "frequency":3600}, {"name":"photos", "frequency":3600}, {"name":"photos_feed", "frequency":3600}]
+  "icons": [
+    {"height": 16, "width": 16, "source":"http://assets.singly.com/service-icons/16px/email.png"},
+    {"height": 24, "width": 24, "source":"http://assets.singly.com/service-icons/24px/email.png"},
+    {"height": 32, "width": 32, "source":"http://assets.singly.com/service-icons/32px/email.png"}
+  ],
+  "synclets":[
+    {"name":"self",        "frequency":3600},
+    {"name":"contacts",    "frequency":3600},
+    {"name":"photos",      "frequency":3600},
+    {"name":"photos_feed", "frequency":3600}
+  ]
 }

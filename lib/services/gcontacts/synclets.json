@@ -1,8 +1,15 @@
 {
 	"name":"Google Contacts",
 	"desc":"Syncs contacts from any Google account",
-    "synclets":[
-		{"name": "self", "frequency": 1700, "note": "frequency has to be < 30min to keep access token alive for media fetches for now, see map.js TODO"}, 
-		{"name": "contacts", "frequency": 86400}
-	]
+  "key": "Client ID",
+  "secret": "Client secret",
+  "icons": [
+    {"height": 16, "width": 16, "source":"http://assets.singly.com/service-icons/16px/gcontacts.png"},
+    {"height": 24, "width": 24, "source":"http://assets.singly.com/service-icons/24px/gcontacts.png"},
+    {"height": 32, "width": 32, "source":"http://assets.singly.com/service-icons/32px/gcontacts.png"}
+  ],
+  "synclets":[
+    {"name": "self", "frequency": 1700, "note": "frequency has to be < 30min to keep access token alive for media fetches for now, see map.js TODO"}, 
+    {"name": "contacts", "frequency": 86400}
+  ]
 }

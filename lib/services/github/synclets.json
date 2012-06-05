@@ -1,30 +1,19 @@
 {
 	"name":"GitHub",
 	"desc":"Syncs friends, followers, issues, repo summary, received and generated events",
-    "synclets": [
-        {
-            "frequency": 3600,
-            "name": "self"
-        },
-        {
-            "frequency": 3600,
-            "name": "users"
-        },
-        {
-            "frequency": 3600,
-            "name": "issues"
-        },
-        {
-            "frequency": 3600,
-            "name": "repos"
-        },
-        {
-            "frequency": 3600,
-            "name": "received"
-        },
-        {
-            "frequency": 3600,
-            "name": "events"
-        }
-    ]
+  "key": "Client ID",
+  "secret": "Secret",
+  "icons": [
+    {"height": 16, "width": 16, "source":"http://assets.singly.com/service-icons/16px/github.png"},
+    {"height": 24, "width": 24, "source":"http://assets.singly.com/service-icons/24px/github.png"},
+    {"height": 32, "width": 32, "source":"http://assets.singly.com/service-icons/32px/github.png"}
+  ],
+  "synclets": [
+    {"frequency": 3600, "name": "self"},
+    {"frequency": 3600, "name": "users"},
+    {"frequency": 3600, "name": "issues"},
+    {"frequency": 3600, "name": "repos"},
+    {"frequency": 3600, "name": "received"},
+    {"frequency": 3600, "name": "events"}
+  ]
 }

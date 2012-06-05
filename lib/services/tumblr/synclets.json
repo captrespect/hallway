@@ -1,21 +1,17 @@
 {
 	"name":"Tumblr",
 	"desc":"Syncs blogs followed, dashboard, and all posts.",
-    "synclets": [
-	{
-        "name": "self",
-        "frequency": 3600
-    },
-	{
-        "name": "following",
-        "frequency": 3600
-    },
-    {
-        "name": "dashboard",
-        "frequency": 600
-    },
-    {
-        "name": "posts",
-        "frequency": 1200
-    }]
+  "key": "OAuth Consumer Key",
+  "secret": "Secret Key",
+  "icons": [
+    {"height": 16, "width": 16, "source":"http://assets.singly.com/service-icons/16px/tumblr.png"},
+    {"height": 24, "width": 24, "source":"http://assets.singly.com/service-icons/24px/tumblr.png"},
+    {"height": 32, "width": 32, "source":"http://assets.singly.com/service-icons/32px/tumblr.png"}
+  ],
+  "synclets": [
+	  {"name": "self",      "frequency": 3600},
+    {"name": "following", "frequency": 3600},
+    {"name": "dashboard", "frequency": 600},
+    {"name": "posts",     "frequency": 1200}
+  ]
 }
