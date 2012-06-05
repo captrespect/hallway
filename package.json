@@ -14,8 +14,8 @@
       "start": "./hallway"
     },
     "dependencies": {
-      "natural": "",
       "async": "=0.1.15",
+      "aws2js": "",
       "colors":"",
       "compress-buffer": "=0.5.1",
       "connect": "=1.8.5",
@@ -34,6 +34,7 @@
       "murmurhash3": "=0.0.10",
       "mysql":"",
       "mysql-libmysqlclient":"=1.3.3",
+      "natural": "",
       "node-fakeweb": "=0.0.7",
       "oauth": "=0.9.6",
       "oauth2-provider": ">=1.0.0 <2.0.0",
