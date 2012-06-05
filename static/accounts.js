@@ -11,18 +11,10 @@ function sortTable() {
 function refresh() {
   $('#rows').html('');
 
-  var since = moment().subtract('days', 1).valueOf();
-
-  var qs = $.deparam.querystring();
-
-  if (qs.since) {
-    since = moment().subtract('minutes', parseInt(qs.since, 10)).valueOf();
-  }
-
-  $.getJSON('/apps/hits?since=' + since, function(apps) {
-    for (var app in apps) {
+  $.getJSON('/apps/accounts', function(apps) {
+    apps.forEach(function(app) {
       (function(currentApp) {
-        $.getJSON('/apps/get?key=' + currentApp, function(info) {
+        $.getJSON('/apps/get?key=' + currentApp.id, function(info) {
           info = info[0];
 
           if (!info || !info.notes) {
@@ -47,17 +39,17 @@ function refresh() {
           }
 
           $('#rows').append('<tr>' +
-              '<td>' + currentApp + '</td>' +
+              '<td>' + currentApp.id + '</td>' +
               '<td>' + info.notes.appName  + '</td>' +
               '<td>' + info.notes.appUrl  + '</td>' +
-              '<td>' + apps[currentApp] + '</td>' +
+              '<td>' + currentApp.accounts + '</td>' +
               '<td>' + info.cat + '</td>' +
             '</tr>');
 
           sortTable();
         });
       })(app);
-    }
+    });
   });
 }
 
