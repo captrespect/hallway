@@ -187,7 +187,7 @@ function exit(returnCode) {
 }
 
 process.on("SIGINT", function() {
-  logger.info("Shutting down...");
+  logger.info("Shutting down via SIGINT...");
   switch (role) {
   case Roles.worker:
     syncManager.manager.stop(function() {
@@ -202,7 +202,8 @@ process.on("SIGINT", function() {
 });
 
 process.on("SIGTERM", function() {
-    shutdown(0);
+  logger.info("Shutting down via SIGTERM...");
+  shutdown(0);
 });
 
 if (!process.env.LOCKER_TEST) {
