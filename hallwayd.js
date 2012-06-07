@@ -126,7 +126,7 @@ function startWorkerWS(cbDone) {
   var worker = require("worker");
   if (!lconfig.worker.listenIP) lconfig.worker.listenIP = "0.0.0.0";
   worker.startService(syncManager.manager, lconfig.worker.port, lconfig.worker.listenIP, function() {
-    logger.info("Starting a Hallway Worker, thou shalt be digitized",lconfig.worker);
+    logger.info("Starting a Hallway Worker, thou shalt be digitized", lconfig.worker);
     cbDone();
   });
 }
