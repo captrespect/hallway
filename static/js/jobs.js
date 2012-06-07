@@ -24,6 +24,16 @@ function refresh() {
   $.getJSON('/workers/state', function(state) {
     var i = 0;
 
+    if (state.unresponsive && state.unresponsive.length) {
+      $('#unresponsive').text(state.unresponsive.join(', '));
+
+      $('#unresponsive-wrapper').show();
+    } else {
+      $('#unresponsive').text('');
+
+      $('#unresponsive-wrapper').hide();
+    }
+
     _.sortBy(state.workers, 'publicIp').forEach(function(worker) {
       i++;
 

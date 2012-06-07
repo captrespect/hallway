@@ -14,6 +14,12 @@ td span.worker {
    border-radius: 2px;
 }
 
+#unresponsive-wrapper {
+  display: none;
+  margin-top: 1em;
+  padding-left: 8px;
+}
+
 .dawgAlert {
    background-color: #fb8072;
    color: white;
