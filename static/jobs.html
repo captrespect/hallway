@@ -24,6 +24,27 @@
 
    <div id="unresponsive-wrapper"><strong>Unresponsive workers:</strong> <span id="unresponsive"></span></div>
 
+   <div id="disavowed-jobs-wrapper">
+    <p><strong>These jobs are not claimed by any worker:</strong></p>
+
+    <table class="table table-striped">
+     <thead>
+      <tr>
+       <th>Worker</th>
+       <th>Synclet</th>
+       <th>Profile</th>
+       <th>State</th>
+       <th>Duration</th>
+       <th>Pipe Duration</th>
+      </tr>
+     </thead>
+
+     <tbody id="disavowed-jobs-rows">
+      <!-- Filled programatically -->
+     </tbody>
+    </table>
+   </div>
+
    <table class="table table-striped">
     <thead>
      <tr>

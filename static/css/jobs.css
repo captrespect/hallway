@@ -14,6 +14,15 @@ td span.worker {
    border-radius: 2px;
 }
 
+#disavowed-jobs-wrapper {
+  display: none;
+  margin-top: 1em;
+}
+
+#disavowed-jobs-wrapper p {
+  padding-left: 8px;
+}
+
 #unresponsive-wrapper {
   display: none;
   margin-top: 1em;
