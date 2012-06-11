@@ -60,7 +60,7 @@ var pipeline = require('pipeline');
 var profileManager = require('profileManager');
 // Set our globalAgent sockets higher
 var http = require("http");
-http.globalAgent.maxSockets = 100;
+http.globalAgent.maxSockets = 800;
 
 if (process.argv.indexOf("offline") >= 0) syncManager.manager.offlineMode = true;
 
