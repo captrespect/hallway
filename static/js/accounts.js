@@ -9,9 +9,23 @@ function sortTable() {
 }
 
 function refresh() {
+  updateSelected();
+
   $('#rows').html('');
 
-  $.getJSON('/apps/accounts', function(apps) {
+  var options = {};
+
+  var state = $.bbq.getState();
+
+  if (state.appSince) {
+    options.appSince = moment().subtract('seconds', parseInt(state.appSince, 10)).unix();
+  }
+
+  if (state.accountSince) {
+    options.accountSince = moment().subtract('seconds', parseInt(state.accountSince, 10)).unix();
+  }
+
+  $.getJSON('/apps/accounts', options, function(apps) {
     apps.forEach(function(app) {
       (function(currentApp) {
         $.getJSON('/apps/get?key=' + currentApp.id, function(info) {
@@ -60,8 +74,54 @@ function refresh() {
   });
 }
 
+function updateSelected() {
+  var state = $.bbq.getState();
+
+  $('a.time').removeClass('selected');
+
+  if (state.appSince) {
+    $('a[data-parameter=app][data-time=' + humanTimeFromSeconds(state.appSince) + ']').addClass('selected');
+  } else {
+    $('a[data-parameter=app][data-time=forever]').addClass('selected');
+  }
+
+  if (state.accountSince) {
+    $('a[data-parameter=account][data-time=' + humanTimeFromSeconds(state.accountSince) + ']').addClass('selected');
+  } else {
+    $('a[data-parameter=account][data-time=forever]').addClass('selected');
+  }
+}
+
 $(function() {
+  $('a.time').click(function(e) {
+    e.preventDefault();
+
+    var $e = $(this);
+
+    var type = $e.attr('data-parameter') + 'Since';
+
+    var humanTime = $e.attr('data-time');
+
+    if (humanTime === 'forever') {
+      $.bbq.removeState(type);
+
+      return;
+    }
+
+    var seconds = secondsFromHumanTime(humanTime);
+
+    var state = {};
+
+    state[type] = seconds;
+
+    $.bbq.pushState(state);
+  });
+
   refresh();
+
+  $(window).bind('hashchange', function() {
+    refresh();
+  });
 
   $('#refresh').click(function() {
     refresh();

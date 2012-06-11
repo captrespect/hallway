@@ -6,6 +6,13 @@ table {
   margin-top: 1em;
 }
 
-#refresh {
-  margin-right: 1em;
+#app-creation,
+#account-creation {
+  margin-left: 1em;
+}
+
+a.selected {
+  font-weight: bold;
+  text-decoration: none;
+  color: black;
 }

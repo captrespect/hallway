@@ -15,12 +15,29 @@
   <script src="/lib/jquery.ba-bbq.min.js"></script>
   <script src="/lib/jquery.sortElements.js"></script>
 
+  <script src="/js/utilities.js"></script>
   <script src="/js/accounts.js"></script>
  </head>
 
  <body>
   <div class="container">
    <input type="button" value="Refresh" class="btn btn-primary btn-large" id="refresh" />
+
+   <span id="app-creation">App creation:</span>
+
+   <a class="time" data-parameter="app" data-time="10m" href="#">10m</a> |
+   <a class="time" data-parameter="app" data-time="1h" href="#">1h</a> |
+   <a class="time" data-parameter="app" data-time="1d" href="#">1d</a> |
+   <a class="time" data-parameter="app" data-time="1w" href="#">1w</a> |
+   <a class="time" data-parameter="app" data-time="forever" href="#">∞</a>
+
+   <span id="account-creation">Account creation:</span>
+
+   <a class="time" data-parameter="account" data-time="10m" href="#">10m</a> |
+   <a class="time" data-parameter="account" data-time="1h" href="#">1h</a> |
+   <a class="time" data-parameter="account" data-time="1d" href="#">1d</a> |
+   <a class="time" data-parameter="account" data-time="1w" href="#">1w</a> |
+   <a class="time" data-parameter="account" data-time="forever" href="#">∞</a>
 
    <table class="table table-striped">
     <thead>
