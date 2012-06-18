@@ -48,8 +48,22 @@ function refresh() {
         $('#unresponsive-wrapper').hide();
       }
 
-      _.sortBy(state.workers, 'publicIp').forEach(function(worker) {
+      var workerClasses = {};
+
+      _.each(state.workers, function(worker) {
+        worker.host = worker.host.replace(/\.singly\.com/, '');
+      });
+
+      _.each(profiles, function(jobs, profile) {
+        _.each(jobs, function(job, syncletKey) {
+          job.worker = job.worker.replace(/\.singly\.com/, '');
+        });
+      });
+
+      _.sortBy(state.workers, 'host').forEach(function(worker) {
         i++;
+
+        workerClasses[worker.host] = i;
 
         worker.active.forEach(function(job) {
           var classes = [];
@@ -65,7 +79,7 @@ function refresh() {
           }
 
           $('#rows').append('<tr>' +
-              '<td><span class="worker worker-' + i + '">' + worker.publicIp + '</span></td>' +
+              '<td><span class="worker worker-' + i + '">' + worker.host + '</span></td>' +
               '<td>' + job.synclet.connector + '#' + job.synclet.name + '</td>' +
               '<td>' + job.profile + '</td>' +
               '<td>' + states[job.state] + '</td>' +
@@ -88,8 +102,14 @@ function refresh() {
             classes.push('dawgAlert');
           }
 
+          var workerClass = '';
+
+          if (workerClasses[job.worker]) {
+            workerClass = 'worker-' + workerClasses[job.worker];
+          }
+
           $('#disavowed-jobs-rows').append('<tr>' +
-              '<td>' + job.worker + '</td>' +
+              '<td><span class="worker ' + workerClass + '">' + job.worker + '</span></td>' +
               '<td>' + job.task.synclet.connector + '#' + job.task.synclet.name + '</td>' +
               '<td>' + job.task.profile + '</td>' +
               '<td>' + states[job.task.state] + '</td>' +

@@ -14,6 +14,24 @@ td span.worker {
    border-radius: 2px;
 }
 
+th.worker {
+   width: 25%;
+}
+
+th.synclet,
+th.duration,
+th.pipe {
+   width: 15%;
+}
+
+th.profile {
+   width: 20%;
+}
+
+th.state {
+   width: 10%;
+}
+
 #disavowed-jobs-wrapper {
   display: none;
   margin-top: 1em;
