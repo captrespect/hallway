@@ -2,6 +2,10 @@ body {
    padding-top: 2em;
 }
 
+#refresh {
+   margin-left: 1em;
+}
+
 table {
    margin-top: 1em;
 }
