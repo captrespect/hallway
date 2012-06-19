@@ -6,6 +6,7 @@ table {
   margin-top: 1em;
 }
 
+#refresh,
 #app-creation,
 #account-creation {
   margin-left: 1em;
