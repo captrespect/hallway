@@ -1,0 +1,21 @@
+{
+	"name":"LastFM",
+	"desc":"Syncs info, friends, scrobbles, loved, banned, library, and shouts.",
+  "key": "API Key",
+  "secret": "secret",
+  "icons": [
+    {"height": 16, "width": 16, "source":"http://assets.singly.com/service-icons/16px/lastfm.png"},
+    {"height": 24, "width": 24, "source":"http://assets.singly.com/service-icons/24px/lastfm.png"},
+    {"height": 32, "width": 32, "source":"http://assets.singly.com/service-icons/32px/lastfm.png"}
+  ],
+  "synclets":[
+    {"name": "info",      "frequency": 86400},
+    {"name": "friends",   "frequency": 3600},
+    {"name": "scrobbles", "frequency": 600},
+    {"name": "loved",     "frequency": 7200},
+    {"name": "banned",    "frequency": 7200},
+    {"name": "library",   "frequency": 86400},
+    {"name": "shouts",    "frequency": 3600}
+  ],
+  "mongoId" : {"shout" : "date"}
+}

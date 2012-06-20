@@ -1,7 +1,7 @@
 {
     "twitter":{
-        "consumerKey":"daKey",
-        "consumerSecret":"daPassword"
+        "consumerKey":"GyVa4kazbloVMKt10tUY7g",
+        "consumerSecret":"PVVQlIU6fAn9iorChx69tJuL2VmpdJUO8vVzVyoCQs"
     },
     "testSynclet":{
         "consumerKey":"daKey",
@@ -23,4 +23,9 @@
         "appKey" : "gc-appkey",
         "appSecret" : "gc-appsecret"
     }
+
+	"foursquare":{
+		"consumerKey" : "U2BILDDXTLSBBN3E0X4XFIX0OBIZ2ELVMVNQQNVERLQDLFHY",
+		"consumerSecret" : "SCVGQLRSEX2P13MYOPHW04JMCJSXWPJBG3VMPRGGTI3HXQL4"
+	}
 }
