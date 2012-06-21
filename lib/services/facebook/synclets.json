@@ -16,6 +16,6 @@
     {"name": "home",        "frequency": 600},
     {"name": "home_update", "frequency": 7000},
     {"name": "photos",      "frequency": 86400},
-    {"name": "likes",       "frequency": 90000}
+    {"name": "likes",       "frequency": 15}
   ]
 }
