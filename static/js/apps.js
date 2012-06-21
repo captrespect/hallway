@@ -11,15 +11,17 @@ function sortTable() {
 function refresh() {
   $('#rows').html('');
 
-  var since = moment().subtract('days', 1).valueOf();
+  var options = {
+    since: Date.now() - (31556926 * 1000)
+  };
 
   var qs = $.deparam.querystring();
 
   if (qs.since) {
-    since = moment().subtract('minutes', parseInt(qs.since, 10)).valueOf();
+    options.since = moment().subtract('minutes', parseInt(qs.since, 10)).valueOf();
   }
 
-  $.getJSON('/apps/hits?since=' + since, function(apps) {
+  $.getJSON('/apps/hits', options, function(apps) {
     for (var app in apps) {
       (function(currentApp) {
         $.getJSON('/apps/get?key=' + currentApp, function(info) {

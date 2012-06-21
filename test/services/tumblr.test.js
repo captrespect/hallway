@@ -42,7 +42,7 @@ describe("tumblr connector", function () {
 
   describe("posts synclet", function () {
     beforeEach(function (done) {
-      fakeweb.registerUri({uri : 'http://api.tumblr.com:80/v2/blog/foo/posts?offset=0&path=%2Fblog%2Ffoo%2Fposts&field=posts&reblog_info=true&notes_info=true&limit=50&api_key=',
+      fakeweb.registerUri({uri : 'http://api.tumblr.com:80/v2/blog/foo/posts?path=%2Fblog%2Ffoo%2Fposts&field=posts&reblog_info=true&notes_info=true&offset=0&limit=50&api_key=',
                            file : __dirname + '/../fixtures/synclets/tumblr/posts.json'});
 
       return done();
