@@ -13,7 +13,7 @@ var deleteme = process.argv[3] === 'MEOW';
 
 function step(arg)
 {
-  dal.query("select at, idr, base, hash from ijod where at >= (select min(at) from (select at from ijod where at < ? order by at desc limit 1000) as sq1) and at <= ?", [arg.at, arg.at], function(err, rows){
+  dal.query("select at, idr, base, hash from ijod where at >= (select min(at) from (select at from ijod where at < ? order by at desc limit 10000) as sq1) and at <= ?", [arg.at, arg.at], function(err, rows){
     if(err) return console.error(err, arg);
     var min = arg.at;
     arg.total += rows.length;
@@ -32,18 +32,22 @@ function step(arg)
     if(min == arg.at) return console.error("done?",arg);
     arg.at = min;
     console.log(min,"dups",dups.length);
+    var dels = [];
     async.forEach(dups, function(dup, cb){
       var ids = dup.split(" ");
       ijod.getOne(ids[0], function(err, entry){
         var bad;
         if(entry.id.indexOf(ids[0]) == -1) bad = ids[0];
         if(entry.id.indexOf(ids[1]) == -1) bad = ids[1];
-        if(!bad || !deleteme) return cb();
-        dal.query("delete from ijod where idr = ?",[bad], cb);
+        if(bad && deleteme) dels.push("'"+bad+"'");
+        cb();
       })
-    }, function(err){
-      if(err) return console.error(err);
-      step(arg);
+    }, function(){
+      if(dels.length == 0) return step(arg);
+      dal.query("delete from ijod where idr in ("+dels.join(',')+")",[],function(err){
+        if(err) return console.error(err);
+        step(arg);
+      });
     });
   });
 }
