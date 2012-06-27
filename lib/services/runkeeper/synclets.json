@@ -10,6 +10,6 @@
   ],
   "synclets":[
     {"name": "self", "frequency": 86400},
-	{"name": "cardio", "frequency": 3600}
+	{"name": "fitness_acts", "frequency": 10}
   ]
 }
