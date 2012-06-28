@@ -13,6 +13,7 @@
 	{"name": "fitness_acts", "frequency": 10},
 	{"name": "strength_acts", "frequency": 10},
 	{"name": "background_acts", "frequency": 10},
+	{"name": "records", "frequency": 10},
 	{"name": "street_team", "frequency": 10}
   ]
 }
