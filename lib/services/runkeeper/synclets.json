@@ -10,8 +10,9 @@
   ],
   "synclets":[
     {"name": "self", "frequency": 86400},
-	{"name": "fitness_acts", "frequency": 3600},
-	{"name": "strength_acts", "frequency": 3600},
-	{"name": "background_acts", "frequency": 3600}
+	{"name": "fitness_acts", "frequency": 10},
+	{"name": "strength_acts", "frequency": 10},
+	{"name": "background_acts", "frequency": 10},
+	{"name": "street_team", "frequency": 10}
   ]
 }
