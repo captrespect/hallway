@@ -39,7 +39,7 @@
       "node-fakeweb": "=0.0.7",
       "oauth": "=0.9.6",
       "optimist": "",
-      "request": "=2.9.3",
+      "request": "=2.9.203",
       "sanitizer": "",
       "serializer": ">=0.0.2 <0.1.0",
       "should": "",
