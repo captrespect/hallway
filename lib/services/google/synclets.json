@@ -1,0 +1,12 @@
+{
+	"name":"Google Account",
+	"desc":"Only provides authentication with and the basic profile for any Google account.",
+  "icons": [
+    {"height": 16, "width": 16, "source":"http://assets.singly.com/service-icons/16px/google.png"},
+    {"height": 24, "width": 24, "source":"http://assets.singly.com/service-icons/24px/google.png"},
+    {"height": 32, "width": 32, "source":"http://assets.singly.com/service-icons/32px/google.png"}
+  ],
+    "synclets":[
+        {"name": "self",    "frequency": 9999999}
+    ]
+}
