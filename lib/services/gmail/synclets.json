@@ -8,5 +8,6 @@
   ],
     "synclets":[
         {"name": "self",    "frequency": 3600}
+        {"name": "headers",    "frequency": 3600}
     ]
 }
