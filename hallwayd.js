@@ -48,6 +48,7 @@ else {
 var logger = require("logger").logger("hallwayd");
 logger.info('process id:' + process.pid);
 var alerting = require("alerting");
+lconfig.alerting = {key:1}
 if (lconfig.alerting && lconfig.alerting.key) {
   alerting.init(lconfig.alerting);
   alerting.install(function(E) {
@@ -209,6 +210,12 @@ process.on("SIGTERM", function() {
 if (!process.env.LOCKER_TEST) {
   process.on('uncaughtException', function(err) {
     try {
+      if(err.toString().indexOf('Error: Parse Error') >= 0)
+      {
+        // ignoring this for now, relating to some node bug, https://github.com/joyent/node/issues/2997
+        logger.warn(err);
+        return;
+      }
       logger.error('Uncaught exception:');
       logger.error(util.inspect(err));
       if (err && err.stack) logger.error(util.inspect(err.stack));
