@@ -7,7 +7,7 @@
     {"height": 32, "width": 32, "source":"http://assets.singly.com/service-icons/32px/gmail.png"}
   ],
     "synclets":[
-        {"name": "self",    "frequency": 3600}
+        {"name": "self",    "frequency": 3600},
         {"name": "headers",    "frequency": 3600}
     ]
 }
