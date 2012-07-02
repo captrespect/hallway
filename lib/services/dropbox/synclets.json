@@ -1,0 +1,14 @@
+{
+	"name":"Dropbox",
+	"desc":"Connect to your Dropbox account",
+  "key": "Client ID",
+  "secret": "Client secret",
+  "icons": [
+    {"height": 16, "width": 16, "source":"http://assets.singly.com/service-icons/16px/dropbox.png"},
+    {"height": 24, "width": 24, "source":"http://assets.singly.com/service-icons/24px/dropbox.png"},
+    {"height": 32, "width": 32, "source":"http://assets.singly.com/service-icons/32px/dropbox.png"}
+  ],
+  "synclets":[
+    {"name": "self", "frequency": 86400}
+  ]
+}
