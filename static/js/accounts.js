@@ -25,51 +25,67 @@ function refresh() {
     options.accountSince = moment().subtract('seconds', parseInt(state.accountSince, 10)).unix();
   }
 
-  $.getJSON('/apps/accounts', options, function(apps) {
-    apps.forEach(function(app) {
-      (function(currentApp) {
-        $.getJSON('/apps/get?key=' + currentApp.id, function(info) {
-          info = info[0];
+  $.getJSON('/apps/accounts', options, function(appsAccounts) {
+    $.getJSON('/apps/profiles', options, function(appsProfiles) {
+      appsAccounts.forEach(function(app) {
+        (function(currentApp) {
+          var appProfile = _.find(appsProfiles, function(item) {
+            return item.id === currentApp.id;
+          });
 
-          if (!info || !info.notes) {
-            info = {
-              notes: {
-                appName: '',
-                appUrl: ''
-              }
-            };
-          } else {
-            info.notes.appUrl = '<a href="' + info.notes.appUrl + '">' + info.notes.appUrl + '</a>';
+          currentApp.profiles = 0;
+
+          if (appProfile) {
+            currentApp.profiles = appProfile.accounts;
           }
 
-          var email = '';
+          $.getJSON('/apps/get?key=' + currentApp.id, function(info) {
+            info = info[0];
 
-          if (info.profile && info.profile.data && info.profile.data.email) {
-            email = '<a href="mailto:'+ info.profile.data.email + '">' + info.profile.data.email + '</a>';
-          }
+            if (!info || !info.notes) {
+              info = {
+                notes: {
+                  appName: '',
+                  appUrl: ''
+                }
+              };
+            } else {
+              info.notes.appUrl = '<a href="' + info.notes.appUrl + '">' + info.notes.appUrl + '</a>';
+            }
 
-          if (currentApp === 'total') {
-            return;
-          }
+            var email = '';
 
-          if (!info.cat) {
-            info.cat = '';
-          } else {
-            info.cat = moment(info.cat).format("M/D/YYYY h:mma");
-          }
+            if (info.profile && info.profile.data && info.profile.data.email) {
+              email = '<a href="mailto:'+ info.profile.data.email + '">' + info.profile.data.email + '</a>';
+            }
 
-          $('#rows').append('<tr>' +
-              '<td>' + currentApp.id + '</td>' +
-              '<td>' + info.notes.appName  + '</td>' +
-              '<td>' + email + '</td>' +
-              '<td>' + info.notes.appUrl  + '</td>' +
-              '<td>' + currentApp.accounts + '</td>' +
-              '<td>' + info.cat + '</td>' +
-            '</tr>');
+            if (currentApp === 'total') {
+              return;
+            }
 
-          sortTable();
-        });
-      })(app);
+            if (!info.cat) {
+              info.cat = '';
+            } else {
+              info.cat = moment(info.cat).format("M/D/YYYY h:mma");
+            }
+
+            var ratio = Math.round((currentApp.profiles / currentApp.accounts) * 100) / 100;
+
+            $('#rows').append('<tr>' +
+                '<td>' + currentApp.id + '</td>' +
+                '<td>' + info.notes.appName  + '</td>' +
+                '<td>' + email + '</td>' +
+                '<td>' + info.notes.appUrl  + '</td>' +
+                '<td>' + currentApp.profiles + '</td>' +
+                '<td>' + currentApp.accounts + '</td>' +
+                '<td>' + ratio + '</td>' +
+                '<td>' + info.cat + '</td>' +
+              '</tr>');
+
+            sortTable();
+          });
+        })(app);
+      });
     });
   });
 }
