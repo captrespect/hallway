@@ -9,6 +9,8 @@
     {"height": 32, "width": 32, "source":"http://assets.singly.com/service-icons/32px/runkeeper.png"}
   ],
   "synclets":[
-    {"name": "self", "frequency": 86400}
+    {"name": "self", "frequency": 86400},
+    {"name": "checkins", "frequency": 3600},
+    {"name": "events", "frequency": 1}
   ]
 }
