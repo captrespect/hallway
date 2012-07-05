@@ -11,6 +11,7 @@
   "synclets":[
     {"name": "self", "frequency": 86400},
     {"name": "checkins", "frequency": 3600},
-    {"name": "events", "frequency": 1}
+    {"name": "groups", "frequency": 1},
+    {"name": "events", "frequency": 3600}
   ]
 }
