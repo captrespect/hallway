@@ -1,8 +1,8 @@
 {
-	"name":"RunKeeper Health Graph",
-	"desc":"Connect to RunKeeper activities and devices",
-  "key": "Client ID",
-  "secret": "Client secret",
+	"name":"Meetup",
+	"desc":"Get Meetup data",
+  "key": "Key",
+  "secret": "Secret",
   "icons": [
     {"height": 16, "width": 16, "source":"http://assets.singly.com/service-icons/16px/runkeeper.png"},
     {"height": 24, "width": 24, "source":"http://assets.singly.com/service-icons/24px/runkeeper.png"},
@@ -10,8 +10,9 @@
   ],
   "synclets":[
     {"name": "self", "frequency": 86400},
-    {"name": "checkins", "frequency": 3600},
-    {"name": "groups", "frequency": 1},
-    {"name": "events", "frequency": 3600}
+	{"name": "checkins", "frequency": 10}, 
+	{"name": "groups", "frequency": 10}, 
+	{"name": "photos", "frequency": 10}, 
+	{"name": "events", "frequency": 10} 
   ]
 }
