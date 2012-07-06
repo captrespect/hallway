@@ -1,0 +1,18 @@
+{
+	"name":"Meetup",
+	"desc":"Get Meetup data",
+  "key": "Key",
+  "secret": "Secret",
+  "icons": [
+    {"height": 16, "width": 16, "source":"http://assets.singly.com/service-icons/16px/meetup.png"},
+    {"height": 24, "width": 24, "source":"http://assets.singly.com/service-icons/24px/meetup.png"},
+    {"height": 32, "width": 32, "source":"http://assets.singly.com/service-icons/32px/meetup.png"}
+  ],
+  "synclets":[
+    {"name": "self", "frequency": 86400},
+	{"name": "checkins", "frequency": 3600}, 
+	{"name": "groups", "frequency": 3600}, 
+	{"name": "photos", "frequency": 3600}, 
+	{"name": "events", "frequency": 3600} 
+  ]
+}

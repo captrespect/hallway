@@ -9,6 +9,11 @@
     {"height": 32, "width": 32, "source":"http://assets.singly.com/service-icons/32px/runkeeper.png"}
   ],
   "synclets":[
-    {"name": "self", "frequency": 86400}
+    {"name": "self", "frequency": 86400},
+	{"name": "fitness_activities", "frequency": 3600},
+	{"name": "strength_activities", "frequency": 3600},
+	{"name": "background_activities", "frequency": 3600},
+	{"name": "records", "frequency": 3600},
+	{"name": "street_team", "frequency": 3600}
   ]
 }
