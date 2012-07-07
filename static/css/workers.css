@@ -1,0 +1,39 @@
+body {
+   padding-top: 2em;
+}
+
+#refresh {
+   margin-left: 1em;
+}
+
+table {
+   margin-top: 1em;
+}
+
+td span.worker {
+   padding-top: 2px;
+   padding-bottom: 2px;
+   padding-left: 4px;
+   padding-right: 4px;
+   border-radius: 2px;
+}
+
+/*
+th.worker {
+   width: 25%;
+}
+
+th.synclet,
+th.duration,
+th.pipe {
+   width: 15%;
+}
+
+th.profile {
+   width: 20%;
+}
+
+th.state {
+   width: 10%;
+}
+*/

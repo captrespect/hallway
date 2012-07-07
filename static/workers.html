@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>worker status</title>
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+
+  <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="/bootstrap/css/bootstrap-responsive.min.css" />
+
+  <link rel="stylesheet" href="/css/dawg.css" />
+  <link rel="stylesheet" href="/css/workers.css" />
+
+  <script src="/lib/moment.min.js"></script>
+  <script src="/lib/underscore-min.js"></script>
+  <script src="/lib/jquery.sortElements.js"></script>
+
+  <script src="/js/utilities.js"></script>
+  <script src="/js/workers.js"></script>
+ </head>
+
+ <body>
+  <div class="container">
+   <a href="/">Home</a>
+
+   <input type="button" value="Refresh" class="btn btn-primary btn-large" id="refresh" />
+
+   <table class="table table-striped">
+    <thead>
+     <tr>
+      <th class="worker">Worker</th>
+      <th class="version">Version</th>
+      <th class="uptime">Uptime</th>
+      <th class="active">Active</th>
+      <th class="total">Total</th>
+      <th class="runtime">Runtime</th>
+      <th class="publicIp">Public IP</th>
+      <th class="privateIp">Private IP</th>
+     </tr>
+    </thead>
+
+    <tbody id="rows">
+     <!-- Filled programatically -->
+    </tbody>
+   </table>
+  </div>
+ </body>
+</html>
