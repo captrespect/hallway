@@ -24,7 +24,7 @@ function refresh() {
 
       $('#rows').append('<tr>' +
           '<td>' + instance.host + '</td>' +
-          '<td>' + (instance.version ? '<a href="https://github.com/Singly/hallway/commit/">' + instance.version + '</a>' : '') + '</td>' +
+          '<td>' + (instance.version ? '<a href="https://github.com/Singly/hallway/commit/' + instance.version + '">' + instance.version + '</a>' : '') + '</td>' +
           '<td>' + moment.duration(instance.uptime, "seconds").humanize() + '</td>' +
           '<td>' + (instance.active ? instance.active.length : '') + '</td>' +
           '<td>' + (instance.total ? commas(instance.total) : '') + '</td>' +
