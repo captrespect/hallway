@@ -21,7 +21,7 @@ function refresh() {
           '<td><a href="https://github.com/Singly/hallway/commit/">' + worker.version + '</a></td>' +
           '<td>' + moment.duration(worker.uptime, "seconds").humanize() + '</td>' +
           '<td>' + worker.active.length + '</td>' +
-          '<td>' + worker.total + '</td>' +
+          '<td>' + commas(worker.total) + '</td>' +
           '<td>' + moment.duration(worker.runtime, "seconds").humanize() + '</td>' +
           '<td>' + worker.publicIp + '</td>' +
           '<td>' + worker.privateIp + '</td>' +
