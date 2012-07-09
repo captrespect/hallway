@@ -22,7 +22,7 @@ check_deps:
 		exit 1; \
 	fi
 
-# get Locker ready to run
+# Get Hallway ready to run
 build: check_deps npm_modules build.json
 .PHONY: build
 
@@ -32,7 +32,7 @@ npm_modules:
 	npm install
 .PHONY: npm_modules
 
-# build.json allows Locker to report its build number and git revision at runtime
+# build.json allows Hallway to report its build number and git revision at runtime
 # the test suite pretends that tests/ is the top of the source tree,
 # so drop a copy there too
 build.json:
@@ -40,33 +40,24 @@ build.json:
 	| tee $@ test/$@
 .PHONY: build.json
 
-# run all of the tests
-test: newtest
-
 # new style mocha tests
 MOCHA = ./node_modules/.bin/mocha
 MOCHA_TESTS = $(shell find test -name "*.test.js")
-newtest: build
-	@env NODE_PATH="lib:$(PWD)/Common/node" \
+test: build
+	@env NODE_PATH="lib" \
 	$(MOCHA) $(MOCHA_TESTS)
 
 MOCHA_UNIT_TESTS=$(shell find test -name "*.unit.test.js")
 unittest: build
-	@env NODE_PATH="lib:$(PWD)/Common/node" \
+	@env NODE_PATH="lib" \
 		$(MOCHA) $(MOCHA_UNIT_TESTS)
 
 _MOCHA=./node_modules/.bin/_mocha
 COVER=./node_modules/cover/bin/cover
 cov: check_deps npm_modules
-	@env NODE_PATH="lib:$(PWD)/Common/node" \
+	@env NODE_PATH="lib" \
 		$(COVER) run $(_MOCHA) $(MOCHA_TESTS)
 	$(COVER) report html
-
-# phantom tests
-PHANTOM_TESTS = $(shell find test -name "*.phantom.js")
-phantomtest: build
-	@env NODE_PATH="$(PWD)/Common/node" \
-	$(MOCHA) $(PHANTOM_TESTS)
 
 SUBDIR=hallway-$(BUILD_NUMBER)
 DISTFILE=$(SUBDIR).tar.gz

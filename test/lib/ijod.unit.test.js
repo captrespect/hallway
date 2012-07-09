@@ -56,14 +56,6 @@ describe("IJOD", function() {
       })
     });
   });
-  describe("countBase", function() {
-    it("should return a count of a base", function(done) {
-      fakeDB.addFake(/SELECT COUNT\(\*\) AS baseCount FROM ijod WHERE base/, [{baseCount:42}]);
-      ijod.countBase("test:1@testing/test", function(count) {
-        done((count == 42 ? null : new Error("Wrong count, expected 42 got " + count)));
-      });
-    });
-  });
 });
 
     /*
