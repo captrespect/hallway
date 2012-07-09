@@ -1,0 +1,17 @@
+{
+	"name":"Yammer",
+	"desc":"Sync messages, users, and groups",
+  "key": "Client ID",
+  "secret": "Client secret",
+  "icons": [
+    {"height": 16, "width": 16, "source":"http://assets.singly.com/service-icons/16px/yammer.png"},
+    {"height": 24, "width": 24, "source":"http://assets.singly.com/service-icons/24px/yammer.png"},
+    {"height": 32, "width": 32, "source":"http://assets.singly.com/service-icons/32px/yammer.png"}
+  ],
+  "synclets":[
+    {"name": "self", "frequency": 7200},
+    {"name": "messages", "frequency": 600},
+    {"name": "users", "frequency": 7200},
+    {"name": "groups", "frequency": 7200}
+  ]
+}
