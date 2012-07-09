@@ -1,31 +1,35 @@
-var assert = require("chai").assert;
 var skew = require("skew");
+var assert = require("chai").assert;
+
+var SERVERS = {
+  redis: {
+    host: 'localhost',
+    port: 6379
+  },
+  beanstalk: {
+    host: 'localhost',
+    port: 11300
+  }
+};
 
 describe('Skew', function() {
   var client;
 
   before(function(done) {
-    client = new skew.client({
-      redis: {
-        host: 'localhost',
-        port: 6379
-      },
-      beanstalk: {
-        host: 'localhost',
-        port: 11300
-      }
-    }, 'testing');
+    client = new skew.client(SERVERS, 'testing');
 
-    client.init(function(err) {
-      // Use a non-default database
-      client.redisClient.select(1, function() {
-        // Use a non-default tube
-        client.beanstalkClient.use(Date.now().toString(36), function(err, tubename) {
-          assert.isNull(err);
+    // Use a non-default database
+    client.redisClient.select(1, function() {
+      // Use a non-default tube
+      /*
+      client.beanstalkClient.use(Date.now().toString(36), function(err, tubename) {
+        assert.isNull(err);
 
-          done();
-        });
+        done();
       });
+      */
+
+      done();
     });
   });
 
@@ -38,7 +42,7 @@ describe('Skew', function() {
 
   describe('#reserve()', function() {
     it('should reserve a job', function(done) {
-      client.schedule(0, Date.now() - (60 * 1000), { a: 'b', c: 'd' }, function(err, jobId) {
+      client.schedule('key', Date.now() - (60 * 1000), { a: 'b', c: 'd' }, 0, function(err, jobId) {
         assert.isNull(err);
         assert.isString(jobId);
         assert.isTrue(parseInt(jobId, 10) > 0);
@@ -61,19 +65,26 @@ describe('Skew', function() {
 
   describe('#schedule()', function() {
     it('should schedule a valid job', function(done) {
-      client.schedule(0, Date.now() + (60 * 1000), { a: 'b', c: 'd' }, function(err, jobId) {
+      var key = 'key';
+      var nextRun = Date.now() + (60 * 1000);
+
+      client.schedule(key, nextRun, { a: 'b', c: 'd' }, 0, function(err, jobId) {
         assert.isNull(err);
         assert.isString(jobId);
         assert.isTrue(parseInt(jobId, 10) > 0);
 
-        done();
+        client.redisClient.hgetall('jobs:' + key, function(err, reply) {
+          assert.equal(nextRun, reply.nextRun);
+
+          done();
+        });
       });
     });
   });
 
-  describe('#deleteRedisJob()', function() {
+  describe('#untrackRedisJob()', function() {
     it('should return false when the job is not tracked', function(done) {
-      client.deleteRedisJob(12345, function(err, result) {
+      client.untrackRedisJob(12345, function(err, result) {
         assert.equal("The job wasn't tracked.", err);
         assert.equal(false, result);
 
@@ -86,7 +97,7 @@ describe('Skew', function() {
         assert.equal(undefined, err);
         assert.equal(true, result);
 
-        client.deleteRedisJob(12345, function(err, result) {
+        client.untrackRedisJob(12345, function(err, result) {
           assert.equal(undefined, err);
           assert.equal(true, result);
 
