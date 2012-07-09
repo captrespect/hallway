@@ -48,7 +48,7 @@
 
    <h2>Profiles</h2>
 
-   <form class="form-horizontal" method="get" action="profiles/get">
+   <form class="form-horizontal" id="profileact" method="get" action="profiles/get">
     <div class="control-group">
      <label for="pid-1" class="control-label">Profile lookup by id</label>
 
@@ -56,6 +56,7 @@
       <input id="pid-1" name="pid" placeholder="id@service" />
 
       <button type="submit" class="btn btn-primary">Go</button>
+      <button type="submit" class="btn btn-primary" onclick="return profileact(this)">Token</button>
      </div>
     </div>
    </form>
