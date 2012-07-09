@@ -25,7 +25,6 @@
     "ent": "",
     "express": "=2.5.4",
     "facebook-js": "=1.0.0",
-    "gdata-js": "2.0.1",
     "generic-pool": "",
     "gift": "0.0.5",
     "gzippo": "=0.1.4",
