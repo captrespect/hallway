@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
  <head>
-  <title>worker status</title>
+  <title>instance status</title>
 
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 
@@ -9,14 +9,15 @@
   <link rel="stylesheet" href="/bootstrap/css/bootstrap-responsive.min.css" />
 
   <link rel="stylesheet" href="/css/dawg.css" />
-  <link rel="stylesheet" href="/css/workers.css" />
+  <link rel="stylesheet" href="/css/instances.css" />
 
+  <script src="/lib/async.min.js"></script>
   <script src="/lib/moment.min.js"></script>
   <script src="/lib/underscore-min.js"></script>
   <script src="/lib/jquery.sortElements.js"></script>
 
   <script src="/js/utilities.js"></script>
-  <script src="/js/workers.js"></script>
+  <script src="/js/instances.js"></script>
  </head>
 
  <body>
@@ -25,10 +26,12 @@
 
    <input type="button" value="Refresh" class="btn btn-primary btn-large" id="refresh" />
 
+   <p>This table displays the current <strong>running</strong> code revision for each instance.</p>
+
    <table class="table table-striped">
     <thead>
      <tr>
-      <th class="worker">Worker</th>
+      <th class="instance">Instance</th>
       <th class="version">Version</th>
       <th class="uptime">Uptime</th>
       <th class="active">Active</th>
