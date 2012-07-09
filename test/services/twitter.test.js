@@ -19,6 +19,7 @@ describe("Twitter connector", function () {
   beforeEach(function (done) {
     fakeweb.allowNetConnect = false;
     pinfo = helper.loadFixture(path.join(__dirname, '..', 'fixtures', 'connectors', 'twitter.json'));
+    pinfo.config = {};
     pinfo.absoluteSrcdir = path.join(__dirname, '..', '..', 'Connectors', 'twitter');
     return done();
   });
@@ -30,7 +31,7 @@ describe("Twitter connector", function () {
 
   describe("friends synclet", function () {
     beforeEach(function (done) {
-      fakeweb.registerUri({uri  : apiBase + 'friends/ids.json?cursor=-1&path=%2Ffriends%2Fids.json' + apiSuffix,
+      fakeweb.registerUri({uri  : apiBase + 'friends/ids.json?path=%2Ffriends%2Fids.json&cursor=-1&slice=0' + apiSuffix,
                            file : __dirname + '/../fixtures/synclets/twitter/friends.js'});
       fakeweb.registerUri({uri  : apiBase + 'users/lookup.json?path=%2Fusers%2Flookup.json&user_id=1054551' + apiSuffix,
                            file : __dirname + '/../fixtures/synclets/twitter/1054551.js'});
