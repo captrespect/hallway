@@ -28,7 +28,7 @@ var Roles = {
 };
 var role = Roles.apihost;
 
-// This lconfig stuff has to come before any other locker modules are loaded!!
+// This lconfig stuff has to come before any other hallway modules are loaded!
 var lconfig = require('lconfig');
 var configDir = process.env.LOCKER_CONFIG || 'Config';
 if (!lconfig.loaded) {
@@ -42,7 +42,7 @@ if (!lconfig.loaded) {
     lconfig.load(configFile);
 }
 else {
-    console.warn("Locker config already loaded, me is set to", lconfig.me);
+    console.warn("Hallway config already loaded");
 }
 
 var logger = require("logger").logger("hallwayd");
@@ -99,7 +99,7 @@ function startSyncmanager(cbDone) {
 function startAPIHost(cbDone) {
   logger.info("Starting an API host");
   var webservice = require('webservice');
-  webservice.startService(lconfig.lockerPort, lconfig.lockerListenIP, function(locker) {
+  webservice.startService(lconfig.lockerPort, lconfig.lockerListenIP, function(hallway) {
     logger.info('Hallway is now listening at ' + lconfig.lockerBase);
     cbDone();
   });
