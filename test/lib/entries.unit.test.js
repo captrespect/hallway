@@ -1,0 +1,1 @@
+var entries = require('entries');
