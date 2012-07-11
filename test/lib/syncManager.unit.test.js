@@ -1,8 +1,21 @@
 var path = require('path');
-var helper = require(path.join(__dirname, '..', 'support', 'locker-helper'));
 
+var helper = require(path.join(__dirname, '..', 'support', 'locker-helper'));
 helper.configurate();
 
-var syncManager = require("syncManager.js");
+var dal = require('dal');
+dal.setBackend('fake');
 
-// TODO
+var syncManager = require('syncManager');
+
+describe('syncManager.manager', function() {
+  describe('#init()', function() {
+    it('should initialize the syncManager', function(done) {
+      //syncManager.manager.init(false, function(err) {
+      //  assert.isNull(err);
+
+        done();
+      //});
+    });
+  });
+});
