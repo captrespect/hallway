@@ -2,7 +2,7 @@ var mocha  = require('mocha');
 var should   = require('should');
 var fakeweb  = require('node-fakeweb');
 var path     = require('path');
-var helper   = require(path.join(__dirname, '..', 'support', 'locker-helper.js'));
+var helper   = require(path.join(__dirname, '..', '..', 'support', 'locker-helper.js'));
 var groups   = require(path.join('services', 'yammer', 'groups.js'));
 var messages = require(path.join('services', 'yammer', 'messages.js'));
 var self     = require(path.join('services', 'yammer', 'self.js'));
@@ -15,7 +15,7 @@ describe("Yammer connector", function () {
 
   beforeEach(function (done) {
     fakeweb.allowNetConnect = false;
-    pi = helper.loadFixture(path.join(__dirname, '..', 'fixtures', 'synclets', 'yammer', 'yammer.json'));
+    pi = helper.loadFixture(path.join(__dirname, '..', '..', 'fixtures', 'synclets', 'yammer', 'yammer.json'));
     pi.config = {};
     return done();
   });
