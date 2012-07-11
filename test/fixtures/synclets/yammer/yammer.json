@@ -1,0 +1,30 @@
+{
+    "srcdir": "",
+    "id": "yammer",
+    "provider":"yammer",
+    "synclets": [
+      {"name": "friends", "frequency": 360000},
+      {"name": "timeline", "frequency": 360000},
+      {"name": "tweets", "frequency": 360000},
+      {"name": "mentions", "frequency": 360000}
+    ],
+    "auth": {
+      "consumerKey":"key",
+      "consumerSecret":"secret",
+      "token": {
+        "user": {
+          "id": 1
+        },
+        "access_token": {
+          "token": "123abc"
+        }
+      },
+      "pid":"someone@yammer",
+      "profile": {
+        "id":"1",
+        "screen_name":"someone"
+      }
+    },
+    "type": "connector",
+    "authed": 1332363644656
+}
