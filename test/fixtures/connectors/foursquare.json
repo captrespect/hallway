@@ -1,5 +1,4 @@
 {
-    "srcdir": "Connectors/foursquare",
     "id": "foursquare",
     "auth": {
       "accessToken":"token",

@@ -15,7 +15,6 @@ describe("Instagram connector", function () {
   beforeEach(function (done) {
     fakeweb.allowNetConnect = false;
     pinfo = helper.loadFixture(path.join(__dirname, '..', '..', 'fixtures', 'connectors', 'instagram.json'));
-    pinfo.absoluteSrcdir = path.join(__dirname, '..', '..', 'Connectors', 'instagram');
     return done();
   });
 

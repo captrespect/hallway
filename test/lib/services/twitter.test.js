@@ -20,7 +20,6 @@ describe("Twitter connector", function () {
     fakeweb.allowNetConnect = false;
     pinfo = helper.loadFixture(path.join(__dirname, '..', '..', 'fixtures', 'connectors', 'twitter.json'));
     pinfo.config = {};
-    pinfo.absoluteSrcdir = path.join(__dirname, '..', '..', 'Connectors', 'twitter');
     return done();
   });
 
