@@ -29,6 +29,9 @@ function refresh() {
           '<td>' + (instance.active ? instance.active.length : '') + '</td>' +
           '<td>' + (instance.total ? commas(instance.total) : '') + '</td>' +
           '<td>' + (instance.runtime ? (Math.round(instance.runtime * 100) / 100) + 's' : '') + '</td>' +
+          '<td>' + Math.round(instance.os.loadavg[0] * 100) / 100 + '</td>' +
+          '<td>' + moment.duration(instance.os.uptime, "seconds").humanize() + '</td>' +
+          '<td>' + Math.round((instance.os.freemem / 1024 / 1024 / 1024) * 100) / 100 + 'gb</td>' +
           '<td>' + instance.publicIp + '</td>' +
           '<td>' + instance.privateIp + '</td>' +
         '</tr>');
