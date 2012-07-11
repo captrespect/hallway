@@ -20,7 +20,7 @@
     "colors": "",
     "compress-buffer": "=0.5.1",
     "connect": "=1.8.5",
-    "cover": "",
+    "cover": "https://github.com/kristjan/node-cover/tarball/master",
     "ejs": "=0.4.3",
     "ent": "",
     "express": "=2.5.4",
