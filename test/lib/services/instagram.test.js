@@ -2,7 +2,7 @@ var mocha   = require('mocha')
   , should  = require('should')
   , fakeweb = require('node-fakeweb')
   , path    = require('path')
-  , helper  = require(path.join(__dirname, '..', 'support', 'locker-helper.js'))
+  , helper  = require(path.join(__dirname, '..', '..', 'support', 'locker-helper.js'))
   , follows = require(path.join('services', 'instagram', 'follows.js'))
   , feed    = require(path.join('services', 'instagram', 'feed.js'))
   , util    = require('util')
@@ -14,7 +14,7 @@ describe("Instagram connector", function () {
 
   beforeEach(function (done) {
     fakeweb.allowNetConnect = false;
-    pinfo = helper.loadFixture(path.join(__dirname, '..', 'fixtures', 'connectors', 'instagram.json'));
+    pinfo = helper.loadFixture(path.join(__dirname, '..', '..', 'fixtures', 'connectors', 'instagram.json'));
     pinfo.absoluteSrcdir = path.join(__dirname, '..', '..', 'Connectors', 'instagram');
     return done();
   });
@@ -27,7 +27,7 @@ describe("Instagram connector", function () {
   describe("follows synclet", function () {
     beforeEach(function (done) {
       fakeweb.registerUri({uri : apiBase + '/users/self/follows?access_token=token',
-                           file : __dirname + '/../fixtures/synclets/instagram/follows.json'});
+                           file : __dirname + '/../../fixtures/synclets/instagram/follows.json'});
       return done();
     });
 
@@ -44,7 +44,7 @@ describe("Instagram connector", function () {
   describe("feed synclet", function () {
     beforeEach(function (done) {
       fakeweb.registerUri({uri : apiBase + '/users/self/feed?access_token=token',
-                           file : __dirname + '/../fixtures/synclets/instagram/feed.json'});
+                           file : __dirname + '/../../fixtures/synclets/instagram/feed.json'});
 
       return done();
     });

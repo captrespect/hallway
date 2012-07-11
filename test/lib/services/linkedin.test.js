@@ -2,7 +2,7 @@ var mocha   = require('mocha')
   , should  = require('should')
   , fakeweb = require('node-fakeweb')
   , path    = require('path')
-  , helper  = require(path.join(__dirname, '..', 'support', 'locker-helper.js'))
+  , helper  = require(path.join(__dirname, '..', '..', 'support', 'locker-helper.js'))
   , self = require(path.join('services', 'linkedin', 'self.js'))
   , updates    = require(path.join('services', 'linkedin', 'updates.js'))
   , util    = require('util')
@@ -13,7 +13,7 @@ describe("linkedin connector", function () {
 
   beforeEach(function (done) {
     fakeweb.allowNetConnect = false;
-    pinfo = helper.loadFixture(path.join(__dirname, '..', 'fixtures', 'connectors', 'linkedin.json'));
+    pinfo = helper.loadFixture(path.join(__dirname, '..', '..', 'fixtures', 'connectors', 'linkedin.json'));
     return done();
   });
 
@@ -26,7 +26,7 @@ describe("linkedin connector", function () {
     beforeEach(function (done) {
       fakeweb.registerUri({uri : 'http://api.linkedin.com:80/v1/people/~:(id,first-name,last-name,headline,location:(name,country:(code)),industry,current-share,num-connections,summary,specialties,proposal-comments,associations,honors,interests,positions,publications,patents,languages,skills,certifications,educations,num-recommenders,recommendations-received,phone-numbers,im-accounts,twitter-accounts,date-of-birth,main-address,member-url-resources,picture-url,site-standard-profile-request:(url),api-standard-profile-request:(url),site-public-profile-request:(url),api-public-profile-request:(url),public-profile-url)?format=json',
       headers:{"Content-Type":"text/plain"},
-                           file : __dirname + '/../fixtures/synclets/linkedin/self.json'});
+                           file : __dirname + '/../../fixtures/synclets/linkedin/self.json'});
       return done();
     });
 
@@ -43,7 +43,7 @@ describe("linkedin connector", function () {
     beforeEach(function (done) {
       fakeweb.registerUri({uri : 'http://api.linkedin.com:80/v1/people/~/network/updates?format=json&scope=self&count=250',
       headers:{"Content-Type":"text/plain"},
-                           file : __dirname + '/../fixtures/synclets/linkedin/updates.json'});
+                           file : __dirname + '/../../fixtures/synclets/linkedin/updates.json'});
 
       return done();
     });
