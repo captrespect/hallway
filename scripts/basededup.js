@@ -7,7 +7,7 @@ var ijod = require('ijod');
 var base = process.argv[2];
 if(!base) return console.error("missing base arg");
 ijod.initDB(function(){
-  step();  
+  step();
 })
 
 var deleteme = process.argv[3] === 'MEOW';
@@ -33,5 +33,5 @@ function step(){
       });
     });
   });
-  
+
 }

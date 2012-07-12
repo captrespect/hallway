@@ -11,7 +11,7 @@ request.get({url:url, json:true}, function(e,r,js){
     timez[r.host].push(entry.at);
     if(entry.at < oldest) oldest = entry.at;
   });
-  
+
   var now = Date.now();
   Object.keys(timez).forEach(function(service){
     timez[service].sort();

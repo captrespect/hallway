@@ -45,7 +45,7 @@ get('profiles', function(j){
         console.log(calls,"calls in",(end-start)/1000,"seconds, ",(end-start)/calls,"ms per call");
         fs.writeFileSync(path.join(__dirname,'snaps','last.json'), JSON.stringify(snap));
         fs.writeFileSync(path.join(__dirname,'snaps','at.'+Date.now()+'.json'), JSON.stringify(snap));
-      });      
+      });
     });
   });
 });

@@ -6,7 +6,7 @@ var ijod = require('ijod');
 
 var start = process.argv[2] || Date.now()+100000;
 ijod.initDB(function(){
-  step({at:start, total:0, del:0});  
+  step({at:start, total:0, del:0});
 })
 
 var deleteme = process.argv[3] === 'MEOW';
