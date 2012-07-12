@@ -29,6 +29,9 @@ var dashboards = {
   features: [
     'stats.app.features.*'
   ],
+  requestDurations: [
+    'stats.timers.request.duration.*.upper'
+  ],
   services: [
     'stats.app.services.rollup',
     'stats.app.services.*.*'
@@ -54,6 +57,11 @@ function addMetrics(dashboard, results, callback) {
   results.forEach(function(result) {
     // If there's another level don't add the stat
     if (/\.$/.test(result)) {
+      return;
+    }
+
+    // upper returns upper and upper_90, we just want upper
+    if (/upper_90$/.test(result)) {
       return;
     }
 
@@ -86,7 +94,7 @@ $(function() {
   // Search for metrics in parallel
   _.each(dashboards, function(searches, dashboard) {
     async.forEach(searches, function(search, searchCallback) {
-      if (/\*$/.test(search)) {
+      if (/\*/.test(search)) {
         graphite.find(search, function(err, results) {
           addMetrics(dashboard, results, searchCallback);
         });
