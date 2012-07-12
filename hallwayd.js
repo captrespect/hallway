@@ -67,11 +67,11 @@ if (process.argv.indexOf("offline") >= 0) syncManager.manager.offlineMode = true
 
 var shuttingDown_ = false;
 
-function syncComplete(response, task, callback) {
+function syncComplete(response, task, runInfo, callback) {
   logger.info("Got a completion from %s", task.profile);
   if(!response) logger.debug("missing response");
   if(!response) response = {};
-  pipeline.inject(response.data, function(err) {
+  pipeline.inject(response.data, runInfo.auth, function(err) {
     if(err) return logger.error("failed pipeline processing: "+err);
     logger.verbose("Rescheduling " + JSON.stringify(task) + " and config "+JSON.stringify(response.config));
     // save any changes and reschedule
