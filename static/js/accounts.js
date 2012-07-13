@@ -28,60 +28,58 @@ function refresh() {
   $.getJSON('/apps/accounts', options, function(appsAccounts) {
     $.getJSON('/apps/profiles', options, function(appsProfiles) {
       appsAccounts.forEach(function(app) {
-        (function(currentApp) {
-          var appProfile = _.find(appsProfiles, function(item) {
-            return item.id === currentApp.id;
-          });
+        app.profiles = 0;
 
-          currentApp.profiles = 0;
+        var appProfile = _.find(appsProfiles, function(item) {
+          return item.id === app.id;
+        });
 
-          if (appProfile) {
-            currentApp.profiles = appProfile.accounts;
-          }
+        if (appProfile) {
+          app.profiles = appProfile.accounts;
+        }
 
-          if (!currentApp.details || !currentApp.details.notes) {
-            currentApp.details = {
-              notes: {
-                appName: '',
-                appUrl: ''
-              }
-            };
-          } else {
-            currentApp.details.notes.appUrl = '<a href="' + currentApp.details.notes.appUrl + '">' + currentApp.details.notes.appUrl + '</a>';
-          }
+        if (!app.details || !app.details.notes) {
+          app.details = {
+            notes: {
+              appName: '',
+              appUrl: ''
+            }
+          };
+        } else {
+          app.details.notes.appUrl = '<a href="' + app.details.notes.appUrl + '">' + app.details.notes.appUrl + '</a>';
+        }
 
-          var email = '';
+        var email = '';
 
-          if (currentApp.details.profile && currentApp.details.profile.data && currentApp.details.profile.data.email) {
-            email = '<a href="mailto:'+ currentApp.details.profile.data.email + '">' + currentApp.details.profile.data.email + '</a>';
-          }
+        if (app.details.profile && app.details.profile.data && app.details.profile.data.email) {
+          email = '<a href="mailto:'+ app.details.profile.data.email + '">' + app.details.profile.data.email + '</a>';
+        }
 
-          if (currentApp === 'total') {
-            return;
-          }
+        if (app === 'total') {
+          return;
+        }
 
-          if (!currentApp.details.cat) {
-            currentApp.details.cat = '';
-          } else {
-            currentApp.details.cat = moment(currentApp.details.cat).format("M/D/YYYY h:mma");
-          }
+        if (!app.details.cat) {
+          app.details.cat = '';
+        } else {
+          app.details.cat = moment(app.details.cat).format("M/D/YYYY h:mma");
+        }
 
-          var ratio = Math.round((currentApp.profiles / currentApp.accounts) * 100) / 100;
+        var ratio = Math.round((app.profiles / app.accounts) * 100) / 100;
 
-          $('#rows').append('<tr>' +
-              '<td>' + currentApp.id + '</td>' +
-              '<td>' + currentApp.details.notes.appName  + '</td>' +
-              '<td>' + email + '</td>' +
-              '<td>' + currentApp.details.notes.appUrl  + '</td>' +
-              '<td>' + currentApp.profiles + '</td>' +
-              '<td>' + currentApp.accounts + '</td>' +
-              '<td>' + ratio + '</td>' +
-              '<td>' + currentApp.details.cat + '</td>' +
-            '</tr>');
-        })(app);
-
-        sortTable();
+        $('#rows').append('<tr>' +
+            '<td>' + app.id + '</td>' +
+            '<td>' + app.details.notes.appName  + '</td>' +
+            '<td>' + email + '</td>' +
+            '<td>' + app.details.notes.appUrl  + '</td>' +
+            '<td>' + app.profiles + '</td>' +
+            '<td>' + app.accounts + '</td>' +
+            '<td>' + ratio + '</td>' +
+            '<td>' + app.details.cat + '</td>' +
+          '</tr>');
       });
+
+      sortTable();
     });
   });
 }
