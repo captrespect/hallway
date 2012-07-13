@@ -44,6 +44,15 @@ var dashboards = {
     'stats.app.types.*',
     'stats.app.types.discovery.*'
   ],
+  typesItems: [
+    // Call these out individually since there's a lot of noise
+    'stats.data.types.photo',
+    'stats.data.types.news',
+    'stats.data.types.video',
+    'stats.data.types.status',
+    'stats.data.types.contact',
+    'stats.data.types.checkin'
+  ],
   proxy: [
     'stats.app.proxy.*'
   ]
