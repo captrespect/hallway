@@ -1,6 +1,4 @@
 function refresh() {
-  $('#rows').html('');
-
   async.parallel({
     workers: function(callback) {
       $.getJSON('/workers/state', function(state) {
@@ -14,6 +12,8 @@ function refresh() {
     },
   },
   function(err, results) {
+    $('#rows').html('');
+
     // I hate how this looks.
     var instances = results.workers.workers.concat(results.apiHosts.apiHosts);
 

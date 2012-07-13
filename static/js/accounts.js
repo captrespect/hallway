@@ -11,8 +11,6 @@ function sortTable() {
 function refresh() {
   updateSelected();
 
-  $('#rows').html('');
-
   var options = {};
 
   var state = $.bbq.getState();
@@ -27,6 +25,8 @@ function refresh() {
 
   $.getJSON('/apps/accounts', options, function(appsAccounts) {
     $.getJSON('/apps/profiles', options, function(appsProfiles) {
+      $('#rows').html('');
+
       appsAccounts.forEach(function(app) {
         app.profiles = 0;
 

@@ -32,6 +32,9 @@ var dashboards = {
   requestDurations: [
     'stats.timers.request.duration.*.upper'
   ],
+  syncletDurations: [
+    'stats.timers.synclet.duration.*.*.upper'
+  ],
   services: [
     'stats.app.services.rollup',
     'stats.app.services.*.*'

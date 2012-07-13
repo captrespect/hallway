@@ -9,8 +9,6 @@ function sortTable() {
 }
 
 function refresh() {
-  $('#rows').html('');
-
   var options = {
     since: Date.now() - (31556926 * 1000)
   };
@@ -22,6 +20,8 @@ function refresh() {
   }
 
   $.getJSON('/apps/hits', options, function(hits) {
+    $('#rows').html('');
+
     hits.apps.forEach(function(app) {
       if (!app.details || !app.details.notes) {
         app.details = {

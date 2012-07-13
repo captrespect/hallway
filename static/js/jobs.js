@@ -21,9 +21,6 @@ function sortTable() {
 }
 
 function refresh() {
-  $('#rows').html('');
-  $('#disavowed-jobs-rows').html('');
-
   $.getJSON('/syncSchedule/active', function(active) {
     var profiles = {};
 
@@ -36,6 +33,9 @@ function refresh() {
     });
 
     $.getJSON('/workers/state', function(state) {
+      $('#rows').html('');
+      $('#disavowed-jobs-rows').html('');
+
       var i = 0;
 
       if (state.unresponsive && state.unresponsive.length) {
