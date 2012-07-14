@@ -1,9 +1,9 @@
 var entries = require('entries');
 
 describe("Entries", function() {
-  describe("parseReq", function() {
+  describe("options", function() {
     it("should do nothing", function(done) {
-      entries.parseReq("/", {});
+      entries.options({});
       done();
     });
   });
