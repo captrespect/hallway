@@ -24,6 +24,9 @@ var Roles = {
   },
   dawg: {
     startup:startDawg
+  },
+  stream: {
+    startup:startStream
   }
 };
 var role = Roles.apihost;
@@ -119,6 +122,14 @@ function startDawg(cbDone) {
   });
 }
 
+function startStream(cbDone) {
+  logger.info("Starting a Hallway Stream -- you're in for a good time.");
+  require("streamer").startService(lconfig.stream, function() {
+    logger.info("Streaming at port %d", lconfig.stream.port);
+    cbDone();
+  });
+}
+
 function startWorkerWS(cbDone) {
   if (!lconfig.worker || !lconfig.worker.port) {
     logger.error("You must specify a worker section with at least a port and password to run.");
@@ -144,7 +155,7 @@ var startupTasks = [];
 
 startupTasks.push(require('ijod').initDB);
 
-if (role !== Roles.dawg) {
+if (role !== Roles.dawg && role !== Roles.stream) {
   startupTasks.push(startSyncmanager);
   startupTasks.push(require('acl').init);
   startupTasks.push(profileManager.init);
