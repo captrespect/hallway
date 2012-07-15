@@ -227,7 +227,7 @@ if (!process.env.LOCKER_TEST) {
         logger.warn(err);
         return;
       }
-      if(err.toString().indexOf('ECONNRESET') >= 0)
+      if(err.toString().indexOf('ECONNRESET') >= 0 || err.toString().indexOf('socket hang up') >= 0)
       {
         // THEORY: these bubble up from event emitter as uncaught errors, even though the socket end event still fires and are ignorable
         logger.warn(err);
