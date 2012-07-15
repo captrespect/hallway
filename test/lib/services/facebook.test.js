@@ -1,18 +1,17 @@
-var mocha   = require('mocha')
-  , should  = require('should')
-  , fakeweb = require('node-fakeweb')
-  , path    = require('path')
-  , helper  = require(path.join(__dirname, '..', '..', 'support', 'locker-helper.js'))
-  , friends = require(path.join('services', 'facebook', 'friends.js'))
-  , home    = require(path.join('services', 'facebook', 'home.js'))
-  , homeup    = require(path.join('services', 'facebook', 'home_update.js'))
-  , photos  = require(path.join('services', 'facebook', 'photos.js'))
-  , util    = require('util')
-  ;
+var mocha   = require('mocha');
+var should  = require('should');
+var fakeweb = require('node-fakeweb');
+var path    = require('path');
+var util    = require('util');
+var helper  = require(path.join(__dirname, '..', '..', 'support', 'locker-helper.js'));
+var friends = require(path.join('services', 'facebook', 'friends.js'));
+var home    = require(path.join('services', 'facebook', 'home.js'));
+var homeup  = require(path.join('services', 'facebook', 'home_update.js'));
+var photos  = require(path.join('services', 'facebook', 'photos.js'));
 
 describe("Facebook connector", function () {
-  var apiBase = 'https://graph.facebook.com:443/me/'
-    , pinfo;
+  var apiBase = 'https://graph.facebook.com:443/me/';
+  var pinfo;
 
   before(function (done) {
     fakeweb.allowNetConnect = false;
@@ -21,7 +20,9 @@ describe("Facebook connector", function () {
 
   beforeEach(function (done) {
     fakeweb.allowNetConnect = false;
-    pinfo = helper.loadFixture(path.join(__dirname, '..', '..', 'fixtures', 'connectors', 'facebook.json'));
+    pinfo = helper.loadFixture(
+      path.join(__dirname, '..', '..', 'fixtures', 'connectors', 'facebook.json')
+    );
     pinfo.config = {};
     return done();
   });
@@ -33,12 +34,18 @@ describe("Facebook connector", function () {
 
   describe("home synclet", function () {
     beforeEach(function (done) {
-      fakeweb.registerUri({uri : 'https://graph.facebook.com:443/?access_token=foo&date_format=U&ids=3488997579924',
-                           file : __dirname + '/../../fixtures/synclets/facebook/photo.json'});
-      fakeweb.registerUri({uri : apiBase + 'home?access_token=foo&date_format=U&limit=200',
-                           file : __dirname + '/../../fixtures/synclets/facebook/home.json'});
-      fakeweb.registerUri({uri : apiBase + 'feed?date_format=U&access_token=abc&limit=25&until=1305843879',
-                           body : '{"data":[]}'});
+      fakeweb.registerUri({
+        uri  : 'https://graph.facebook.com:443/?ids=3488997579924&access_token=foo&date_format=U',
+        file : __dirname + '/../../fixtures/synclets/facebook/photo.json'
+      });
+      fakeweb.registerUri({
+        uri : apiBase + 'home?limit=200&access_token=foo&date_format=U',
+        file : __dirname + '/../../fixtures/synclets/facebook/home.json'
+      });
+      fakeweb.registerUri({
+        uri : apiBase + 'feed?date_format=U&access_token=abc&limit=25&until=1305843879',
+        body : '{"data":[]}'
+      });
 
       return done();
     });
@@ -47,8 +54,10 @@ describe("Facebook connector", function () {
       home.sync(pinfo, function (err, response) {
         if (err) return done(err);
 
-        response.data['post:42@facebook/home'][0].id.should.equal('100002438955325_224550747571079');
-        response.data['photo:42@facebook/home_photos'][0].id.should.equal('3488997579924');
+        response.data['post:42@facebook/home'][0].id.
+          should.equal('100002438955325_224550747571079');
+        response.data['photo:42@facebook/home_photos'][0].id.
+          should.equal('3488997579924');
         return done();
       });
     });
@@ -57,11 +66,18 @@ describe("Facebook connector", function () {
 
   describe("home update synclet", function () {
     beforeEach(function (done) {
-      fakeweb.registerUri({uri : apiBase + 'home?access_token=foo&date_format=U&since=yesterday&limit=500',
-                           file : __dirname + '/../../fixtures/synclets/facebook/home.json'});
-      fakeweb.registerUri({uri: "https://graph.facebook.com:443/me/feed?access_token=foo&date_format=U&since=yesterday&limit=500", file : __dirname + '/../../fixtures/synclets/facebook/home.json'} );
-      fakeweb.registerUri({uri : apiBase + 'feed?date_format=U&access_token=abc&limit=25&until=1305843879&since=yesterday',
-                           body : '{"data":[]}'});
+      fakeweb.registerUri({
+        uri : apiBase + 'home?limit=500&since=yesterday&access_token=foo&date_format=U',
+        file : __dirname + '/../../fixtures/synclets/facebook/home.json'
+      });
+      fakeweb.registerUri({
+        uri: 'https://graph.facebook.com:443/me/feed?limit=500&since=yesterday&access_token=foo&date_format=U',
+        file : __dirname + '/../../fixtures/synclets/facebook/home.json'
+      });
+      fakeweb.registerUri({
+        uri : apiBase + 'feed?date_format=U&access_token=abc&limit=25&until=1305843879&since=yesterday',
+        body : '{"data":[]}'
+      });
 
       return done();
     });
@@ -70,7 +86,8 @@ describe("Facebook connector", function () {
       homeup.sync(pinfo, function (err, response) {
         if (err) return done(err);
 
-        response.data['post:42@facebook/home'][0].id.should.equal('100002438955325_105511996206765');
+        response.data['post:42@facebook/home'][0].id.
+          should.equal('100002438955325_105511996206765');
         return done();
       });
     });
