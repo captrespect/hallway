@@ -227,6 +227,12 @@ if (!process.env.LOCKER_TEST) {
         logger.warn(err);
         return;
       }
+      if(err.toString().indexOf('ECONNRESET') >= 0)
+      {
+        // THEORY: these bubble up from event emitter as uncaught errors, even though the socket end event still fires and are ignorable
+        logger.warn(err);
+        return;
+      }
       logger.error('Uncaught exception:');
       logger.error(util.inspect(err));
       if (err && err.stack) logger.error(util.inspect(err.stack));
