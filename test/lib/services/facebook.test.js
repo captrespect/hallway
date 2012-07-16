@@ -51,6 +51,35 @@ describe("Facebook connector", function() {
       });
     });
 
+    describe('separating self-posts vs. other people', function() {
+      beforeEach(function(done) {
+        pinfo.auth.pid = '100002438955325@facebook';
+        return done();
+      });
+
+      it('collects posts made by the profile owner', function(done) {
+        feed.sync(pinfo, function(err, response) {
+          if (err) return done(err);
+          var posts = response.data['post:100002438955325@facebook/feed_self'];
+          posts.forEach(function(post) {
+            post.from.id.should.equal('100002438955325');
+          });
+          return done();
+        });
+      });
+
+      it('collects posts made everyone else', function(done) {
+        feed.sync(pinfo, function(err, response) {
+          if (err) return done(err);
+          var posts = response.data['post:100002438955325@facebook/feed_others'];
+          posts.forEach(function(post) {
+            post.from.id.should.not.equal('100002438955325');
+          });
+          return done();
+        });
+      });
+    });
+
     describe('when there is more to fetch', function() {
       it('remembers the next page to fetch', function(done) {
         feed.sync(pinfo, function(err, response) {
