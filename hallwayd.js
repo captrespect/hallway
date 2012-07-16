@@ -101,14 +101,14 @@ function syncComplete(response, task, runInfo, callback) {
         if (!response.auth)
           return cb();
 
-        // TODO/BAG: What happens here?
+        // TODO: Document what happens here
         profileManager.authSet(task.profile, response.auth, null, cb);
       },
       function(cb) {
         if (!response.config)
          return cb();
 
-        // TODO/BAG: What happens here?
+        // TODO: Document what happens here
         profileManager.configSet(task.profile, response.config, cb);
       },
       function(cb) {
