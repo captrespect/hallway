@@ -21,9 +21,6 @@ function sortTable() {
 }
 
 function refresh() {
-  $('#rows').html('');
-  $('#disavowed-jobs-rows').html('');
-
   $.getJSON('/syncSchedule/active', function(active) {
     var profiles = {};
 
@@ -36,6 +33,9 @@ function refresh() {
     });
 
     $.getJSON('/workers/state', function(state) {
+      $('#rows').html('');
+      $('#disavowed-jobs-rows').html('');
+
       var i = 0;
 
       if (state.unresponsive && state.unresponsive.length) {
@@ -82,7 +82,7 @@ function refresh() {
               '<td><span class="worker worker-' + i + '">' + worker.host + '</span></td>' +
               '<td>' + job.synclet.connector + '#' + job.synclet.name + '</td>' +
               '<td>' + job.profile + '</td>' +
-              '<td>' + states[job.state] + '</td>' +
+              '<td>' + (states[job.state] ? states[job.state] : '') + '</td>' +
               '<td data-start="' + job.tstart + '"><span class="' + classes.join(' ') + '">' + moment(job.tstart).fromNow(true) + '</span></td>' +
               '<td>' + (job.tpipe ? moment(job.tpipe).fromNow(true) : '') + '</td>' +
             '</tr>');
@@ -112,7 +112,7 @@ function refresh() {
               '<td><span class="worker ' + workerClass + '">' + job.worker + '</span></td>' +
               '<td>' + job.task.synclet.connector + '#' + job.task.synclet.name + '</td>' +
               '<td>' + job.task.profile + '</td>' +
-              '<td>' + states[job.task.state] + '</td>' +
+              '<td>' + (states[job.task.state] ? states[job.task.state] : '') + '</td>' +
               '<td data-start="' + job.task.tstart + '"><span class="' + classes.join(' ') + '">' + moment(job.task.tstart).fromNow(true) + '</span></td>' +
               '<td>' + (job.task.tpipe ? moment(job.task.tpipe).fromNow(true) : '') + '</td>' +
             '</tr>');

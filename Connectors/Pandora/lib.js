@@ -1,2 +1,0 @@
-
-exports.fetch = function(url){}

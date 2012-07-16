@@ -13,7 +13,6 @@
     "action": "Connect to a github account",
     "desc": "Collect and sync my data from my github account using the github API and a github 'app' that I create just for myself.",
     "info": "Syncs information about your github contacts, and your github repos.",
-    "srcdir": "Data/node_modules/github",
     "authurl": "https://github.com/login/oauth/authorize?client_id=abc&response_type=code&redirect_uri=https://me.lvh.me:8443/auth/github/auth",
     "auth": {
         "accessToken": "abc",

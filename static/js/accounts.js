@@ -11,8 +11,6 @@ function sortTable() {
 function refresh() {
   updateSelected();
 
-  $('#rows').html('');
-
   var options = {};
 
   var state = $.bbq.getState();
@@ -27,65 +25,61 @@ function refresh() {
 
   $.getJSON('/apps/accounts', options, function(appsAccounts) {
     $.getJSON('/apps/profiles', options, function(appsProfiles) {
+      $('#rows').html('');
+
       appsAccounts.forEach(function(app) {
-        (function(currentApp) {
-          var appProfile = _.find(appsProfiles, function(item) {
-            return item.id === currentApp.id;
-          });
+        app.profiles = 0;
 
-          currentApp.profiles = 0;
+        var appProfile = _.find(appsProfiles, function(item) {
+          return item.id === app.id;
+        });
 
-          if (appProfile) {
-            currentApp.profiles = appProfile.accounts;
-          }
+        if (appProfile) {
+          app.profiles = appProfile.accounts;
+        }
 
-          $.getJSON('/apps/get?key=' + currentApp.id, function(info) {
-            info = info[0];
-
-            if (!info || !info.notes) {
-              info = {
-                notes: {
-                  appName: '',
-                  appUrl: ''
-                }
-              };
-            } else {
-              info.notes.appUrl = '<a href="' + info.notes.appUrl + '">' + info.notes.appUrl + '</a>';
+        if (!app.details || !app.details.notes) {
+          app.details = {
+            notes: {
+              appName: '',
+              appUrl: ''
             }
+          };
+        } else {
+          app.details.notes.appUrl = '<a href="' + app.details.notes.appUrl + '">' + app.details.notes.appUrl + '</a>';
+        }
 
-            var email = '';
+        var email = '';
 
-            if (info.profile && info.profile.data && info.profile.data.email) {
-              email = '<a href="mailto:'+ info.profile.data.email + '">' + info.profile.data.email + '</a>';
-            }
+        if (app.details.profile && app.details.profile.data && app.details.profile.data.email) {
+          email = '<a href="mailto:'+ app.details.profile.data.email + '">' + app.details.profile.data.email + '</a>';
+        }
 
-            if (currentApp === 'total') {
-              return;
-            }
+        if (app === 'total') {
+          return;
+        }
 
-            if (!info.cat) {
-              info.cat = '';
-            } else {
-              info.cat = moment(info.cat).format("M/D/YYYY h:mma");
-            }
+        if (!app.details.cat) {
+          app.details.cat = '';
+        } else {
+          app.details.cat = moment(app.details.cat).format("M/D/YYYY h:mma");
+        }
 
-            var ratio = Math.round((currentApp.profiles / currentApp.accounts) * 100) / 100;
+        var ratio = Math.round((app.profiles / app.accounts) * 100) / 100;
 
-            $('#rows').append('<tr>' +
-                '<td>' + currentApp.id + '</td>' +
-                '<td>' + info.notes.appName  + '</td>' +
-                '<td>' + email + '</td>' +
-                '<td>' + info.notes.appUrl  + '</td>' +
-                '<td>' + currentApp.profiles + '</td>' +
-                '<td>' + currentApp.accounts + '</td>' +
-                '<td>' + ratio + '</td>' +
-                '<td>' + info.cat + '</td>' +
-              '</tr>');
-
-            sortTable();
-          });
-        })(app);
+        $('#rows').append('<tr>' +
+            '<td>' + app.id + '</td>' +
+            '<td>' + app.details.notes.appName  + '</td>' +
+            '<td>' + email + '</td>' +
+            '<td>' + app.details.notes.appUrl  + '</td>' +
+            '<td>' + app.profiles + '</td>' +
+            '<td>' + app.accounts + '</td>' +
+            '<td>' + ratio + '</td>' +
+            '<td>' + app.details.cat + '</td>' +
+          '</tr>');
       });
+
+      sortTable();
     });
   });
 }

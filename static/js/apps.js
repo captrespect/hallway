@@ -9,8 +9,6 @@ function sortTable() {
 }
 
 function refresh() {
-  $('#rows').html('');
-
   var options = {
     since: Date.now() - (31556926 * 1000)
   };
@@ -21,52 +19,44 @@ function refresh() {
     options.since = moment().subtract('minutes', parseInt(qs.since, 10)).valueOf();
   }
 
-  $.getJSON('/apps/hits', options, function(apps) {
-    for (var app in apps) {
-      (function(currentApp) {
-        $.getJSON('/apps/get?key=' + currentApp, function(info) {
-          info = info[0];
+  $.getJSON('/apps/hits', options, function(hits) {
+    $('#rows').html('');
 
-          if (!info || !info.notes) {
-            info = {
-              notes: {
-                appName: '',
-                appUrl: ''
-              }
-            };
-          } else {
-            info.notes.appUrl = '<a href="' + info.notes.appUrl + '">' + info.notes.appUrl + '</a>';
+    hits.apps.forEach(function(app) {
+      if (!app.details || !app.details.notes) {
+        app.details = {
+          notes: {
+            appName: '',
+            appUrl: ''
           }
+        };
+      } else {
+        app.details.notes.appUrl = '<a href="' + app.details.notes.appUrl + '">' + app.details.notes.appUrl + '</a>';
+      }
 
-          var email = '';
+      var email = '';
 
-          if (info.profile && info.profile.data && info.profile.data.email) {
-            email = '<a href="mailto:'+ info.profile.data.email + '">' + info.profile.data.email + '</a>';
-          }
+      if (app.details.profile && app.details.profile.data && app.details.profile.data.email) {
+        email = '<a href="mailto:'+ app.details.profile.data.email + '">' + app.details.profile.data.email + '</a>';
+      }
 
-          if (currentApp === 'total') {
-            return;
-          }
+      if (!app.details.cat) {
+        app.details.cat = '';
+      } else {
+        app.details.cat = moment(app.details.cat).format("M/D/YYYY h:mma");
+      }
 
-          if (!info.cat) {
-            info.cat = '';
-          } else {
-            info.cat = moment(info.cat).format("M/D/YYYY h:mma");
-          }
+      $('#rows').append('<tr>' +
+          '<td>' + app.id + '</td>' +
+          '<td>' + app.details.notes.appName + '</td>' +
+          '<td>' + email + '</td>' +
+          '<td>' + app.details.notes.appUrl + '</td>' +
+          '<td>' + app.hits + '</td>' +
+          '<td>' + app.details.cat + '</td>' +
+        '</tr>');
+    });
 
-          $('#rows').append('<tr>' +
-              '<td>' + currentApp + '</td>' +
-              '<td>' + info.notes.appName + '</td>' +
-              '<td>' + email + '</td>' +
-              '<td>' + info.notes.appUrl + '</td>' +
-              '<td>' + apps[currentApp] + '</td>' +
-              '<td>' + info.cat + '</td>' +
-            '</tr>');
-
-          sortTable();
-        });
-      })(app);
-    }
+    sortTable();
   });
 }
 

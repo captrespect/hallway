@@ -1,0 +1,1 @@
+var instruments = require('instruments');

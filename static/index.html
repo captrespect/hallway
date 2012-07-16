@@ -26,6 +26,8 @@
     <li><a href="/apps.html?since=1440">API hits by app (24h)</a> (<a href="/apps/hits">raw</a>)</a></li>
     <li><a href="/jobs.html">Currently syncing jobs</a> (<a href="/workers/state">raw</a>)</li>
     <li><a href="/instances.html">Instance status</a></li>
+    <li><a href="/app-dash.html">Application dashboard</a></li>
+    <li><a href="/developers.html">Developer accounts by day</a></li>
    </ul>
 
    <h2>Raw Metrics</h2>
@@ -48,7 +50,7 @@
 
    <h2>Profiles</h2>
 
-   <form class="form-horizontal" method="get" action="profiles/get">
+   <form class="form-horizontal" id="profileact" method="get" action="profiles/get">
     <div class="control-group">
      <label for="pid-1" class="control-label">Profile lookup by id</label>
 
@@ -56,6 +58,7 @@
       <input id="pid-1" name="pid" placeholder="id@service" />
 
       <button type="submit" class="btn btn-primary">Go</button>
+      <button type="submit" class="btn btn-primary" onclick="return profileact(this)">Token</button>
      </div>
     </div>
    </form>

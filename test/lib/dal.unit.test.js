@@ -3,8 +3,6 @@ if (!lconfig.database) lconfig.database = {};
 lconfig.database.maxConnections = 1;
 var dal = require("dal");
 
-console.log(lconfig);
-
 dal.setBackend("fake");
 
 describe("DAL", function() {

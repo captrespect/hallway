@@ -1,0 +1,32 @@
+{
+   "debug": false,
+   "lockerHost": "localhost",
+   "externalHost": "localhost",
+   "lockerListenIP": "0.0.0.0",
+   "lockerPort": 8042,
+   "externalPort": 8042,
+   "externalSecure": false,
+   "worker": {
+      "port": 8041
+   },
+   "stats": {},
+   "database": {
+      "maxConnections": 10,
+      "port": 3306
+   },
+   "ec2": {},
+   "s3": {},
+   "syncManager": {},
+   "authSecrets": {},
+   "cookieExpire": 2592000,
+   "logging": {
+      "level": "verbose",
+      "maxsize": 268435456,
+      "console": true
+   },
+   "tolerance": {
+      "threshold": 50,
+      "maxstep": 10,
+      "idle": 600
+   }
+}

@@ -1,7 +1,0 @@
-{
-    "title":"Google Plus",
-    "status":"stable",
-    "provider":"gplus",
-    "provides":["activitiy/gplus"],
-    "synclets":[{"name": "activities", "frequency": 3500}]
-}
