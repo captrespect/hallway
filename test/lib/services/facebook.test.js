@@ -9,7 +9,7 @@ var home    = require(path.join('services', 'facebook', 'home.js'));
 var homeup  = require(path.join('services', 'facebook', 'home_update.js'));
 var photos  = require(path.join('services', 'facebook', 'photos.js'));
 
-describe("Facebook connector", function () {
+describe("Facebook connector", function() {
   var apiBase = 'https://graph.facebook.com:443/me/';
   var pinfo;
 
@@ -32,7 +32,7 @@ describe("Facebook connector", function () {
     return done();
   });
 
-  describe("home synclet", function () {
+  describe("home synclet", function() {
     beforeEach(function (done) {
       fakeweb.registerUri({
         uri  : 'https://graph.facebook.com:443/?ids=3488997579924&access_token=foo&date_format=U',
@@ -50,7 +50,7 @@ describe("Facebook connector", function () {
       return done();
     });
 
-    it('can fetch news feed', function (done) {
+    it('can fetch news feed', function(done) {
       home.sync(pinfo, function (err, response) {
         if (err) return done(err);
 
@@ -64,7 +64,7 @@ describe("Facebook connector", function () {
 
   });
 
-  describe("home update synclet", function () {
+  describe("home update synclet", function() {
     beforeEach(function (done) {
       fakeweb.registerUri({
         uri : apiBase + 'home?limit=500&since=yesterday&access_token=foo&date_format=U',
@@ -82,13 +82,95 @@ describe("Facebook connector", function () {
       return done();
     });
 
-    it('can update news feed', function (done) {
+    it('can update news feed', function(done) {
       homeup.sync(pinfo, function (err, response) {
         if (err) return done(err);
 
         response.data['post:42@facebook/home'][0].id.
           should.equal('100002438955325_105511996206765');
         return done();
+      });
+    });
+  });
+
+  describe('the photos synclet', function() {
+    beforeEach(function(done) {
+      fakeweb.registerUri({
+        uri : 'https://graph.facebook.com:443/fql?q=SELECT%20object_id%2C%20modified%20FROM%20album%20WHERE%20owner%3Dme()%20AND%20modified%20%3E%200&access_token=foo&date_format=U',
+        file : __dirname + '/../../fixtures/synclets/facebook/albums.json'
+      });
+      fakeweb.registerUri({
+        uri : 'https://graph.facebook.com:443/?ids=59354442594%2C10150465363772595&access_token=foo&date_format=U',
+        file : __dirname + '/../../fixtures/synclets/facebook/album.json'
+      });
+      fakeweb.registerUri({
+        uri : 'https://graph.facebook.com:443/10150465363772595/photos?limit=500&access_token=foo&date_format=U',
+        file : __dirname + '/../../fixtures/synclets/facebook/photos.json'
+      });
+      fakeweb.registerUri({
+        uri : 'https://graph.facebook.com:443/59354442594/photos?limit=500&access_token=foo&date_format=U',
+        file : __dirname + '/../../fixtures/synclets/facebook/photos.json'
+      });
+      return done();
+    });
+
+    describe('when we have no albums to fetch', function() {
+      it('fetches new albums', function(done) {
+        photos.sync(pinfo, function(err, response) {
+          if (err) return done(err);
+          response.config.albums[0].object_id.should.equal(59354442594);
+          response.config.albums[1].object_id.should.equal('10150465363772595');
+          return done();
+        });
+      });
+    });
+
+    describe('when there are albume to fetch', function() {
+      beforeEach(function(done) {
+        pinfo.config.albums = helper.loadFixture(
+          __dirname + '/../../fixtures/synclets/facebook/albums.json'
+        ).data;
+        return done();
+      });
+
+      it('fetches new photos', function(done) {
+        photos.sync(pinfo, function(err, response) {
+          if (err) return done(err);
+          response.data['photo:42@facebook/photos'][0].id.
+            should.equal('214713967594');
+          return done();
+        });
+      });
+
+      it('consumes an album', function(done) {
+        photos.sync(pinfo, function(err, response) {
+          if (err) return done(err);
+          response.config.albums.length.should.equal(1);
+          return done();
+        });
+      });
+
+      it('runs again immediately', function(done) {
+        photos.sync(pinfo, function(err, response) {
+          if (err) return done(err);
+          response.config.nextRun.should.equal(-1);
+          return done();
+        });
+      });
+
+      describe('when we fetch the last album', function() {
+        beforeEach(function(done) {
+          pinfo.config.albums.pop();
+          return done();
+        });
+
+        it('does not run again', function(done) {
+          photos.sync(pinfo, function(err, response) {
+            if (err) return done(err);
+            should.not.exist(response.config.nextRun);
+            return done();
+          });
+        });
       });
     });
   });
