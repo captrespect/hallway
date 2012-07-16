@@ -4,6 +4,7 @@ var fakeweb = require('node-fakeweb');
 var path    = require('path');
 var util    = require('util');
 var helper  = require(path.join(__dirname, '..', '..', 'support', 'locker-helper.js'));
+var feed    = require(path.join('services', 'facebook', 'feed.js'));
 var friends = require(path.join('services', 'facebook', 'friends.js'));
 var home    = require(path.join('services', 'facebook', 'home.js'));
 var homeup  = require(path.join('services', 'facebook', 'home_update.js'));
@@ -30,6 +31,61 @@ describe("Facebook connector", function() {
   afterEach(function (done) {
     fakeweb.tearDown();
     return done();
+  });
+
+  describe('the feed synclet', function() {
+    beforeEach(function(done) {
+      fakeweb.registerUri({
+        uri : apiBase + 'feed?limit=200&access_token=foo&date_format=U',
+        file : __dirname + '/../../fixtures/synclets/facebook/feed.json'
+      });
+      return done();
+    });
+
+    it('fetches your profile feed', function(done) {
+      feed.sync(pinfo, function(err, response) {
+        if (err) return done(err);
+        response.data['post:42@facebook/feed'][0].id.
+          should.equal('100002438955325_224550747571079');
+        return done();
+      });
+    });
+
+    describe('when there is more to fetch', function() {
+      it('remembers the next page to fetch', function(done) {
+        feed.sync(pinfo, function(err, response) {
+          response.config.feedNext.should.equal(
+            'https://graph.facebook.com/me/home?access_token=abc&date_format=U&limit=25&until=1306193396'
+          );
+          return done();
+        });
+      });
+
+      it('schedules itself immediately', function(done) {
+        feed.sync(pinfo, function(err, response) {
+          response.config.nextRun.should.equal(-1);
+          return done();
+        });
+      });
+    });
+
+    describe('when there is nothing left to fetch', function() {
+      beforeEach(function(done) {
+        fakeweb.registerUri({
+          uri : apiBase + 'feed?limit=200&access_token=foo&date_format=U',
+          body : '{"data":[]}'
+        });
+        return done();
+      });
+
+      it('does not schedule another run', function(done) {
+        feed.sync(pinfo, function(err, response) {
+          response.config.feedNext.should.equal(false);
+          return done();
+        });
+      });
+    });
+
   });
 
   describe("home synclet", function() {
@@ -150,7 +206,7 @@ describe("Facebook connector", function() {
         });
       });
 
-      it('runs again immediately', function(done) {
+      it('schedules itself immediately', function(done) {
         photos.sync(pinfo, function(err, response) {
           if (err) return done(err);
           response.config.nextRun.should.equal(-1);
