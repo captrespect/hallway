@@ -12,6 +12,13 @@ var SERVERS = {
   }
 };
 
+var EXAMPLE_JOB = {
+  profile: '123@twitter',
+  synclet: {
+    name: 'timeline'
+  }
+};
+
 describe('Skew', function() {
   var client;
 
@@ -42,7 +49,7 @@ describe('Skew', function() {
 
   describe('#reserve()', function() {
     it('should reserve a job', function(done) {
-      client.schedule('key', Date.now() - (60 * 1000), { a: 'b', c: 'd' }, 0, function(err, jobId) {
+      client.schedule('key', Date.now() - (60 * 1000), EXAMPLE_JOB, 0, function(err, jobId) {
         assert.isNull(err);
         assert.isString(jobId);
         assert.isTrue(parseInt(jobId, 10) > 0);
@@ -54,8 +61,8 @@ describe('Skew', function() {
 
           assert.isObject(payload);
 
-          assert.isTrue(payload.a === 'b');
-          assert.isTrue(payload.c === 'd');
+          assert.isTrue(payload.profile === '123@twitter');
+          assert.isTrue(payload.synclet.name === 'timeline');
 
           done();
         });
@@ -68,7 +75,7 @@ describe('Skew', function() {
       var key = 'key';
       var nextRun = Date.now() + (60 * 1000);
 
-      client.schedule(key, nextRun, { a: 'b', c: 'd' }, 0, function(err, jobId) {
+      client.schedule(key, nextRun, EXAMPLE_JOB, 0, function(err, jobId) {
         assert.isNull(err);
         assert.isString(jobId);
         assert.isTrue(parseInt(jobId, 10) > 0);
@@ -85,7 +92,7 @@ describe('Skew', function() {
   describe('#untrackRedisJob()', function() {
     it('should return false when the job is not tracked', function(done) {
       client.untrackRedisJob(12345, function(err, result) {
-        assert.equal("The job wasn't tracked.", err);
+        assert.equal("The job '12345' wasn't tracked", err);
         assert.equal(false, result);
 
         done();
@@ -119,7 +126,7 @@ describe('Skew', function() {
         assert.equal(true, result);
 
         client.trackRedisJob(12345, function(err, result) {
-          assert.equal('The job was already tracked.', err);
+          assert.equal("The job '12345' was already tracked", err);
           assert.equal(false, result);
 
           done();
