@@ -38,7 +38,7 @@ function refresh() {
 
       if (instance.version &&
         instance.version !== results.head.sha) {
-        versionClass = 'alert';
+        versionClass = 'versionAlert';
       }
 
       $('#rows').append('<tr>' +
