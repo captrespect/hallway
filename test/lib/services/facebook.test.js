@@ -39,6 +39,10 @@ describe("Facebook connector", function() {
         uri : apiBase + 'feed?limit=200&access_token=foo&date_format=U',
         file : __dirname + '/../../fixtures/synclets/facebook/feed.json'
       });
+      fakeweb.registerUri({
+        uri : 'https://graph.facebook.com:443/?ids=3362356749178&access_token=foo&date_format=U',
+        file : __dirname + '/../../fixtures/synclets/facebook/photo.json'
+      });
       return done();
     });
 
@@ -47,6 +51,16 @@ describe("Facebook connector", function() {
         if (err) return done(err);
         response.data['post:42@facebook/feed'][0].id.
           should.equal('100002438955325_224550747571079');
+        return done();
+      });
+    });
+
+    it('collects photos included in posts', function(done) {
+      feed.sync(pinfo, function(err, response) {
+        if (err) return done(err);
+        console.log(response.data['photo:42@facebook/home_photos']);
+        response.data['photo:42@facebook/home_photos'][0].id.
+          should.equal('3488997579924');
         return done();
       });
     });
@@ -141,6 +155,15 @@ describe("Facebook connector", function() {
 
         response.data['post:42@facebook/home'][0].id.
           should.equal('100002438955325_224550747571079');
+        response.data['photo:42@facebook/home_photos'][0].id.
+          should.equal('3488997579924');
+        return done();
+      });
+    });
+
+    it('collects photos included in posts', function(done) {
+      home.sync(pinfo, function(err, response) {
+        if (err) return done(err);
         response.data['photo:42@facebook/home_photos'][0].id.
           should.equal('3488997579924');
         return done();
