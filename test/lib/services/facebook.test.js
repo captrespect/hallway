@@ -58,7 +58,6 @@ describe("Facebook connector", function() {
     it('collects photos included in posts', function(done) {
       feed.sync(pinfo, function(err, response) {
         if (err) return done(err);
-        console.log(response.data['photo:42@facebook/home_photos']);
         response.data['photo:42@facebook/home_photos'][0].id.
           should.equal('3488997579924');
         return done();
