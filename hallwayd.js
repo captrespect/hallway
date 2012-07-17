@@ -153,7 +153,9 @@ if (argv._.length > 0) {
 
 var startupTasks = [];
 
-startupTasks.push(require('ijod').initDB);
+if (role !== Roles.stream) {
+  startupTasks.push(require('ijod').initDB);
+}
 
 if (role !== Roles.dawg && role !== Roles.stream) {
   startupTasks.push(startSyncmanager);
