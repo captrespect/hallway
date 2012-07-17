@@ -10,6 +10,16 @@ p {
    margin-top: 1em;
 }
 
+.alert {
+   background-color: #fb8072;
+   color: white;
+   padding-top: 2px;
+   padding-bottom: 2px;
+   padding-left: 4px;
+   padding-right: 4px;
+   border-radius: 2px;
+}
+
 td span.instance {
    padding-top: 2px;
    padding-bottom: 2px;

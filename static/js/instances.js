@@ -1,5 +1,10 @@
 function refresh() {
   async.parallel({
+    head: function(callback) {
+      $.getJSON('https://api.github.com/repos/Singly/hallway/commits', function(commits) {
+        callback(null, commits[0]);
+      });
+    },
     workers: function(callback) {
       $.getJSON('/workers/state', function(state) {
         callback(null, state.workers);
@@ -14,6 +19,8 @@ function refresh() {
   function(err, results) {
     $('#rows').html('');
 
+    $('#head').html('<a href="https://github.com/Singly/hallway/commit/' + results.head.sha + '">' + results.head.sha.slice(0, 8) + '</a>');
+
     var instances = results.workers.concat(results.apiHosts);
 
     instances = _.sortBy(instances, 'uptime');
@@ -27,9 +34,16 @@ function refresh() {
         url = 'http://' + instance.publicIp + ':8041/';
       }
 
+      var versionClass = '';
+
+      if (instance.version &&
+        instance.version !== results.head.sha) {
+        versionClass = 'alert';
+      }
+
       $('#rows').append('<tr>' +
           '<td><a href="' + url + '">' + instance.host + '</a></td>' +
-          '<td>' + (instance.version ? '<a href="https://github.com/Singly/hallway/commit/' + instance.version + '">' + instance.version.slice(0, 8) + '</a>' : '') + '</td>' +
+          '<td>' + (instance.version ? '<span class="' + versionClass + '"><a href="https://github.com/Singly/hallway/commit/' + instance.version + '">' + instance.version.slice(0, 8) + '</a></span>' : '') + '</td>' +
           '<td>' + moment.duration(instance.uptime, "seconds").humanize() + '</td>' +
           '<td>' + (instance.active ? instance.active.length : '') + '</td>' +
           '<td>' + (instance.total ? commas(instance.total) : '') + '</td>' +
